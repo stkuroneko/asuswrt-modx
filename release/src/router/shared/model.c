@@ -58,6 +58,12 @@ static const struct model_s model_list[] = {
 	{ "RT-RM2100", MODEL_RTRM2100},
 #elif defined(RTR2100)
 	{ "RT-R2100", MODEL_RTR2100},
+#elif defined(RTNEWIFI2)
+	{ "RT-NEWIFI2", MODEL_RTNEWIFI2},
+#elif defined(RTNEWIFI3)
+	{ "RT-NEWIFI3", MODEL_RTNEWIFI3},
+#elif defined(RTHIWIFI4)
+	{ "RT-HIWIFI4", MODEL_RTHIWIFI4},
 #else
 	{ "RT-AC85U", MODEL_RTAC85U},
 #endif
@@ -213,6 +219,12 @@ int get_model(void)
 	return MODEL_RTRM2100;
 #elif defined(RTR2100)
 	return MODEL_RTR2100;
+#elif defined(RTNEWIFI2)
+	return MODEL_RTNEWIFI2;
+#elif defined(RTNEWIFI3)
+	return MODEL_RTNEWIFI3;
+#elif defined(RTHIWIFI4)
+	return MODEL_RTHIWIFI4;
 #endif
 	static int model = MODEL_UNKNOWN;
 	char *pid;

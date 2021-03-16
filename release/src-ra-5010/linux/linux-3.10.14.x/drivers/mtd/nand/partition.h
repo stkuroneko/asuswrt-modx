@@ -10,11 +10,19 @@
 
 extern unsigned int  CFG_BLOCKSIZE;
 #if defined(CONFIG_DUAL_TRX)	/* ASUS_EXT */
+#if defined(CONFIG_MODEL_RMAC2100) || defined(CONFIG_MODEL_RTMIR3G)
+#define LARGE_MTD_BOOT_PART_SIZE	(0x100000)
+#define LARGE_MTD_CONFIG_PART_SIZE	(0x40000)
+#define LARGE_MTD_FACTORY_PART_SIZE	(0x40000)
+#define TRX_FIRMWARE_SIZE		(34 * 1024 * 1024) 	//50 MB
+#define TRX_FW_NUM			2
+#else
 #define LARGE_MTD_BOOT_PART_SIZE	(CFG_BLOCKSIZE * 7)
 #define LARGE_MTD_CONFIG_PART_SIZE	(CFG_BLOCKSIZE * 8)
 #define LARGE_MTD_FACTORY_PART_SIZE	(CFG_BLOCKSIZE * 8)
 #define TRX_FIRMWARE_SIZE		(50 * 1024 * 1024) 	//50 MB
 #define TRX_FW_NUM			2
+#endif
 #else
 #define LARGE_MTD_BOOT_PART_SIZE       (CFG_BLOCKSIZE<<2)
 #define LARGE_MTD_CONFIG_PART_SIZE     (CFG_BLOCKSIZE<<2)
@@ -22,13 +30,15 @@ extern unsigned int  CFG_BLOCKSIZE;
 #define TRX_FW_NUM			1
 #endif
 
-// Xiaomi
-#define LARGE_MTD_BOOT_PART_SIZE	0x100000
+// HIWIFI4
+#if defined(CONFIG_MODEL_RTHIWIFI4)
+#define LARGE_MTD_BOOT_PART_SIZE	0xe0000
 #define LARGE_MTD_CONFIG_PART_SIZE	0x20000
 #define LARGE_MTD_FACTORY_PART_SIZE	0x20000
 #define TRX_FIRMWARE_SIZE		(50 * 1024 * 1024) 	//50 MB
 #define TRX_FW_NUM			1
-// Xiaomi
+#endif 
+// HIWIFI4
 
 #ifdef CONFIG_RT2880_ROOTFS_IN_FLASH
 #define MTD_ROOTFS_RESERVED_BLOCK	0x80000  // (CFG_BLOCKSIZE<<2)
@@ -73,21 +83,40 @@ static struct mtd_partition g_pasStatic_Partition[] = {
         /* Put your own partition definitions here */
         {
                 name:           "Bootloader",
+#if defined(CONFIG_MODEL_RMAC2100) || defined(CONFIG_MODEL_RTMIR3G)
+               size:           0x100000,
+#else
                 size:           MTD_BOOT_PART_SIZE,
+#endif
                 offset:         0,
         }, {
                 name:           "nvram",
+#if defined(CONFIG_MODEL_RMAC2100) || defined(CONFIG_MODEL_RTMIR3G)
+                size:           0x40000,
+                offset:         0x140000,
+#else
                 size:           MTD_CONFIG_PART_SIZE,
                 offset:         MTDPART_OFS_APPEND
+#endif
         }, {
                 name:           "Factory",
+#if defined(CONFIG_MODEL_RMAC2100) || defined(CONFIG_MODEL_RTMIR3G)
+                size:           0x40000,
+                offset:         0x100000,
+#else
                 size:           MTD_FACTORY_PART_SIZE,
                 offset:         MTDPART_OFS_APPEND
+#endif
 #ifdef CONFIG_MTK_MTD_NAND
         }, {
                 name:           "Factory2",
+#if defined(CONFIG_MODEL_RMAC2100) || defined(CONFIG_MODEL_RTMIR3G)
+                size:           0x40000,
+                offset:         0x100000,
+#else
                 size:           MTD_FACTORY_PART_SIZE,
                 offset:         MTDPART_OFS_APPEND
+#endif
 #endif	/* CONFIG_MTK_MTD_NAND */
 #ifdef CONFIG_RT2880_ROOTFS_IN_FLASH
         }, {
@@ -111,21 +140,41 @@ static struct mtd_partition g_pasStatic_Partition[] = {
 #else //CONFIG_RT2880_ROOTFS_IN_RAM
         }, {
                 name:           "linux",
+#if defined(CONFIG_MODEL_RMAC2100) || defined(CONFIG_MODEL_RTMIR3G)
+                size:           0x2800000,
+                offset:         0x200000,
+#else
                 size:           MTD_KERN_PART_SIZE,
                 offset:         MTDPART_OFS_APPEND,
+#endif
         }, {
                 name:           "RootFS",
+#if defined(CONFIG_MODEL_RMAC2100) || defined(CONFIG_MODEL_RTMIR3G)
+                size:           0x2600000,
+                offset:         0x400000,
+#else
                 size:           MTD_ROOTFS_PART_SIZE,
                 offset:         MTDPART_OFS_APPEND,
-#ifdef CONFIG_DUAL_TRX
+#endif
+#if defined(CONFIG_DUAL_TRX) || defined(CONFIG_MODEL_RMAC2100) || defined(CONFIG_MODEL_RTMIR3G)
         }, {
                 name:           "linux2",
+#if defined(CONFIG_MODEL_RMAC2100) || defined(CONFIG_MODEL_RTMIR3G)
+                size:           0x2800000,
+                offset:         0x200000,
+#else
                 size:           MTD_KERN_PART_SIZE,
                 offset:         MTDPART_OFS_APPEND,
+#endif
         }, {
                 name:           "RootFS2",
+#if defined(CONFIG_MODEL_RMAC2100) || defined(CONFIG_MODEL_RTMIR3G)
+                size:           0x2600000,
+                offset:         0x400000,
+#else
                 size:           MTD_ROOTFS_PART_SIZE,
                 offset:         MTDPART_OFS_APPEND,
+#endif
 #endif	/* CONFIG_DUAL_TRX */
 #endif
 #ifdef CONFIG_DUAL_IMAGE
@@ -142,13 +191,25 @@ static struct mtd_partition g_pasStatic_Partition[] = {
 #endif
         },{
                 name:           "jffs2",
+#if defined(CONFIG_MODEL_RMAC2100) || defined(CONFIG_MODEL_RTMIR3G)
+                size:           0x5500000,
+                offset:         0x2a00000,
+#else
                 size:           MTD_JFFS2_PART_SIZE,
                 offset:         MTDPART_OFS_APPEND,
+#endif
         } ,{
                 name:           "ALL",
                 size:           MTDPART_SIZ_FULL,
                 offset:         0,
-        }
+		}
+#if defined(CONFIG_MODEL_RMAC2100) || defined(CONFIG_MODEL_RTMIR3G)
+        , {
+                name:           "RootFS-default",
+                size:           0x2600000,
+                offset:         0x400000,
+		}
+#endif
 
 };
 

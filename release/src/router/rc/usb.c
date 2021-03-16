@@ -230,7 +230,7 @@ void add_usb_host_module(void)
 #endif
 
 #if defined(RTCONFIG_USB_XHCI)
-#if defined(RTN65U) || defined(RTCONFIG_QCA) || defined(RTAC85U) || defined(RTAC85P) || defined(RTACRH26) || defined(RTMIR3G) || defined(RTMIR3P)
+#if defined(RTN65U) || defined(RTCONFIG_QCA) || defined(RTAC85U) || defined(RTAC85P) || defined(RTACRH26) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTNEWIFI2) || defined(RTNEWIFI3) || defined(RTHIWIFI4)
 	char *u3_param = "u3intf=0";
 #endif
 #endif
@@ -243,7 +243,7 @@ void add_usb_host_module(void)
 	modprobe(USBCORE_MOD);
 
 #if defined(RTCONFIG_USB_XHCI)
-#if defined(RTN65U) || defined(RTCONFIG_QCA) || defined(RTAC85U) || defined(RTAC85P) || defined(RTACRH26) || defined(RTMIR3G) || defined(RTMIR3P)
+#if defined(RTN65U) || defined(RTCONFIG_QCA) || defined(RTAC85U) || defined(RTAC85P) || defined(RTACRH26) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTNEWIFI2) || defined(RTNEWIFI3) || defined(RTHIWIFI4)
 	if (nvram_get_int("usb_usb3") == 1)
 		u3_param = "u3intf=1";
 #if !defined(RTCONFIG_SOC_IPQ40XX)
@@ -272,7 +272,7 @@ void add_usb_host_module(void)
 
 	/* if enabled, force USB2 before USB1.1 */
 	if (nvram_get_int("usb_usb2") == 1) {
-#if defined(RTN56UB1) || defined(RTN56UB2) || defined(RTAC1200GA1) || defined(RTAC1200GU)
+#if defined(RTN56UB1) || defined(RTN56UB2) || defined(RTAC1200GA1) || defined(RTAC1200GU)|| defined(RTHIWIFI4)
 		modprobe(USB20_MOD);
 #else
 		i = nvram_get_int("usb_irq_thresh");
@@ -1050,12 +1050,12 @@ void stop_usb(int f_force)
 	if (disabled || nvram_get_int("usb_uhci") != 1 || f_force) modprobe_r(USBUHCI_MOD);
 	if (disabled || nvram_get_int("usb_usb2") != 1 || f_force) modprobe_r(USB20_MOD);
 
-#if defined(RTN56UB1) ||  defined(RTN56UB2) || defined(RTAC1200GA1) || defined(RTAC1200GU)
+#if defined(RTN56UB1) ||  defined(RTN56UB2) || defined(RTAC1200GA1) || defined(RTAC1200GU)|| defined(RTHIWIFI4)
 	modprobe_r(USB20_MOD);
 #endif
 
 #if defined(RTCONFIG_USB_XHCI)
-#if defined(RTN65U) || defined(RTCONFIG_QCA) || defined(RTAC85U) || defined(RTAC85P) || defined(RTACRH26) || defined(RTMIR3G) || defined(RTMIR3P)
+#if defined(RTN65U) || defined(RTCONFIG_QCA) || defined(RTAC85U) || defined(RTAC85P) || defined(RTACRH26) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTNEWIFI2) || defined(RTNEWIFI3) || defined(RTHIWIFI4)
 	if (disabled) {
 #if defined(RTCONFIG_SOC_IPQ8064)
 		modprobe_r("dwc3-ipq");
