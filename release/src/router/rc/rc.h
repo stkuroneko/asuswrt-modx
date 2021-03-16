@@ -1571,6 +1571,7 @@ extern void start_sendDSLdiag(void);
 extern void start_snmpd(void);
 extern void stop_snmpd(void);
 #endif
+int ddns_custom_updated_main(int argc, char *argv[]);
 #ifdef RTCONFIG_TIMEMACHINE
 extern int start_timemachine(void);
 extern void stop_timemachine(void);
@@ -1861,6 +1862,8 @@ extern int start_tr(void);
 extern void stop_tr(void);
 extern int dhcpc_lease_main(int argc, char *argv[]);
 #endif
+
+extern int dnsmasq_script_main(int argc, char **argv);
 
 #ifdef RTCONFIG_NEW_USER_LOW_RSSI
 extern void stop_roamast(void);

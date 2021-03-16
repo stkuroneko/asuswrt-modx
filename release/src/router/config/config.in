@@ -1795,3 +1795,12 @@ config RTCONFIG_UUPLUGIN
 config RTCONFIG_CAPTCHA
 	bool "Web UI supports captcha"
 	default n
+
+config RTCONFIG_SOFTCENTER
+	bool "softcenter"
+	default n
+
+config RTCONFIG_SMARTDNS
+	bool "smart dns"
+	default n
+

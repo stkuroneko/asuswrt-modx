@@ -67,6 +67,14 @@ export SRCBASEDIR := $(shell pwd | sed 's/.*release\///g')
 RELEASEDIR := $(shell (cd $(SRC_ROOT)/.. && pwd -P))
 export PATH := $(RELEASEDIR)/tools:$(SRCBASE)/ctools:$(PATH)
 
+#K3C/K3/SBRAC1900P/SBRAC3200P/R7000/R8000/R7900P/R8000P/RTACRH17/RTAC85P/GTAC2900/GTAC5300/RTAC86U/RTAC68U/RTAC3100/RTAC3200/RTAC68P/BLUECAVE/EA6700/RTRM2100
+#aimesh:R(384 and 385),non-aimesh:B(382 and 384),special:X(382/384/385/386)
+export MERLINR_NAME := RTRM2100
+export MERLINR_VER_MAJOR :=B
+export MERLINR_VER_MINOR :=5.1.0
+export MERLINR_VER := $(MERLINR_VER_MAJOR)$(MERLINR_VER_MINOR)
+export MERLINRVER := $(MERLINR_NAME)_$(MERLINR_VER)
+
 # tmp depend on busybox
 E2FSPROGS := $(if $(filter $(BUSYBOX),busybox-1.17.4),n,y)
 
@@ -199,7 +207,11 @@ uppercase_B = $(shell echo $(BUILD_NAME) | tr a-z  A-Z)
 lowercase_B = $(shell echo $(BUILD_NAME) | tr A-Z a-z)
 BUILD_TIME := $(shell LC_ALL=C date -u)
 BUILD_USER ?= $(shell whoami)
+ifeq ($(BUILD_USER),paldier)
+BUILD_INFO := MerlinRdev
+else
 BUILD_INFO := $(shell git log --pretty="%h" -n 1|sed -e "s,\([0-9a-z]\{7\}\)[0-9a-z]*,\1,")
+endif
 
 ifeq ($(CONFIG_LINUX26),y)
 mips_rev = $(if $(filter $(MIPS32),r2),MIPSR2,MIPSR1)
@@ -2615,6 +2627,14 @@ define RouterOptions
 	if [ "$(UUPLUGIN)" = "y" ]; then \
 		sed -i "/RTCONFIG_UUPLUGIN/d" $(1); \
 		echo "RTCONFIG_UUPLUGIN=y" >>$(1); \
+	fi; \
+	if [ "$(SOFTCENTER)" = "y" ]; then \
+	sed -i "/RTCONFIG_SOFTCENTER/d" $(1); \
+	echo "RTCONFIG_SOFTCENTER=y" >>$(1); \
+	fi; \
+	if [ "$(SMARTDNS)" = "y" ]; then \
+	sed -i "/RTCONFIG_SMARTDNS/d" $(1); \
+	echo "RTCONFIG_SMARTDNS=y" >>$(1); \
 	fi; \
 	)
 	$(call platformRouterOptions, $(1))

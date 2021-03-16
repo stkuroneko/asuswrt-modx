@@ -395,10 +395,15 @@ var wl_info = {
 			})()
 };
 //wireless end
-
+var rc_support = '<% nvram_get("rc_support"); %>';
 function uiSupport(_ptn){
 	var ui_support = [<% get_ui_support(); %>][0];
-
+	if(_ptn == "uu_accel"){
+		if(rc_support.search("uu_accel") != -1)
+			return true;
+		else if ('<% nvram_get("uu_enable"); %>' == 0)
+			return false;
+	}
 	if(ui_support[_ptn])
 		return ui_support[_ptn];
 	else
@@ -483,7 +488,7 @@ function isSupport(_ptn){
 
 		if(( based_modelid == "BRT-AC828" || based_modelid == "GT-AC5300" || based_modelid == "GT-AC9600" || based_modelid == "RT-AC5300" || based_modelid == "RT-AC3200" || based_modelid == "RT-AC3100" || 
 			based_modelid == "RT-AC88U" || based_modelid == "RT-AC87U" || based_modelid == "RT-AC86U" || based_modelid == "AC2900" || based_modelid == "RT-AC85U" || based_modelid == "RT-MIR3G" || based_modelid == "RT-MIR3P" || based_modelid == "RT-MIR4A" || based_modelid == "RT-RM2100" || based_modelid == "RT-R2100" ||
-			based_modelid == "RT-NEWIFI2" ||based_modelid == "RT-NEWIFI3" || based_modelid == "RT-HIWIFI4"  ||
+			based_modelid == "RT-NEWIFI2" ||based_modelid == "RT-NEWIFI3" || based_modelid == "RT-HIWIFI4" ||
 			based_modelid == "RT-AC65U" || based_modelid == "RT-AC85P" || based_modelid == "4G-AC68U" || based_modelid == "DSL-AC68U" || based_modelid == "RT-AC68U" || based_modelid == "RT-AC68R" || 
 			based_modelid == "RT-AC68W" || based_modelid == "RT-AC68RW" || based_modelid == "RT-AC1900P" || 
 			based_modelid == "RT-AC67U" || based_modelid == "RT-AC56U" || based_modelid == "RT-AC56R" || based_modelid == "BLUECAVE")
@@ -1235,7 +1240,8 @@ function submitenter(myfield,e)
 	else
 		return true;
 }
-
+var tabtitle = [""];
+var tablink = [""];
 function show_menu(){
 	var wan_pppoe_username = decodeURIComponent('<% nvram_char_to_ascii("", "wan0_pppoe_username"); %>');
 	var cht_pppoe = wan_pppoe_username.split("@");
@@ -1260,7 +1266,26 @@ function show_menu(){
 			menus: menuTree.exclude.menus(),
 			tabs: menuTree.exclude.tabs()
 		};
-
+		if (typeof menu_hook != "undefined") {
+			menu_hook();
+			for (var i = 0; i < tablink[0].length - 1; i++) {
+				menuList[menuList.length - 1].tab[i] = {
+					url: tablink[0][i + 1],
+					tabName: tabtitle[0][i + 1]
+				}
+			}
+			menuList[menuList.length - 1].tab[tablink[0].length - 1] = {
+				url: "NULL",
+				tabName: "__INHERIT__"
+			}
+		}else{
+			if(window.location.pathname.indexOf("Module_") != -1){
+				menuList[menuList.length - 1].tab[0] = {
+					url: window.location.pathname.split("/")[1],
+					tabName: window.location.pathname.split(".asp")[0].split("/Module_")[1]
+				}
+			}
+		}
 		Session.set("menuList", menuList);
 		Session.set("menuExclude", menuExclude);
 		showMenuTree(menuList, menuExclude);

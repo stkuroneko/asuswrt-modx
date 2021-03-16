@@ -3838,3 +3838,6 @@ weekSche_Del_All=Are you sure you want to delete all the rules?
 weekSche_MAX_Num=The maximum number of rules is #MAXNUM.
 weekSche_MAX_Del_Hint=In order to add new rules, you can delete those rules that are not being used.
 weekSche_Offtime_Sche=Offtime schedule
+Enable_led_on_off=Enable LED
+Softcenter=Softcenter
+Softcenter_tool=Tools

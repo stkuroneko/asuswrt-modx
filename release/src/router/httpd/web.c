@@ -188,7 +188,10 @@ extern int ssl_stream_fd;
 #endif
 
 #include <iboxcom.h>
-
+#include "sysinfo.h"
+#ifdef RTCONFIG_SOFTCENTER
+#include "dbapi.h"
+#endif
 extern int ej_wl_sta_list_2g(int eid, webs_t wp, int argc, char_t **argv);
 extern int ej_wl_sta_list_5g(int eid, webs_t wp, int argc, char_t **argv);
 #ifndef RTCONFIG_QTN
@@ -282,6 +285,7 @@ void response_nvram_config(webs_t wp, char *config_name, json_object *res, json_
 extern void do_captcha_file(char *url, FILE *stream);
 #endif
 
+extern int get_lang_num_merlinr();
 #if 0
 static int nvram_check_and_set(char *name, char *value);
 #endif
@@ -931,6 +935,94 @@ ej_nvram_match(int eid, webs_t wp, int argc, char_t **argv)
  * <% nvram_match("wan_proto", "dhcp", "selected"); %> produces "selected"
  * <% nvram_match("wan_proto", "static", "selected"); %> does not produce
  */
+#ifdef RTCONFIG_SOFTCENTER
+static int
+ej_dbus_get(int eid, webs_t wp, int argc, char_t **argv)
+{
+	char *name, c[512];
+	int ret = 0;
+
+	if (ejArgs(argc, argv, "%s", &name) < 1) {
+		websError(wp, 400, "Insufficient args\n");
+		return -1;
+	}
+	doSystem("dbus get %s > /tmp/dbusxxx", name);
+	char *buffer = read_whole_file("/tmp/dbusxxx");
+	if (buffer) {
+		sscanf(buffer, "%[^\n]", c);
+		free(buffer);
+	} else {
+		strcpy(c, "");
+	}
+	unlink("/tmp/dbusxxx");
+
+	ret += websWrite(wp, c);
+
+	return ret;
+}
+
+
+static int
+ej_dbus_get_def(int eid, webs_t wp, int argc, char_t **argv)
+{
+	char *name, c[512], *output;
+	int ret = 0;
+//	char sid_dummy = "",
+
+	if (ejArgs(argc, argv, "%s %s", &name, &output) < 2) {
+		websError(wp, 400, "Insufficient args\n");
+		return -1;
+	}
+	doSystem("dbus get %s > /tmp/dbusxxx", name);
+	char *buffer = read_whole_file("/tmp/dbusxxx");
+	if (buffer) {
+		sscanf(buffer, "%[^\r]", c);
+		if (c[0]!='\n') {
+			c[strlen(c)-1]='\0';
+			ret += websWrite(wp, c);
+		} else
+			ret += websWrite(wp, output);
+		free(buffer);
+	} else {
+		ret += websWrite(wp, output);
+	}
+	unlink("/tmp/dbusxxx");
+	//doSystem("rm -rf /tmp/dbusxxx");
+	//for (; *c; c++) {
+			//ret += websWrite(wp, c);
+	//}
+
+	return ret;
+}
+
+static int
+ej_dbus_match(int eid, webs_t wp, int argc, char_t **argv)
+{
+	char c[512], *name, *match, *output;
+
+	if (ejArgs(argc, argv, "%s %s %s", &name, &match, &output) < 3) {
+		websError(wp, 400, "Insufficient args\n");
+		return -1;
+	}
+	doSystem("dbus get %s > /tmp/dbusxxx", name);
+	char *buffer = read_whole_file("/tmp/dbusxxx");
+	if (buffer) {
+		sscanf(buffer, "%[^\n]", c);
+		free(buffer);
+	} else {
+		strcpy(c, "");
+	}
+	unlink("/tmp/dbusxxx");
+	//doSystem("rm -rf /tmp/dbusxxx");
+	if (strcmp(c,match) == 0)
+	{
+		return websWrite(wp, output);
+	}
+
+	return 0;
+}
+#endif
+
 static int
 ej_nvram_match_x(int eid, webs_t wp, int argc, char_t **argv)
 {
@@ -1812,6 +1904,10 @@ ej_dump(int eid, webs_t wp, int argc, char_t **argv)
 		|| strcmp(file, "adsl/adsllog.log")==0
 #endif
 	){
+		sprintf(filename, "/tmp/%s", file);
+		ret += dump_file(wp, filename);
+	}
+	else {
 		sprintf(filename, "/tmp/%s", file);
 		ret += dump_file(wp, filename);
 	}
@@ -4396,6 +4492,15 @@ static int ej_update_variables(int eid, webs_t wp, int argc, char_t **argv) {
 			websWrite(wp, "<script>restart_needed_time(%d);</script>\n", atoi(action_wait));
 		}
 	}
+	else if(!strcmp(action_mode, "toolscript")){
+		nvram_set("freeze_duck", "5");
+		strncpy(notify_cmd, action_script, 128);
+		_dprintf("Scrip_Cmd: [%s]\n", notify_cmd);
+		validate_apply(wp, NULL);
+		strlcpy(SystemCmd, notify_cmd, sizeof(SystemCmd));
+		sys_script("syscmd.sh");
+	}
+
 #if defined(RTCONFIG_USB_SMS_MODEM) && !defined(RTCONFIG_USB_MULTIMODEM)
 	else if(!strcmp(action_script, "start_savesms")){
 		int fd;
@@ -8067,6 +8172,60 @@ static int get_client_detail_info(struct json_object *clients, struct json_objec
 	return 0;
 }
 
+static int ej_get_clientlist_maclist(int eid, webs_t wp, int argc, char_t **argv)
+{
+        if(!pids("networkmap")){
+                websWrite(wp, "[]");
+                return 0;
+        }
+
+	struct json_object *macArray = json_object_new_array();
+	P_CLIENT_DETAIL_INFO_TABLE p_client_info_tab;
+	void *shared_client_info = (void *) 0;
+	char mac_buf[32];
+	int i, lock, shm_client_info_id;
+
+	lock = file_lock("networkmap");
+	shm_client_info_id = shmget((key_t)SHMKEY_LAN, sizeof(CLIENT_DETAIL_INFO_TABLE), 0666|IPC_CREAT);
+	if (shm_client_info_id == -1){
+		fprintf(stderr,"shmget failed\n");
+		file_unlock(lock);
+		websWrite(wp, "[]");
+		return 0;
+	}
+
+	shared_client_info = shmat(shm_client_info_id,(void *) 0,0);
+	if (shared_client_info == (void *)-1){
+		fprintf(stderr, "shmat failed\n");
+		file_unlock(lock);
+		websWrite(wp, "[]");
+		return 0;
+	}
+
+	p_client_info_tab = (P_CLIENT_DETAIL_INFO_TABLE)shared_client_info;
+	for(i = 0; i < p_client_info_tab->ip_mac_num; i++) {
+		if(p_client_info_tab->device_flag[i]&(1<<FLAG_EXIST)) {
+			memset(mac_buf, 0, sizeof(mac_buf));
+			sprintf(mac_buf, "%02X:%02X:%02X:%02X:%02X:%02X",
+				p_client_info_tab->mac_addr[i][0],p_client_info_tab->mac_addr[i][1],
+				p_client_info_tab->mac_addr[i][2],p_client_info_tab->mac_addr[i][3],
+				p_client_info_tab->mac_addr[i][4],p_client_info_tab->mac_addr[i][5]
+				);
+			json_object_array_add(macArray, json_object_new_string(mac_buf));
+		}
+	}
+
+	shmdt(shared_client_info);
+	file_unlock(lock);
+
+	websWrite(wp, "%s", json_object_to_json_string(macArray));
+
+	if(macArray)
+		json_object_put(macArray);
+
+	return 0;
+}
+
 static int ej_get_clientlist(int eid, webs_t wp, int argc, char_t **argv)
 {
 	struct json_object *clients;
@@ -9817,6 +9976,7 @@ static int ej_usb_is_exist(int eid, webs_t wp, int argc, char_t **argv){
 #endif
 
 int ej_shown_language_css(int eid, webs_t wp, int argc, char **argv){
+	struct language_table *pLang = NULL;
 	char lang[4];
 	int len;
 #ifdef RTCONFIG_AUTODICT
@@ -9837,7 +9997,7 @@ int ej_shown_language_css(int eid, webs_t wp, int argc, char **argv){
 	memset(lang, 0, 4);
 	strcpy(lang, nvram_safe_get("preferred_lang"));
 
-	if(get_lang_num() == 1){
+	if(get_lang_num_merlinr() == 1){
 		websWrite(wp, "<li style=\"visibility:hidden;\"><dl><a href=\"#\"><dt id=\"selected_lang\"></dt></a>\\n");
 	}
 	else{
@@ -9863,7 +10023,7 @@ int ej_shown_language_css(int eid, webs_t wp, int argc, char **argv){
 				memset(target, 0, sizeof(target));
 				strncpy(target, follow_info, len);
 
-				if (check_lang_support(key) && strcmp(key,lang))
+				if (check_lang_support_merlinr(key) && strcmp(key,lang))
 					websWrite(wp, "<dd><a onclick=\"submit_language(this)\" id=\"%s\">%s</a></dd>\\n", key, target);
 			}
 			else
@@ -12382,9 +12542,149 @@ do_upload_cert_key_cgi(char *url, FILE *stream)
 }
 #endif
 
+#ifdef RTCONFIG_SOFTCENTER
+static int ssupload = 0;
 static void
-do_download_cert_key_cgi(char *url, FILE *stream)//for DUT
+do_ssupload_post(char *url, FILE *stream, int len, char *boundary)
 {
+	do_html_get(url, len, boundary);
+	char *name = websGetVar(wp, "a","");
+	char upload_fifo[64];
+	memset(upload_fifo, 0, 64);
+	strcpy(upload_fifo, name);
+	FILE *fifo = NULL;
+	char buf[4096];
+	int ch, ret = EINVAL;
+	int count, cnt;
+	long filelen;
+	int offset;
+
+	/* Look for our part */
+	while (len > 0)
+	{
+		if (!fgets(buf, MIN(len + 1, sizeof(buf)), stream))
+		{
+			goto err;
+		}
+
+		len -= strlen(buf);
+
+		if (!strncasecmp(buf, "Content-Disposition:", 20) && strstr(buf, "name=\"file\""))
+			break;
+	}
+
+	/* Skip boundary and headers */
+	while (len > 0) {
+		if (!fgets(buf, MIN(len + 1, sizeof(buf)), stream))
+		{
+			goto err;
+		}
+		len -= strlen(buf);
+		if (!strcmp(buf, "\n") || !strcmp(buf, "\r\n"))
+		{
+			break;
+		}
+	}
+
+
+	if (!(fifo = fopen(upload_fifo, "a+"))) goto err;
+	filelen = len;
+	cnt = 0;
+	offset = 0;
+
+	/* Pipe the rest to the FIFO */
+	while (len>0 && filelen>0)
+	{
+
+#ifdef RTCONFIG_HTTPS
+		if(do_ssl){
+			if (waitfor(ssl_stream_fd, (len >= 0x4000)? 3 : 1) <= 0)
+				break;
+		}
+		else{
+			if (waitfor (fileno(stream), 10) <= 0)
+			{
+				break;
+			}
+		}
+#else
+		if (waitfor (fileno(stream), 10) <= 0)
+		{
+			break;
+		}
+#endif
+
+		count = fread(buf + offset, 1, MIN(len, sizeof(buf)-offset), stream);
+
+		if(count <= 0)
+			goto err;
+
+		len -= count;
+
+		if(cnt==0) {
+			if(count + offset < 8)
+			{
+				offset += count;
+				continue;
+			}
+
+			count += offset;
+			offset = 0;
+			_dprintf("read from stream: %d\n", count);
+			cnt++;
+		}
+		filelen-=count;
+		fwrite(buf, 1, count, fifo);
+	}
+
+	/* Slurp anything remaining in the request */
+	while (len-- > 0)
+	{
+		if((ch = fgetc(stream)) == EOF)
+			break;
+
+		if (filelen>0)
+		{
+			fputc(ch, fifo);
+			filelen--;
+		}
+	}
+	fclose(fifo);
+	fifo = NULL;
+	ssupload = 1;
+err:
+	if (fifo)
+		fclose(fifo);
+
+	/* Slurp anything remaining in the request */
+	while (len-- > 0)
+		if((ch = fgetc(stream)) == EOF)
+			break;
+}
+
+
+static void
+do_ssupload_cgi(char *url, FILE *stream)
+{
+	int i;
+	for (i=0; i<10; i++)
+	{
+		if(ssupload == 1)
+		{
+			websWrite(stream,"<script>parent.upload_ok(1);</script>\n" );
+			break;
+		} else
+			sleep(1);
+	}
+	if (i == 10)
+		websWrite(stream,"<script>parent.upload_ok(0);</script>\n" );
+}
+#endif
+
+static void
+do_download_cert_key_cgi(char *url, FILE *stream)
+{
+	_dprintf("do_download_cert_key_cgi\n");
 	eval("tar", "cf",
 		"/tmp/cert_key.tar",
 		"-C",
@@ -14881,6 +15181,261 @@ do_appGet_cgi(char *url, FILE *stream)
 	free(dup_pattern);
 }
 
+#ifdef RTCONFIG_SOFTCENTER
+static int
+applydb_cgi(webs_t wp, char_t *urlPrefix, char_t *webDir, int arg,
+		char_t *url, char_t *path, char_t *query)
+{
+	char *action_mode;
+	char *action_script;
+	char dbjson[100][9999];
+	char dbvar[2048];
+	char dbval[9999];
+	char notify_cmd[128];
+	char db_cmd[128];
+	int i, j;
+	char *result = NULL;
+	char *temp = NULL;
+	char *name = websGetVar(wp, "p","");
+	char *userm = strstr(url, "use_rm=1");
+	char scPath[128];
+	char *post_db_buf = post_json_buf;
+
+	action_mode = websGetVar(wp, "action_mode", "");
+	action_script = websGetVar(wp, "action_script", "");
+	
+	dbclient client;
+	dbclient_start(&client);
+	if (strlen(name) <= 0) {
+		printf("No \"name\"!\n");
+	}
+	if ( !strcmp("", post_db_buf)){
+		//get
+		sprintf(post_db_buf, "%s", post_buf_backup+1);
+		unescape(post_db_buf);
+		//logmessage("HTTPD", "url: %s,%s", post_db_buf, name);
+		strcpy(post_json_buf, post_db_buf);
+		result = strtok( post_json_buf, "&" );
+		i =0;
+	while( result != NULL )
+	{
+		if (result!=NULL)
+		{
+		strcpy(dbjson[i], result);
+		i++;
+			result = strtok( NULL, "&" );
+		}
+	}
+	for (j =0; j < i; j++)
+	{
+		if(!strncasecmp(dbjson[j], name, strlen(name))){
+				memset(dbvar,'\0',sizeof(dbvar));
+				memset(dbval,'\0',sizeof(dbval));
+				temp=strstr(dbjson[j], "=");
+				strcpy(dbval, temp+1);
+				strncpy(dbvar, dbjson[j], strlen(dbjson[j])-strlen(temp));
+			//logmessage("HTTPD", "name: %s post: %s", dbvar, dbval);
+			if(userm)
+				doSystem("dbus remove %s", dbvar);
+			else
+				dbclient_bulk(&client, "set", dbvar, strlen(dbvar), dbval, strlen(dbval));
+		}
+	}
+	} else {
+	//post
+	unescape(post_db_buf);
+	//logmessage("HTTPD", "name: %s post: %s", name, post_json_buf);
+	//logmessage("HTTPD", "name: %s post: %s", name, post_db_buf);
+	strcpy(post_json_buf, post_db_buf);
+	result = strtok( post_json_buf, "&" );
+	i =0;
+	while( result != NULL )
+	{
+		if (result!=NULL)
+		{
+		strcpy(dbjson[i], result);
+		i++;
+			result = strtok( NULL, "&" );
+		}
+	}
+	for (j =0; j < i; j++)
+	{
+		if(!strncasecmp(dbjson[j], name, strlen(name))){
+				memset(dbvar,'\0',sizeof(dbvar));
+				memset(dbval,'\0',sizeof(dbval));
+				temp=strstr(dbjson[j], "=");
+				strcpy(dbval, temp+1);
+				strncpy(dbvar, dbjson[j], strlen(dbjson[j])-strlen(temp));
+			//logmessage("HTTPD", "name: %s post: %s", dbvar, dbval);
+			if(userm)
+				doSystem("dbus remove %s", dbvar);
+			else
+				dbclient_bulk(&client, "set", dbvar, strlen(dbvar), dbval, strlen(dbval));
+		}
+	}
+	}
+	dbclient_end(&client);
+	memset(db_cmd,'\0',sizeof(db_cmd));
+	if(!strcmp(action_mode, "toolscript") || !strcmp(action_mode, " Refresh ")){
+		snprintf(scPath, sizeof(scPath), "/jffs/softcenter/scripts/");
+		strncpy(notify_cmd, action_script, 128);
+		strcat(scPath, notify_cmd);
+		strlcpy(SystemCmd, scPath, sizeof(SystemCmd));
+		sys_script("syscmd.sh");
+	}
+	else if(!strcmp(action_mode, "restart")){
+		snprintf(scPath, sizeof(scPath), "/jffs/softcenter/scripts/");
+		strncpy(notify_cmd, action_script, 128);
+		strcat(scPath, notify_cmd);
+		snprintf(db_cmd, sizeof(db_cmd), " restart");
+		strcat(scPath, db_cmd);
+		strlcpy(SystemCmd, scPath, sizeof(SystemCmd));
+		sys_script("syscmd.sh");
+	}
+	else if(!strcmp(action_mode, "start")){
+		snprintf(scPath, sizeof(scPath), "/jffs/softcenter/scripts/");
+		strncpy(notify_cmd, action_script, 128);
+		strcat(scPath, notify_cmd);
+		snprintf(db_cmd, sizeof(db_cmd), " start");
+		strcat(scPath, db_cmd);
+		strlcpy(SystemCmd, scPath, sizeof(SystemCmd));
+		sys_script("syscmd.sh");
+	}
+	else if(!strcmp(action_mode, "stop")){
+		snprintf(scPath, sizeof(scPath), "/jffs/softcenter/scripts/");
+		strncpy(notify_cmd, action_script, 128);
+		strcat(scPath, notify_cmd);
+		snprintf(db_cmd, sizeof(db_cmd), " stop");
+		strcat(scPath, db_cmd);
+		strlcpy(SystemCmd, scPath, sizeof(SystemCmd));
+		sys_script("syscmd.sh");
+	}
+	else if(!strcmp(action_mode, "clean")){
+		snprintf(scPath, sizeof(scPath), "/jffs/softcenter/scripts/");
+		strncpy(notify_cmd, action_script, 128);
+		strcat(scPath, notify_cmd);
+		snprintf(db_cmd, sizeof(db_cmd), " clean");
+		strcat(scPath, db_cmd);
+		strlcpy(SystemCmd, scPath, sizeof(SystemCmd));
+		sys_script("syscmd.sh");
+	}
+	else if(!strcmp(action_mode, "ks_app_install")){
+		snprintf(scPath, sizeof(scPath), "/jffs/softcenter/scripts/");
+		strncpy(notify_cmd, action_script, 128);
+		strcat(scPath, notify_cmd);
+		snprintf(db_cmd, sizeof(db_cmd), " ks_app_install");
+		strcat(scPath, db_cmd);
+		strlcpy(SystemCmd, scPath, sizeof(SystemCmd));
+		sys_script("syscmd.sh");
+	}
+	else if(!strcmp(action_mode, "ks_app_remove")){
+		snprintf(scPath, sizeof(scPath), "/jffs/softcenter/scripts/");
+		strncpy(notify_cmd, action_script, 128);
+		strcat(scPath, notify_cmd);
+		snprintf(db_cmd, sizeof(db_cmd), " ks_app_remove");
+		strcat(scPath, db_cmd);
+		strlcpy(SystemCmd, scPath, sizeof(SystemCmd));
+		sys_script("syscmd.sh");
+	}
+	websWrite(wp,"<script>parent.done_validating('', '');</script>\n" );
+	return 0;
+}
+
+static void
+do_applydb_cgi(char *url, FILE *stream)
+{
+    applydb_cgi(stream, NULL, NULL, 0, url, NULL, NULL);
+}
+
+static int db_print(dbclient* client, webs_t wp, char* prefix, char* key, char* value) {
+	websWrite(wp,"o[\"%s\"]=\"%s\";\n", key, value);
+	return 0;
+}
+
+static void
+do_dbconf(char *url, FILE *stream)
+{
+	char *name = NULL;
+	char * delim = ",";
+	char *pattern = websGetVar(wp, "p","");
+	char *dup_pattern = strdup(pattern);
+	char *sepstr = dup_pattern;
+	dbclient client;
+	dbclient_start(&client);
+	if(strstr(sepstr,delim)) {
+		for(name = strsep(&sepstr, delim); name != NULL; name = strsep(&sepstr, delim)) {
+			websWrite(stream,"var db_%s=(function() {\nvar o={};\n", name);
+
+			dbclient_list(&client, name, stream, db_print);
+			websWrite(stream,"return o;\n})();\n" );
+		}
+	} else {
+		name= strdup(pattern);
+		websWrite(stream,"var db_%s=(function() {\nvar o={};\n", name);
+		dbclient_list(&client, name, stream, db_print);
+		websWrite(stream,"return o;\n})();\n" );
+	}
+	free(dup_pattern);
+	dbclient_end(&client);
+}
+
+static void
+do_ss_status(char *url, FILE *stream)
+{
+
+	if(check_if_file_exist("/jffs/softcenter/ss/cru/china.sh"))
+	{
+		doSystem("sh /jffs/softcenter/ss/cru/china.sh &");
+		doSystem("sh /jffs/softcenter/ss/cru/foreign.sh &");
+	}
+	else
+	{
+		nvram_set("ss_foreign_state", "USB Problem detected!");
+		nvram_set("ss_china_state", "USB Problem detected!");
+	}
+	sleep(1);
+	websWrite(stream,"[\"%s\", ", nvram_get("ss_foreign_state") );
+	websWrite(stream,"\"%s\"]", nvram_get("ss_china_state") );
+}
+
+static int
+do_logread(webs_t wp, char_t *urlPrefix, char_t *webDir, int arg,
+		char_t *url, char_t *path, char_t *query)
+{
+	char buf[4096];
+	char logpath[128], scPath[128];
+	FILE *fp;
+	//char filename[100];
+	//sscanf(url, "logreaddb.cgi?%s", filename);
+	char *filename = websGetVar(wp, "p","");
+	char *script = websGetVar(wp, "script", "");
+	if(script){
+		sprintf(scPath, "/jffs/softcenter/scripts/%s", script);
+		strlcpy(SystemCmd, scPath, sizeof(SystemCmd));
+		sys_script("syscmd.sh");
+	}
+	sprintf(logpath, "/tmp/%s", filename);
+	//logmessage("HTTPD", "logread: %s, url: %s", logpath, url);
+	//sleep(1);//
+	if(check_if_file_exist(logpath)){
+		if((fp = fopen(logpath, "r"))!= NULL){
+			while(fgets(buf, sizeof(buf),fp) != NULL){
+				websWrite(wp,"%s\n", buf);
+			}
+		}
+		fclose(fp);
+		//doSystem("rm -rf %s", path);
+	} else
+		websWrite(wp,"not found log file\n");
+	return 0;
+}
+static void
+do_logread_cgi(char *url, FILE *stream)
+{
+    do_logread(stream, NULL, NULL, 0, url, NULL, NULL);
+}
+#endif
+
 static void
 do_appGet_image_path_cgi(char *url, FILE *stream)
 {
@@ -15919,6 +16474,10 @@ struct mime_handler mime_handlers[] = {
 #endif
 	{ "wlc_status.json", "application/json", no_cache_IE7, do_html_post_and_get, do_ej, do_auth },
 	{ "get_webdavInfo.asp", "text/html", no_cache_IE7, do_html_post_and_get, do_ej, NULL },
+#ifdef RTCONFIG_SOFTCENTER
+	{ "dbconf", "text/javascript", no_cache_IE7 , do_html_post_and_get, do_dbconf, NULL },
+	{ "ss_status", "text/javascript", no_cache_IE7 , do_html_post_and_get , do_ss_status, NULL },
+#endif
 	{ "appGet_image_path.cgi", "text/html", no_cache_IE7, do_html_post_and_get, do_appGet_image_path_cgi, NULL },
 	{ "login.cgi", "text/html", no_cache_IE7, do_html_post_and_get, do_login_cgi, NULL },
 	{ "update_clients.asp", "text/html", no_cache_IE7, do_html_post_and_get, do_ej, do_auth },
@@ -15987,6 +16546,7 @@ struct mime_handler mime_handlers[] = {
 	{ "**.json", "application/json", no_cache_IE7, do_html_post_and_get, do_ej, do_auth },
 	{ "**.cab", "text/txt", NULL, NULL, do_file, do_auth },
 	{ "**.CFG", "application/force-download", NULL, do_html_post_and_get, do_prf_file, do_auth },
+	{ "**.crt", "application/force-download", NULL, NULL, do_file, do_auth },
 	{ "uploadIconFile.tar", "application/force-download", NULL, NULL, do_uploadIconFile_file, do_auth },
 	{ "networkmap.tar", "application/force-download", NULL, NULL, do_networkmap_file, do_auth },
 	{ "upnp.log", "application/force-download", NULL, NULL, do_upnp_file, do_auth },
@@ -15999,6 +16559,11 @@ struct mime_handler mime_handlers[] = {
 	{ "apply.cgi*", "text/html", no_cache_IE7, do_html_post_and_get, do_apply_cgi, do_auth },
 	{ "applyapp.cgi*", "text/html", no_cache_IE7, do_html_post_and_get, do_apply_cgi, do_auth },
 	{ "appGet.cgi*", "text/html", no_cache_IE7, do_html_post_and_get, do_appGet_cgi, do_auth },
+#ifdef RTCONFIG_SOFTCENTER
+	{ "applydb.cgi*", "text/html", no_cache_IE7, do_html_post_and_get, do_applydb_cgi, do_auth },
+	{ "logreaddb.cgi*", "text/html", no_cache_IE7, do_html_post_and_get, do_logread_cgi, do_auth },
+	{ "ssupload.cgi*", "text/html", no_cache_IE7, do_ssupload_post, do_ssupload_cgi, do_auth },
+#endif
 	{ "upgrade.cgi*", "text/html", no_cache_IE7, do_upgrade_post, do_upgrade_cgi, do_auth},
 	{ "upload.cgi*", "text/html", no_cache_IE7, do_upload_post, do_upload_cgi, do_auth },
 	{ "set_ASUS_EULA.cgi*", "text/html", no_cache_IE7, do_html_post_and_get, do_set_ASUS_EULA_cgi, do_auth },
@@ -16128,6 +16693,9 @@ struct except_mime_handler except_mime_handlers[] = {
 	{ "detwan.cgi", MIME_EXCEPTION_NOAUTH_FIRST},
 #endif
 	{ "athX_state.cgi", MIME_EXCEPTION_NOAUTH_FIRST},
+#endif
+#ifdef RTCONFIG_SOFTCENTER
+	{ "applydb.cgi", MIME_EXCEPTION_NOAUTH_FIRST},
 #endif
 	{ NULL, 0 }
 };
@@ -23444,7 +24012,8 @@ struct ej_handler ej_handlers[] = {
 #endif
 	{ "get_default_reboot_time", ej_get_default_reboot_time},
 	{ "radio_status", ej_radio_status},
-	{ "sysinfo", ej_sysinfo},
+	{ "asus_sysinfo", ej_sysinfo},
+	{ "sysinfo", ej_show_sysinfo},
 #ifdef RTCONFIG_OPENVPN
 	{ "vpn_server_get_parameter", ej_vpn_server_get_parameter},
 	{ "vpn_client_get_parameter", ej_vpn_client_get_parameter},
@@ -23459,6 +24028,7 @@ struct ej_handler ej_handlers[] = {
 	{ "check_passwd_strength", ej_check_passwd_strength},
 	{ "check_wireless_encryption", ej_check_wireless_encryption},
 	{ "get_clientlist", ej_get_clientlist},
+	{ "get_clientlist_maclist", ej_get_clientlist_maclist},
 #if defined(RTCONFIG_BWDPI)
 	{ "bwdpi_status", ej_bwdpi_status},
 	{ "bwdpi_history", ej_bwdpi_history},
@@ -23560,6 +24130,11 @@ struct ej_handler ej_handlers[] = {
 	{ "generate_trans_id", ej_generate_trans_id},
 #endif
 	{ "get_sw_mode", ej_get_sw_mode},
+#ifdef RTCONFIG_SOFTCENTER
+	{ "dbus_get", ej_dbus_get},
+	{ "dbus_get_def", ej_dbus_get_def},
+	{ "dbus_match", ej_dbus_match},
+#endif
 	{ NULL, NULL }
 };
 

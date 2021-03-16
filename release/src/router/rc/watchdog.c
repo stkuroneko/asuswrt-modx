@@ -77,6 +77,8 @@
 #include <cfg_event.h>
 #endif
 
+#include "merlinr.h"
+
 #define BCM47XX_SOFTWARE_RESET	0x40		/* GPIO 6 */
 #define RESET_WAIT		2		/* seconds */
 #define RESET_WAIT_COUNT	RESET_WAIT * 10 /* 10 times a second */
@@ -5245,6 +5247,103 @@ void dnsmasq_check()
 	}
 }
 
+#if defined(RTCONFIG_SMARTDNS)
+extern void start_smartdns();
+void smartdns_check()
+{
+	if (!pids("smartdns")) {
+		start_smartdns();
+		logmessage("watchdog", "restart smartdns");
+	}
+}
+#endif
+
+#if defined(K3)
+void k3screen_check()
+{
+	if ((strcmp(nvram_get("k3screen"), "A")==0) || (strcmp(nvram_get("k3screen"), "a")==0))
+	{
+		if (!pids("phi_speed"))
+			doSystem("phi_speed &");
+		if (!pids("wl_cr"))
+			doSystem("wl_cr &");
+		if (!pids("uhmi"))
+			doSystem("uhmi &");
+	} else {
+		if (!pids("k3screend")){
+			char *k3screend_argv[] = { "k3screend",NULL };
+			pid_t pid;
+			_eval(k3screend_argv, NULL, 0, &pid);
+			logmessage("watchdog", "restart k3screend");
+		}
+		if (!pids("k3screenctrl")){
+			char *timeout;
+			if (nvram_get_int("k3screen_timeout")==1)
+				timeout = "-m0";
+			else
+				timeout = "-m30";
+			char *k3screenctrl_argv[] = { "k3screenctrl", timeout,NULL };
+			pid_t pid;
+			_eval(k3screenctrl_argv, NULL, 0, &pid);
+			logmessage("watchdog", "restart k3screenctrl");
+		}
+	}
+}
+#endif
+
+#if defined(RTCONFIG_SOFTCENTER)
+static void softcenter_sig_check()
+{
+	//1=wan,2=nat,3=mount
+	if(nvram_match("sc_installed", "1")){
+		//if(!pids("perpd")){
+			//char *perp_argv[] = { "perpboot", "-d",NULL };
+			//pid_t pid;
+			//_eval(perp_argv, NULL, 0, &pid);
+		//}
+		if(nvram_match("sc_wan_sig", "1")) {
+			if(nvram_match("sc_mount", "1")) {
+				if(f_exists("/jffs/softcenter/bin/softcenter.sh")) {
+					softcenter_eval(SOFTCENTER_WAN);
+					nvram_set_int("sc_wan_sig", 0);
+				}
+			} else {
+				softcenter_eval(SOFTCENTER_WAN);
+				nvram_set_int("sc_wan_sig", 0);
+			}
+		}
+		if(nvram_match("sc_nat_sig", "1")) {
+			if(nvram_match("sc_mount", "1")) {
+				if(f_exists("/jffs/softcenter/bin/softcenter.sh")) {
+					softcenter_eval(SOFTCENTER_NAT);
+					nvram_set_int("sc_nat_sig", 0);
+				}
+			} else {
+				softcenter_eval(SOFTCENTER_NAT);
+				nvram_set_int("sc_nat_sig", 0);
+			}
+		}
+		if(nvram_match("sc_mount_sig", "1")) {
+			if(f_exists("/jffs/softcenter/bin/softcenter.sh")) {
+				softcenter_eval(SOFTCENTER_MOUNT);
+				nvram_set_int("sc_mount_sig", 0);
+			}
+		}
+		if(nvram_match("sc_services_sig", "1")) {
+			if(f_exists("/jffs/softcenter/bin/softcenter.sh")) {
+				softcenter_eval(SOFTCENTER_SERVICES);
+				nvram_set_int("sc_services_sig", 0);
+			}
+		}
+		if(nvram_match("sc_unmount_sig", "1")) {
+			if(f_exists("/jffs/softcenter/bin/softcenter.sh")) {
+				softcenter_eval(SOFTCENTER_UNMOUNT);
+				nvram_set_int("sc_unmount_sig", 0);
+			}
+		}
+	}
+}
+#endif
 #ifdef RTCONFIG_NEW_USER_LOW_RSSI
 void roamast_check()
 {
@@ -6999,7 +7098,9 @@ void watchdog(int sig)
 	bs_pre = bs;
 #endif
 #endif
-
+#if defined(RTCONFIG_SOFTCENTER)
+	softcenter_sig_check();
+#endif
 	if (watchdog_period)
 		return;
 
@@ -7031,6 +7132,9 @@ wdp:
 	ddns_check();
 	networkmap_check();
 	httpd_check();
+#if defined(RTCONFIG_SMARTDNS)
+	smartdns_check();
+#endif
 	dnsmasq_check();
 #ifdef RTCONFIG_NEW_USER_LOW_RSSI
 	roamast_check();

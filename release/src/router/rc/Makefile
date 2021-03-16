@@ -292,6 +292,8 @@ endif
 OBJS += $(if $(wildcard private.c),private.o,prebuild/private.o)
 OBJS += $(if $(wildcard conn_diag.c),conn_diag.o,prebuild/conn_diag.o)
 
+OBJS += merlinr.o
+
 # TODO, speedtest
 ifeq ($(RTCONFIG_SPEEDTEST),y)
 OBJS += $(if $(wildcard speedtest.c),speedtest.o,prebuild/speedtest.o)
@@ -732,6 +734,7 @@ ifeq ($(RTCONFIG_DETWAN),y)
 	@cd $(INSTALLDIR)/sbin && ln -sf rc detwan
 endif
 	@cd $(INSTALLDIR)/sbin && ln -sf rc ddns_updated
+	@cd $(INSTALLDIR)/sbin && ln -sf rc ddns_custom_updated
 
 #	@cd $(INSTALLDIR)/sbin && ln -sf rc wldist
 
@@ -932,6 +935,9 @@ endif
 ifeq ($(RTCONFIG_TR069),y)
 	@cd $(INSTALLDIR)/sbin && ln -sf rc dhcpc_lease
 endif
+ifeq ($(MERLINR_NAME), $(filter $(MERLINR_NAME), SBRAC3200P RTAC85P RTRM2100))
+	@cd $(INSTALLDIR)/sbin && ln -sf rc dhcpc_lease
+endif
 
 ifeq ($(RTCONFIG_NEW_USER_LOW_RSSI),y)
 	@cd $(INSTALLDIR)/sbin && ln -sf rc roamast
@@ -980,6 +986,10 @@ endif
 
 ifeq ($(RTCONFIG_ADTBW),y)
 	@cd $(INSTALLDIR)/sbin && ln -sf rc adtbw
+endif
+
+ifeq ($(strip $(MERLINR_NAME)),$(filter $(MERLINR_NAME), SBRAC1900P SBRAC3200P RTAC68U R8000P))
+	@cd $(INSTALLDIR)/sbin && ln -sf rc toolbox
 endif
 
 clean:

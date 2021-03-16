@@ -1579,6 +1579,27 @@ function save_cert_key(){
 					</td>
 				</tr>
 			</table>
+			<table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3"  class="FormTable">
+				<thead>
+					<tr>
+						<td colspan="2">Persistent JFFS2 partition</td>
+					</tr>
+				</thead>
+				<tr>
+					<th>Format JFFS partition at next boot</th>
+					<td>
+						<input type="radio" name="jffs2_format" value="1" <% nvram_match("jffs2_format", "1", "checked"); %>><#checkbox_Yes#>
+						<input type="radio" name="jffs2_format" value="0" <% nvram_match("jffs2_format", "0", "checked"); %>><#checkbox_No#>
+					</td>
+				</tr>
+				<tr>
+					<th>Enable JFFS custom scripts and configs</th>
+					<td>
+						<input type="radio" name="jffs2_scripts" value="1" <% nvram_match("jffs2_scripts", "1", "checked"); %>><#checkbox_Yes#>
+						<input type="radio" name="jffs2_scripts" value="0" <% nvram_match("jffs2_scripts", "0", "checked"); %>><#checkbox_No#>
+					</td>
+				</tr>
+			</table>
 
 			<table id="hdd_spindown_table" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3"  class="FormTable" style="margin-top:8px;display:none;">
 				<thead>
@@ -1759,6 +1780,20 @@ function save_cert_key(){
 						<input type="radio" name="btn_ez_radiotoggle" id="turn_LED" class="input" style="display:none;" value="0" <% nvram_match_x("", "btn_ez_mode", "1", "checked"); %>><label for="turn_LED" id="turn_LED_str"><#LED_switch#></label>
 					</td>
 				</tr>
+				<tr id="disabled_led_tr" style="display:none">
+					<th><#CTL_close#> LEDs</th>
+					<td>
+						<input type="radio" name="led_disable" class="input" value="1" <% nvram_match_x("", "led_disable", "1", "checked"); %>><#checkbox_Yes#>
+						<input type="radio" name="led_disable" class="input" value="0" <% nvram_match_x("", "led_disable", "0", "checked"); %>><#checkbox_No#>
+					</td>
+				</tr>
+				<tr>
+					<th><#CTL_Enabled#> UU</th>
+					<td>
+						<input type="radio" name="uu_enable" class="input" value="1" <% nvram_match_x("", "uu_enable", "1", "checked"); %>><#checkbox_Yes#>
+						<input type="radio" name="uu_enable" class="input" value="0" <% nvram_match_x("", "uu_enable", "0", "checked"); %>><#checkbox_No#>
+					</td>
+				</tr>
 				<tr id="pwrsave_tr">
 					<th align="right">Power Save Mode<!--untranslated--></th>
 					<td>
@@ -1774,6 +1809,13 @@ function save_cert_key(){
 					<td>
 						<input type="radio" value="1" name="reboot_schedule_enable_x" onClick="hide_reboot_option(1);" <% nvram_match_x("LANHostConfig","reboot_schedule_enable", "1", "checked"); %>><#checkbox_Yes#>
 						<input type="radio" value="0" name="reboot_schedule_enable_x" onClick="hide_reboot_option(0);" <% nvram_match_x("LANHostConfig","reboot_schedule_enable", "0", "checked"); %>><#checkbox_No#>
+					</td>
+				</tr>
+				<tr id="led_on_off">
+					<th align="right"><a class="hintstyle" href="javascript:void(0);" onClick="openHint(11,6);"><#Enable_led_on_off#></a></th>
+					<td>
+						<input type="radio" name="led_on_off" class="input" value="1" <% nvram_match_x("","led_on_off","1", "checked"); %> ><#checkbox_Yes#>
+						<input type="radio" name="led_on_off" class="input" value="0" <% nvram_match_x("","led_on_off","0", "checked"); %> ><#checkbox_No#>
 					</td>
 				</tr>
 				<tr id="reboot_schedule_date_tr">

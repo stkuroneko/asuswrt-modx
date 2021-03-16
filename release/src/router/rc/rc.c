@@ -43,6 +43,8 @@ int IS_ATE_FACTORY_MODE(void)
 #include <lp5523led.h>
 #endif
 
+#include "merlinr.h"
+
 #ifndef ARRAYSIZE
 #define ARRAYSIZE(a) (sizeof(a) / sizeof(a[0]))
 #endif /* ARRAYSIZE */
@@ -807,6 +809,7 @@ static const applets_t applets[] = {
 	{ "usbled",			usbled_main			},
 #endif
 	{ "ddns_updated", 		ddns_updated_main		},
+	{ "ddns_custom_updated",	ddns_custom_updated_main	},
 	{ "radio",			radio_main			},
 	{ "udhcpc",			udhcpc_wan			},
 	{ "udhcpc_lan",			udhcpc_lan			},

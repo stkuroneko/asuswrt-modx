@@ -111,6 +111,7 @@ OBJS += bwdpi_utils.o
 OBJS += bwdpi_utils.o
 OBJS += mac_name_tab.o
 OBJS += stun.o
+OBJS += scripts.o
 ifeq ($(RTCONFIG_AHS),y)
 OBJS += $(if $(wildcard notify_ahs.c),notify_ahs.o,prebuild/notify_ahs.o)
 endif

@@ -72,6 +72,8 @@
 #define SHELL "/bin/sh"
 #define LOGIN "/bin/login"
 
+#include "merlinr.h"
+
 static int fatalsigs[] = {
 	SIGILL,
 	SIGABRT,
@@ -3823,6 +3825,7 @@ int init_nvram(void)
 #elif defined(RTR2100)
 	case MODEL_RTR2100:
 #endif
+		merlinr_init();
 		nvram_set("boardflags", "0x100"); // although it is not used in ralink driver, set for vlan
 		nvram_set("vlan1hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
 		nvram_set("lan_ifname", "br0");
@@ -3889,6 +3892,7 @@ int init_nvram(void)
 
 #if defined(RTNEWIFI3) 
 	case MODEL_RTNEWIFI3:
+		merlinr_init();
 		nvram_set("boardflags", "0x100"); // although it is not used in ralink driver, set for vlan
 		nvram_set("vlan1hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
 		nvram_set("lan_ifname", "br0");
@@ -3934,6 +3938,7 @@ int init_nvram(void)
 
 #if defined(RTNEWIFI2) 
 	case MODEL_RTNEWIFI2:
+		merlinr_init();
 		nvram_set("boardflags", "0x100"); // although it is not used in ralink driver, set for vlan
 		nvram_set("vlan1hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
 		nvram_set("lan_ifname", "br0");
@@ -3976,6 +3981,7 @@ int init_nvram(void)
 
 #if defined(RTHIWIFI4)
 	case MODEL_RTHIWIFI4:
+		merlinr_init();
                 nvram_set("boardflags", "0x100"); // although it is not used in ralink driver, set for vlan
 		nvram_set("vlan1hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
 		nvram_set("lan_ifname", "br0");
@@ -10232,6 +10238,7 @@ static void sysinit(void)
 		"/tmp/etc/rc.d",
 #endif
 		"/tmp/var/tmp",
+		"/tmp/etc/dnsmasq.user",	// ssr and adbyby
 		NULL
 	};
 	umask(0);
@@ -10813,8 +10820,12 @@ int init_main(int argc, char *argv[])
 #ifndef RTCONFIG_NVRAM_FILE
 #if !defined(RTCONFIG_TEST_BOARDDATA_FILE)
 		start_jffs2();
+#if defined(RTNEWIFI2)||defined(RTNEWIFI3)
+		mount("/dev/mtdblock5", "/jffs", "jffs2", MS_NOATIME, "");
 #endif
 #endif
+#endif
+
 #ifdef RTCONFIG_NVRAM_ENCRYPT
 		init_enc_nvram();
 #endif
@@ -10838,6 +10849,7 @@ int init_main(int argc, char *argv[])
 		extern void asm1042_upgrade(int);
 		asm1042_upgrade(1);	// check whether upgrade firmware of ASM1042
 #endif
+		run_custom_script("init-start", 0, NULL, NULL);
 
 		state = SIGUSR2;	/* START */
 
@@ -11379,6 +11391,8 @@ dbg("boot/continue fail= %d/%d\n", nvram_get_int("Ate_boot_fail"),nvram_get_int(
 			nvram_set("success_start_service", "1");
 			force_free_caches();
 #endif
+
+			merlinr_init_done();
 
 #ifdef RTCONFIG_AMAS
 			nvram_set("start_service_ready", "1");
