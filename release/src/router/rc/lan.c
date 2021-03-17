@@ -1896,7 +1896,7 @@ void start_lan(void)
 
 #ifdef RTCONFIG_LED_ALL
 	led_control(LED_ALL, LED_ON);
-#if defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTN56UB2) || defined(RTAC1200GA1) || defined(RTAC1200GU)|| defined(RTNEWIFI3)
+#if defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTN56UB2) || defined(RTAC1200GA1) || defined(RTAC1200GU)
 	led_control(LED_5G, LED_ON);
 	led_control(LED_2G, LED_ON);
 #endif
