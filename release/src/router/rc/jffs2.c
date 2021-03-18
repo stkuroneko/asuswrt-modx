@@ -271,7 +271,7 @@ void start_jffs2(void)
 		}
 	}
 	modprobe(JFFS_NAME);
-	sprintf(s, MTD_BLKDEV(%d), part);
+	sprintf(s, "/dev/mtdblock%d", part);
 
 	if (mount(s, "/jffs", JFFS_NAME, MS_NOATIME, "") != 0) {
 		if (/*(model==MODEL_RTAC56U || model==MODEL_RTAC56S || model==MODEL_RTAC3200 || model==MODEL_RTAC68U || model==MODEL_DSLAC68U || model==MODEL_RTAC87U || model==MODEL_RTAC88U || model==MODEL_RTAC86U || model==MODEL_RTAC3100 || model==MODEL_RTAC5300 || model==MODEL_GTAC5300 || model==MODEL_RTN18U || model==MODEL_RTAC1200G || model==MODEL_RTAC1200GP) ^ */(!mtd_erase(JFFS2_MTD_NAME))){
@@ -351,6 +351,11 @@ void start_jffs2(void)
 	}
 	run_userfile("/jffs", ".asusrouter", "/jffs", 3);
 #endif
+
+	if (!check_if_dir_exist("/jffs/scripts/")) mkdir("/jffs/scripts/", 0755);
+	if (!check_if_dir_exist("/jffs/configs/")) mkdir("/jffs/configs/", 0755);
+	if (!check_if_dir_exist("/jffs/opt/")) mkdir("/jffs/opt/", 0755);
+
 }
 
 void stop_jffs2(int stop)

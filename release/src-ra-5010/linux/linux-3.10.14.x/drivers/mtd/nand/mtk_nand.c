@@ -5067,7 +5067,7 @@ int mtk_nand_probe()
 
         offs = LARGE_MTD_BOOT_PART_SIZE + LARGE_MTD_CONFIG_PART_SIZE + (LARGE_MTD_FACTORY_PART_SIZE*2) + trx_firmware_size;
 // HIWIFI4
-#if defined(CONFIG_MODEL_RTHIWIFI4)
+#if defined(CONFIG_MODEL_RTHIWIFI4) || defined(CONFIG_MODEL_RTE8820S)
         offs = 0x140000;
 #endif 
 // HIWIFI4
@@ -5098,7 +5098,7 @@ int mtk_nand_probe()
         if (rfs_offset != 0) {
             MSG(INIT, "[mtk_nand] Line = %d!\n", __LINE__);
 // HIWIFI4
-#if defined(CONFIG_MODEL_RTHIWIFI4)
+#if defined(CONFIG_MODEL_RTHIWIFI4) || defined(CONFIG_MODEL_RTE8820S)
             g_pasStatic_Partition[4 + shift].offset = offs + trx_firmware_size;
             g_pasStatic_Partition[5 + shift].offset = offs + trx_firmware_size + rfs_offset;
             g_pasStatic_Partition[5 + shift].mask_flags |= MTD_WRITEABLE;
@@ -5125,7 +5125,7 @@ int mtk_nand_probe()
 //----- asus add
 
 // HIWIFI4
-#if defined(CONFIG_MODEL_RTHIWIFI4)
+#if defined(CONFIG_MODEL_RTHIWIFI4) || defined(CONFIG_MODEL_RTE8820S)
 	g_pasStatic_Partition[1].offset = 0xe0000;
 	g_pasStatic_Partition[2].offset = 0x100000;
 	g_pasStatic_Partition[3].offset = 0x120000;

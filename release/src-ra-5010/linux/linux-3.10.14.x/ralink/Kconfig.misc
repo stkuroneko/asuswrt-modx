@@ -63,4 +63,8 @@ config  MODEL_RTHIWIFI4
 	bool "RT-HIWIFI4"
 	default n
 
+config  MODEL_RTE8820S
+	bool "RT-E8820S"
+	default n
+
 endmenu

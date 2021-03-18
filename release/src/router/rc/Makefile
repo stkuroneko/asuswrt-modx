@@ -908,7 +908,7 @@ endif
 ifeq ($(RTCONFIG_BWDPI),y)
 	@cd $(INSTALLDIR)/sbin && ln -sf rc bwdpi
 	@cd $(INSTALLDIR)/sbin && ln -sf rc bwdpi_check
-ifneq ($(or $(RTMIR3G),$(RTMIR3P),$(RTMIR4A),$(RTRM2100),$(RTR2100),$(RTNEWIFI2),$(RTNEWIFI3),$(RTHIWIFI4)),y)
+ifneq ($(or $(RTMIR3G),$(RTMIR3P),$(RTMIR4A),$(RTRM2100),$(RTR2100),$(RTNEWIFI2),$(RTNEWIFI3),$(RTHIWIFI4),$(RTE8820S)),y)
 	@cd $(INSTALLDIR)/sbin && ln -sf rc bwdpi_wred_alive
 	@cd $(INSTALLDIR)/sbin && ln -sf rc rsasign_sig_check
 endif
@@ -959,7 +959,7 @@ ifeq ($(RTCONFIG_QCA),y)
 endif
 
 ifeq ($(RTCONFIG_RALINK),y)
-ifneq ($(or $(RTMIR3G),$(RTMIR3P),$(RTMIR4A),$(RTRM2100),$(RTR2100),$(RTNEWIFI2),$(RTNEWIFI3),$(RTHIWIFI4)),y)
+ifneq ($(or $(RTMIR3G),$(RTMIR3P),$(RTMIR4A),$(RTRM2100),$(RTR2100),$(RTNEWIFI2),$(RTNEWIFI3),$(RTHIWIFI4),$(RTE8820S)),y)
 	@cd $(INSTALLDIR)/sbin && ln -sf rc dump_powertable
 	@cd $(INSTALLDIR)/sbin && ln -sf rc dump_txbftable
 	@cd $(INSTALLDIR)/sbin && ln -sf rc air_monitor
