@@ -10176,7 +10176,8 @@ static void
 prepare_restore(webs_t wp){
 	int offset = 10;
 #ifdef RTCONFIG_RALINK
-	if (get_model() == MODEL_RTN65U || get_model() == MODEL_RTAC85U || get_model() == MODEL_RTAC85P || get_model() == MODEL_RTACRH26 )
+	int model = get_model();
+	if (model == MODEL_RTN65U || model == MODEL_RTAC85U || model == MODEL_RTAC85P || model == MODEL_RTACRH26 || model == MODEL_RTRM2100)
 		offset = 15;
 #endif
 
@@ -15197,7 +15198,7 @@ applydb_cgi(webs_t wp, char_t *urlPrefix, char_t *webDir, int arg,
 	char *result = NULL;
 	char *temp = NULL;
 	char *name = websGetVar(wp, "p","");
-	char *userm = strstr(url, "use_rm=1");
+	char *userm = websGetVar(wp, "use_rm", "");
 	char scPath[128];
 	char *post_db_buf = post_json_buf;
 
@@ -15235,8 +15236,8 @@ applydb_cgi(webs_t wp, char_t *urlPrefix, char_t *webDir, int arg,
 				strcpy(dbval, temp+1);
 				strncpy(dbvar, dbjson[j], strlen(dbjson[j])-strlen(temp));
 			//logmessage("HTTPD", "name: %s post: %s", dbvar, dbval);
-			if(userm)
-				doSystem("dbus remove %s", dbvar);
+			if(*userm || dbval[0]=='\0')
+				dbclient_rm(&client, dbvar, strlen(dbvar));
 			else
 				dbclient_bulk(&client, "set", dbvar, strlen(dbvar), dbval, strlen(dbval));
 		}
@@ -15266,9 +15267,9 @@ applydb_cgi(webs_t wp, char_t *urlPrefix, char_t *webDir, int arg,
 				temp=strstr(dbjson[j], "=");
 				strcpy(dbval, temp+1);
 				strncpy(dbvar, dbjson[j], strlen(dbjson[j])-strlen(temp));
-			//logmessage("HTTPD", "name: %s post: %s", dbvar, dbval);
-			if(userm)
-				doSystem("dbus remove %s", dbvar);
+			//logmessage("HTTPD", "dbvar: %s dbval: %s", dbvar, dbval);
+			if(*userm || dbval[0]=='\0')
+				dbclient_rm(&client, dbvar, strlen(dbvar));
 			else
 				dbclient_bulk(&client, "set", dbvar, strlen(dbvar), dbval, strlen(dbval));
 		}
@@ -15409,7 +15410,7 @@ do_logread(webs_t wp, char_t *urlPrefix, char_t *webDir, int arg,
 	//sscanf(url, "logreaddb.cgi?%s", filename);
 	char *filename = websGetVar(wp, "p","");
 	char *script = websGetVar(wp, "script", "");
-	if(script){
+	if(*script){
 		sprintf(scPath, "/jffs/softcenter/scripts/%s", script);
 		strlcpy(SystemCmd, scPath, sizeof(SystemCmd));
 		sys_script("syscmd.sh");
@@ -15444,11 +15445,20 @@ do_appGet_image_path_cgi(char *url, FILE *stream)
 
 	websWrite(stream,"{\n" );
 
-	if(nvram_match("odmpid", "RT-AC66U_B1") || nvram_match("odmpid", "RT-AC1750_B1")|| nvram_match("odmpid", "RT-N66U_C1")|| nvram_match("odmpid", "RT-AC1900U")){
-		snprintf(file_path, sizeof(file_path), "/images/RT-AC66U_V2");
-		snprintf(file_path1, sizeof(file_path), "/images/RT-AC66U_V2");
+#ifdef RTAC68U
+	if (is_ac66u_v2_series())
+	{
+		if(!strcmp(get_productid(), "RP-AC1900")){
+			snprintf(file_path, sizeof(file_path), "/images/RP-AC1900");
+			snprintf(file_path1, sizeof(file_path), "/images/RP-AC1900");
+		}else{
+			snprintf(file_path, sizeof(file_path), "/images/RT-AC66U_V2");
+			snprintf(file_path1, sizeof(file_path), "/images/RT-AC66U_V2");
+		}
 	}
-	else{
+	else
+#endif
+	{
 		snprintf(file_path, sizeof(file_path), "/images");
 		snprintf(file_path1, sizeof(file_path), "/images/New_ui");
 	}

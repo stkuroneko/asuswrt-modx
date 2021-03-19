@@ -5327,6 +5327,9 @@ static void softcenter_sig_check()
 			if(f_exists("/jffs/softcenter/bin/softcenter.sh")) {
 				softcenter_eval(SOFTCENTER_MOUNT);
 				nvram_set_int("sc_mount_sig", 0);
+			} else if(!f_exists("/jffs/softcenter/bin/softcenter.sh") && nvram_match("sc_mount", "1")) {
+				//remount to sdb sdc not sda
+				doSystem("sh /jffs/softcenter/automount.sh &");
 			}
 		}
 		if(nvram_match("sc_services_sig", "1")) {

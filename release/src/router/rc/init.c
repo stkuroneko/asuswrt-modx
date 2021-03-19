@@ -4063,6 +4063,7 @@ int init_nvram(void)
 
 #if defined(RTAC85P) 
 	case MODEL_RTAC85P:
+		merlinr_init();
 		nvram_set("boardflags", "0x100"); // although it is not used in ralink driver, set for vlan
 		nvram_set("vlan1hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
 		nvram_set("vlan2hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
@@ -9292,7 +9293,7 @@ int init_nvram(void)
 	add_rc_support("vht80_80");
 #endif
 #if defined(RTCONFIG_VHT160)
-	// add_rc_support("vht160");
+	add_rc_support("vht160");
 #endif
 #ifdef RTCONFIG_BCMWL6
 	add_rc_support("wl6");
