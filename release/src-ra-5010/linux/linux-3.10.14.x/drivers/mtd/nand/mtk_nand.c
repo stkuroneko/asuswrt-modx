@@ -5129,8 +5129,8 @@ int mtk_nand_probe()
 	g_pasStatic_Partition[1].offset = 0xe0000;
 	g_pasStatic_Partition[2].offset = 0x100000;
 	g_pasStatic_Partition[3].offset = 0x120000;
-	g_pasStatic_Partition[6].offset = 0x3800000;
-	g_pasStatic_Partition[6].size = 0x4780000;
+	g_pasStatic_Partition[6].offset = g_pasStatic_Partition[4].offset + g_pasStatic_Partition[4].size ;
+	g_pasStatic_Partition[6].size = MTDPART_SIZ_FULL;
 #endif 
 // HIWIFI4
 	err = add_mtd_partitions(mtd, g_pasStatic_Partition, part_num);
