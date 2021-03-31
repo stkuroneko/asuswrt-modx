@@ -2783,7 +2783,7 @@ dnsmasq:
 	@$(SEP)
 	@$(MAKE) -C dnsmasq \
 	COPTS="-DHAVE_BROKEN_RTC -DHAVE_LEASEFILE_EXPIRE -DEDNS_PKTSZ=1280 \
-		-DNO_ID -DNO_AUTH -DNO_IPSET -DNO_LOOP -DNO_INOTIFY -DNO_DUMPFILE \
+		-DNO_ID -DNO_AUTH -DNO_LOOP -DNO_INOTIFY -DNO_DUMPFILE \
 		$(if $(RTCONFIG_IPV6),-DUSE_IPV6,-DNO_IPV6) \
 		$(if $(RTCONFIG_USB_EXTRAS)||$(RTCONFIG_TR069),,-DNO_SCRIPT) \
 		$(if $(RTCONFIG_USB_EXTRAS),,-DNO_TFTP)" \
@@ -3982,9 +3982,9 @@ libpcap: libpcap/stamp-h1
 
 libpcap-install: libpcap
 	@echo "do nothing"
-	#install -D libpcap/libpcap.so.1.4.0 $(INSTALLDIR)/libpcap/usr/lib/libpcap.so.1.4.0
-	#$(STRIP) $(INSTALLDIR)/libpcap/usr/lib/libpcap.so.1.4.0
-	#cd $(INSTALLDIR)/libpcap/usr/lib && ln -sf libpcap.so.1.4.0 libpcap.so
+	install -D libpcap/libpcap.so.1.5.3 $(INSTALLDIR)/libpcap/usr/lib/libpcap.so.1.5.3
+	$(STRIP) $(INSTALLDIR)/libpcap/usr/lib/libpcap.so.1.5.3
+	cd $(INSTALLDIR)/libpcap/usr/lib && ln -sf libpcap.so.1.5.3 libpcap.so
 
 libpcap-clean:
 	[ ! -f libpcap/Makefile ] || $(MAKE) -C libpcap clean

@@ -233,7 +233,7 @@ struct nvram_tuple router_defaults[] = {
 #endif
 #endif
 	{ "wl_mrate_x", "0", CKN_STR4, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },	/* Mcast Auto rate */
-#if !defined(RTCONFIG_WIFILOGO) && !defined(RTCONFIG_QCA) && !defined(RTMIR3G) && !defined(RTMIR3P) && !defined(RTMIR4A) && !defined(RTRM2100) && !defined(RTR2100)&& !defined(RTNEWIFI2)&& !defined(RTNEWIFI3)&& !defined(RTHIWIFI4)&& !defined(RTE8820S)
+#if !defined(RTCONFIG_WIFILOGO) && !defined(RTCONFIG_QCA) && !defined(RTMIR3G) && !defined(RTMIR3P) && !defined(RTMIR4A) && !defined(RTRM2100) && !defined(RTR2100) && !defined(RTNEWIFI2) && !defined(RTNEWIFI3) && !defined(RTHIWIFI4) && !defined(RTE8820S)
 	{ "wl_frameburst", "on", CKN_STR4, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },	/* BRCM Frambursting mode (off|on) */
 	{ "wl_frameburst_override", "on", CKN_STR_DEFAULT, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },  /* BRCM frameburst override to enable/disable
 						 * dynamic framebursting default on
@@ -289,7 +289,7 @@ struct nvram_tuple router_defaults[] = {
 #ifdef RTCONFIG_WL_AUTO_CHANNEL
 	{ "AUTO_CHANNEL", "1", CKN_STR1, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },	/* 0: real channel; 1: Auto; for RT-N12HP & RT-N14UHP */
 #endif
-	{ "location_code", "EU", CKN_STR8, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
+	{ "location_code", "CN", CKN_STR8, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
 #ifdef RTCONFIG_RALINK
 	{ "wl_nband", "2", CKN_STR1, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },	/* N-BAND */
 	{ "wl0_nband", "2", CKN_STR1, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },	/* 2.4 GHz */

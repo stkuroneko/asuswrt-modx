@@ -12841,31 +12841,6 @@ do_dbupload_cgi(char *url, FILE *stream)
 }
 #endif
 
-static void
-do_download_cert_key_cgi(char *url, FILE *stream)
-{
-	_dprintf("do_download_cert_key_cgi\n");
-	eval("tar", "cf",
-		"/tmp/cert_key.tar",
-		"-C",
-		"/etc",
-		"cert.pem",
-		"key.pem"
-		);
-	do_file("/tmp/cert_key.tar", stream);
-}
-
-static void
-do_download_cert_cgi(char *url, FILE *stream)//for browser
-{
-	eval("tar", "cf",
-		"/tmp/cert.tar",
-		"-C",
-		"/etc",
-		"cert.crt"
-		);
-	do_file("/tmp/cert.tar", stream);
-}
 
 // Viz 2010.08
 static void

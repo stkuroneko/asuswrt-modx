@@ -9,7 +9,7 @@ elif [ "$MODEL" == "TUF-AX3000" ] || [ "$(nvram get merlinr_tuf)" == "1" ] ;then
 	TUF=1
 fi
 
-if [ $SPACE_AVAL -gt 40960 -a "$(nvram get sc_mount)" == 0 ];then
+if [ $SPACE_AVAL -gt 30000 -a "$(nvram get sc_mount)" == 0 ];then
 mkdir -p /jffs/softcenter/init.d
 mkdir -p /jffs/softcenter/bin
 mkdir -p /jffs/softcenter/etc
@@ -39,16 +39,31 @@ if [ "$(nvram get sc_mount)" == 1 ];then
 		mkdir -p $usb_disk/webs
 		mkdir -p $usb_disk/scripts
 		mkdir -p $usb_disk/lib
+		mkdir -p $usb_disk/koolproxy
+		mkdir -p $usb_disk/adbyby
+		mkdir -p $usb_disk/acme
+		mkdir -p $usb_disk/ss
+		mkdir -p $usb_disk/uu
 		mkdir -p /jffs/softcenter/etc
 		mkdir -p /jffs/softcenter/init.d
 		mkdir -p /jffs/softcenter/configs
 		mkdir -p /jffs/softcenter/ss
 		mkdir -p /jffs/softcenter/perp
+		mkdir -p /jffs/softcenter/koolproxy
+		mkdir -p /jffs/softcenter/adbyby
+		mkdir -p /jffs/softcenter/acme
+		mkdir -p /jffs/softcenter/ss
+		mkdir -p /jffs/softcenter/uu
 		ln -sf $usb_disk/bin /jffs/softcenter/
 		ln -sf $usb_disk/res /jffs/softcenter/
 		ln -sf $usb_disk/webs /jffs/softcenter/
 		ln -sf $usb_disk/scripts /jffs/softcenter/
 		ln -sf $usb_disk/lib /jffs/softcenter/
+		ln -sf $usb_disk/koolproxy /jffs/softcenter/
+		ln -sf $usb_disk/adbyby /jffs/softcenter/
+		ln -sf $usb_disk/acme /jffs/softcenter/
+		ln -sf $usb_disk/ss /jffs/softcenter/
+		ln -sf $usb_disk/uu /jffs/softcenter/
 		cd $usb_disk && touch .sc_installed
 	fi
 else

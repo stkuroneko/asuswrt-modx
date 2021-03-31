@@ -4814,7 +4814,7 @@ int mtk_nand_probe()
     }
 #endif
 
-#if defined(CONFIG_MODEL_RMAC2100) || defined(CONFIG_MODEL_RTMIR3G)
+#if defined(CONFIG_MODEL_RMAC2100) || defined(CONFIG_MODEL_RTMIR3G) || defined(CONFIG_MODEL_RTRM2100)
 #if defined (__KERNEL_NAND__)
     MSG(INIT, "[mtk_nand] Line = %d!\n", __LINE__);
 
@@ -5126,9 +5126,9 @@ int mtk_nand_probe()
 
 // HIWIFI4
 #if defined(CONFIG_MODEL_RTHIWIFI4) || defined(CONFIG_MODEL_RTE8820S)
-	g_pasStatic_Partition[1].offset = 0xe0000;
+	g_pasStatic_Partition[1].offset = 0x80000;
 	g_pasStatic_Partition[2].offset = 0x100000;
-	g_pasStatic_Partition[3].offset = 0x120000;
+	g_pasStatic_Partition[3].offset = 0xc0000;
 	g_pasStatic_Partition[6].offset = g_pasStatic_Partition[4].offset + g_pasStatic_Partition[4].size ;
 	g_pasStatic_Partition[6].size = MTDPART_SIZ_FULL;
 #endif 

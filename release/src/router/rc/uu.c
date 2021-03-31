@@ -11,7 +11,7 @@ void start_uu(void)
 	}
 
 	if(nvram_get_int("uu_enable"))
-#if defined(R8000P) || defined(RTAC3200) || defined(RTAC3100) || defined(EA6700) || defined(RAX20) || defined(SBRAC1900P) || defined(R7000P) || defined(RMAC2100) || defined(TY6201_BCM) || defined(TY6201_RTK) || defined(RTE8820S)
+#if defined(R8000P) || defined(RTAC3200) || defined(RTAC3100) || defined(EA6700) || defined(RAX20) || defined(SBRAC1900P) || defined(R7000P) || defined(RMAC2100) || defined(TY6201_BCM) || defined(TY6201_RTK) || defined(RTE8820S) || defined(RTMIR3G) || defined(RTNEWIFI2) || defined(RTNEWIFI3) || defined(RTHIWIFI4)
 		exec_uu_merlinr();
 #else
 		exec_uu();

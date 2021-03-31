@@ -3947,16 +3947,16 @@ int init_nvram(void)
 		wl_ifaces[WL_5G_BAND] = "rai0";
 
 		set_basic_ifname_vars("eth3", "vlan1", wl_ifaces, "usb", "vlan1", NULL, "vlan3", NULL, 0);
-		nvram_set_int("led_usb_gpio", 10|GPIO_ACTIVE_LOW);
-		nvram_set_int("pwr_usb_gpio", 12);
-		nvram_set_int("pwr_usb_gpio_on", 0);
+		nvram_set_int("pwr_usb_gpio", 11);
+		nvram_set_int("pwr_usb2_gpio", 9);
 		nvram_set("ehci_ports", "1-1 1-2");
 		nvram_set("ohci_ports", "2-1 2-2");
-		add_rc_support("2.4G 5G noupdate usbX1");
+		add_rc_support("2.4G 5G noupdate usbX2");
 
-                nvram_set_int("led_pwr_gpio",  6|GPIO_ACTIVE_LOW);
-		nvram_set_int("led_wan_gpio",  7|GPIO_ACTIVE_LOW);
-                nvram_set_int("btn_rst_gpio", 18|GPIO_ACTIVE_LOW);
+                nvram_set_int("led_pwr_gpio",  14|GPIO_ACTIVE_LOW);
+		nvram_set_int("led_wan_gpio",  16|GPIO_ACTIVE_LOW);
+                nvram_set_int("btn_rst_gpio", 15|GPIO_ACTIVE_LOW);
+                nvram_set_int("btn_wps_gpio", 18|GPIO_ACTIVE_LOW);
 
 		eval("rtkswitch", "11");
 		nvram_set("ct_max", "300000"); // force
@@ -4031,7 +4031,7 @@ int init_nvram(void)
 		wl_ifaces[WL_5G_BAND] = "rai0";
 
 		set_basic_ifname_vars("eth3", "vlan1", wl_ifaces, "usb", "vlan1", NULL, "vlan3", NULL, 0);
-		add_rc_support("2.4G 5G noupdate usbX2");
+		add_rc_support("2.4G 5G noupdate usbX1");
 
                 nvram_set_int("led_pwr_gpio",  6|GPIO_ACTIVE_LOW);
 		nvram_set_int("led_wan_gpio",  7|GPIO_ACTIVE_LOW);
@@ -4039,8 +4039,8 @@ int init_nvram(void)
 
 		eval("rtkswitch", "11");
 
-		nvram_set("ehci_ports", "1-1 1-2");
-		nvram_set("ohci_ports", "2-1 2-2");
+		nvram_set("ehci_ports", "1-1");
+		nvram_set("ohci_ports", "2-1");
 		nvram_set("ct_max", "300000"); // force
 
 		add_rc_support("mssid");
