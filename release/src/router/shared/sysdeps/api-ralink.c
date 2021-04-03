@@ -41,6 +41,12 @@ const char APCLI_5G[]	= "apcli0";
 const char APCLI_2G[]	= "apclii0";
 #endif
 
+typedef struct channel_info {
+	unsigned char channel;
+	unsigned char bandwidth;
+	unsigned char extrach;
+};
+
 #if defined(RA_ESW)
 /* Read TX/RX byte count information from switch's register. */
 #if defined(RTCONFIG_RALINK_MT7620)
