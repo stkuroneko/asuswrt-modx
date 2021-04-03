@@ -12559,6 +12559,31 @@ do_upload_cert_key_cgi(char *url, FILE *stream)
 }
 #endif
 
+static void
+do_download_cert_key_cgi(char *url, FILE *stream)//for DUT
+{
+	eval("tar", "cf",
+		"/tmp/cert_key.tar",
+		"-C",
+		"/etc",
+		"cert.pem",
+		"key.pem"
+		);
+	do_file("/tmp/cert_key.tar", stream);
+}
+
+static void
+do_download_cert_cgi(char *url, FILE *stream)//for browser
+{
+	eval("tar", "cf",
+		"/tmp/cert.tar",
+		"-C",
+		"/etc",
+		"cert.crt"
+		);
+	do_file("/tmp/cert.tar", stream);
+}
+
 #ifdef RTCONFIG_SOFTCENTER
 static int ssupload = 0;
 static void
