@@ -1815,7 +1815,12 @@ _dprintf("# wanduck(%d): if_wan_phyconnected: x_Setting=%d, link_modem=%d, sim_s
 		&& nvram_match("AllLED", "1")
 #endif
 	)
+	if (nvram_match("led_on_off", "1")) {
 		led_control(LED_LAN, LED_ON);
+		}
+		else{
+			led_control(LED_LAN, LED_OFF);
+			}
 	else led_control(LED_LAN, LED_OFF);
 #endif
 

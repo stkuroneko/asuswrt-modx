@@ -2060,11 +2060,11 @@ static inline void enable_wifi_bled(char *ifname)
 #if defined(RTCONFIG_QCA)
 		v = LED_OFF;	/* WiFi not ready. Don't turn on WiFi LED here. */		
 #endif
-#if defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTN56UB2) || defined(RTAC1200GA1) || defined(RTAC1200GU) || defined(RTAC85U) || defined(RTAC85P) || defined(RTACRH26)|| defined(RTMIR3G) || defined(RTNEWIFI2) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S)
+#if defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTN56UB2) || defined(RTAC1200GA1) || defined(RTAC1200GU) || defined(RTAC85U) || defined(RTAC85P) || defined(RTACRH26)
 		if(!get_radio(1, 0) && unit==1) //*5G WiFi not ready. Don't turn on WiFi GPIO LED . */
 		 	v=LED_OFF;
 #endif		
-#if defined(RTN56UB1) || defined(RTN56UB2) || defined(RTAC1200GA1) || defined(RTAC1200GU) || defined(RTAC85U) || defined(RTAC85P) || defined(RTN800HP) || defined(RTACRH26)|| defined(RTMIR3G) || defined(RTNEWIFI2) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S)
+#if defined(RTN56UB1) || defined(RTN56UB2) || defined(RTAC1200GA1) || defined(RTAC1200GU) || defined(RTAC85U) || defined(RTAC85P) || defined(RTN800HP) || defined(RTACRH26)
 		if(!get_radio(0, 0) && unit==0) //*2G WiFi not ready. Don't turn on WiFi GPIO LED . */
 		 	v=LED_OFF;
 #endif		

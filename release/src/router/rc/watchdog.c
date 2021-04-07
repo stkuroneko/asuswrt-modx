@@ -2484,7 +2484,12 @@ void btn_check(void)
 					}
 					else
 					{
-						led_control(LED_LAN, LED_ON);
+	if (nvram_match("led_on_off", "1")) {
+		led_control(LED_LAN, LED_ON);
+		}
+		else{
+			led_control(LED_LAN, LED_OFF);
+			}
 						led_control(LED_WAN, LED_ON);
 						led_control(LED_WPS, LED_ON);
 					}
@@ -2578,7 +2583,12 @@ void btn_check(void)
 						system("reg s 0xB0000000; reg w 0x64 0x30015014");
 						system("reg s 0xB0000600; reg w 0x04 0x1C20; reg w 0x24 0x69CB");
 						led_control(LED_WAN, LED_ON);
-						led_control(LED_LAN, LED_ON);
+	if (nvram_match("led_on_off", "1")) {
+		led_control(LED_LAN, LED_ON);
+		}
+		else{
+			led_control(LED_LAN, LED_OFF);
+			}
 						led_control(LED_2G, LED_ON);
 #endif
 					}
@@ -2649,7 +2659,12 @@ void btn_check(void)
 				led_control(LED_2G, LED_OFF);
 				sleep(1);
 				led_control(LED_WAN, LED_ON);
-				led_control(LED_LAN, LED_ON);
+	if (nvram_match("led_on_off", "1")) {
+		led_control(LED_LAN, LED_ON);
+		}
+		else{
+			led_control(LED_LAN, LED_OFF);
+			}
 				led_control(LED_2G, LED_ON);
 				sleep(1);
 				led_control(LED_WAN, LED_OFF);
@@ -4063,7 +4078,12 @@ void fake_etlan_led(void)
 			data_etlan = count_etlan;
 		}
 		else blink_etlan = 0;
+	if (nvram_match("led_on_off", "1")) {
 		led_control(LED_LAN, LED_ON);
+		}
+		else{
+			led_control(LED_LAN, LED_OFF);
+			}
 	}
 
 	if (blink_etlan) {
@@ -4080,12 +4100,22 @@ void fake_etlan_led(void)
 			if (status != status_old)
 			{
 				if (status)
-					led_control(LED_LAN, LED_ON);
+	if (nvram_match("led_on_off", "1")) {
+		led_control(LED_LAN, LED_ON);
+		}
+		else{
+			led_control(LED_LAN, LED_OFF);
+			}
 				else
 					led_control(LED_LAN, LED_OFF);
 			}
 		}
+	if (nvram_match("led_on_off", "1")) {
 		led_control(LED_LAN, LED_ON);
+		}
+		else{
+			led_control(LED_LAN, LED_OFF);
+			}
 	}
 
 	blink_etlan_check++;

@@ -188,7 +188,7 @@ void set_radio(int on, int unit, int subunit)
 		doSystem("iwpriv %s set RadioOn=%d", WIF_2G, on);
 	else doSystem("iwpriv %s set RadioOn=%d", WIF_5G, on);
 
-#if defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTN56UB2) || defined(RTAC1200GA1) || defined(RTAC1200GU) || defined(RTAC85U) || defined(RTAC85P) || defined(RTAC65U)  || defined(RTN800HP)  || defined(RTACRH26) || defined(RTNEWIFI3)//5G:7612E 2G:7603E
+#if defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTN56UB2) || defined(RTAC1200GA1) || defined(RTAC1200GU) || defined(RTAC85U) || defined(RTAC85P) || defined(RTAC65U)  || defined(RTN800HP)  || defined(RTACRH26) //5G:7612E 2G:7603E
 	led_onoff(unit);
 #endif	
 }
@@ -711,7 +711,7 @@ int get_channel_list_via_country(int unit, const char *country_code, char *buffe
 }
 
 
-#if defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTN56UB2) || defined(RTAC1200GA1) || defined(RTAC1200GU) || defined(RTAC85U) || defined(RTAC85P) || defined(RTAC65U) || defined(RTN800HP) || defined(RTACRH26) || defined(RTNEWIFI3)
+#if defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTN56UB2) || defined(RTAC1200GA1) || defined(RTAC1200GU) || defined(RTAC85U) || defined(RTAC85P) || defined(RTAC65U) || defined(RTN800HP) || defined(RTACRH26)
 void led_onoff(int unit)
 {   
 #if defined(RTAC1200HP)
