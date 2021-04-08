@@ -2395,6 +2395,17 @@ static void handle_eject_usb_button(void)
 static inline void handle_eject_usb_button(void) { }
 #endif	/* RTCONFIG_EJUSB_BTN && RTCONFIG_BLINK_LED */
 
+
+void led_on_off(void)
+{
+	if (nvram_match("led_on_off", "0")) {
+		led_control(LED_POWER, LED_OFF);
+		led_control(LED_LAN, LED_OFF);
+		led_control(LED_USB, LED_OFF);
+	}
+}
+
+
 void btn_check(void)
 {
 #ifdef RTCONFIG_WIFI_SON
@@ -2822,7 +2833,7 @@ void btn_check(void)
 			if (LED_status_on) {
 				TRACE_PT("LED turn to normal\n");
 				led_control(LED_POWER, LED_ON);
-#if defined(RTAC65U) || defined(RTAC85U) || defined(RTAC85P) || defined(RTN800HP) || defined(RTACRH26) || defined(RTNEWIFI2) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S)
+#if defined(RTAC65U) || defined(RTAC85U) || defined(RTAC85P) || defined(RTN800HP) || defined(RTACRH26)
 			if (nvram_match("wl0_radio", "1")) {
 				led_control(LED_2G, LED_ON);
 			}
@@ -3395,6 +3406,24 @@ void btn_check(void)
 #endif
 	}
 #endif	/* BTN_SETUP */
+			if (nvram_match("wl0_radio", "1")) {
+				if (nvram_match("led_on_off", "1")){
+					led_control(LED_2G, LED_ON);				
+				}else{
+				led_control(LED_2G, LED_OFF);
+				}
+			}else{
+				led_control(LED_2G, LED_OFF);
+			}
+			if (nvram_match("wl1_radio", "1")) {
+				if (nvram_match("led_on_off", "1")){
+					led_control(LED_5G, LED_ON);				
+				}else{
+				led_control(LED_5G, LED_OFF);
+				}
+			}else{
+				led_control(LED_5G, LED_OFF);
+			}
 }
 
 #define DAYSTART (0)

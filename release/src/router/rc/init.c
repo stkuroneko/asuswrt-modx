@@ -3834,10 +3834,9 @@ int init_nvram(void)
 		wl_ifaces[WL_5G_BAND] = "rai0";
 #if defined(RTMIR3G) || defined(RTMIR3P)
 		set_basic_ifname_vars("eth3", "vlan1", wl_ifaces, "usb", "vlan1", NULL, "vlan3", NULL, 0);
-		nvram_set_int("led_usb_gpio", 10|GPIO_ACTIVE_LOW);
-		nvram_set_int("led_usb3_gpio",10|GPIO_ACTIVE_LOW);
+		nvram_set_int("led_wps_gpio", 10|GPIO_ACTIVE_LOW);
 #if defined(RTMIR3G)
-		nvram_set_int("led_wan_gpio", 13|GPIO_ACTIVE_LOW);
+		nvram_set_int("led_wan_gpio", 6);
 #elif defined(RTMIR3P)
 		nvram_set_int("led_wan_gpio", 14|GPIO_ACTIVE_LOW);
 #endif
