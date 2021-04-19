@@ -3838,3 +3838,5 @@ weekSche_Del_All=모든 규칙을 삭제하시겠습니까?
 weekSche_MAX_Num=최대 규칙 수는 #MAXNUM개입니다.
 weekSche_MAX_Del_Hint=새 규칙을 추가하기 위해 사용되지 않는 규칙을 삭제할 수 있습니다.
 weekSche_Offtime_Sche=오프라인 일정
+Softcenter=Softcenter
+Softcenter_tool=Tools

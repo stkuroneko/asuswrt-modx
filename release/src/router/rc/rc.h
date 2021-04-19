@@ -2123,3 +2123,4 @@ int get_wifi_temps(WiFi_temperature_t *wt);
 #endif /* RTCONFIG_BCMARM */
 
 #endif	/* __RC_H__ */
+

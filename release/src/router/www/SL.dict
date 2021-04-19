@@ -3838,3 +3838,5 @@ weekSche_Del_All=Ste prepričani, da želite izbrisati vsa pravila?
 weekSche_MAX_Num=Največje dovoljeno število pravil je #MAXNUM.
 weekSche_MAX_Del_Hint=Če želite dodati nova pravila, lahko izbrišete tista, ki niso v uporabi.
 weekSche_Offtime_Sche=Urnik v prostem času
+Softcenter=Softcenter
+Softcenter_tool=Tools

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <html xmlns:v>
 <head>
@@ -334,7 +334,7 @@ function validForm(){
 				return false;
 			}
 			
-			if(document.form.ddns_server_x.value != "Custom" && document.form.ddns_username_x.value == ""){
+			if(document.form.ddns_username_x.value == ""){
 				alert("<#QKSet_account_nameblank#>");
 				document.form.ddns_username_x.focus();
 				document.form.ddns_username_x.select();
@@ -819,3 +819,4 @@ function save_cert_key(){
 </form>
 </body>
 </html>
+

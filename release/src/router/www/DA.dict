@@ -3838,3 +3838,5 @@ weekSche_Del_All=Vil du slette alle reglerne?
 weekSche_MAX_Num=Det maksimale antal regler er #MAXNUM.
 weekSche_MAX_Del_Hint=For at tilføje nye regler kan du slette de regler, der ikke bruges.
 weekSche_Offtime_Sche=Offtime-plan
+Softcenter=Softcenter
+Softcenter_tool=Tools

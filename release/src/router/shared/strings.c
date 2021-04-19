@@ -410,3 +410,4 @@ void toUpperCase(char *str) {
 	for(p = str; *p != '\0'; p++)
 		if(*p >= 'a' && *p <='z') *p -= 32;
 }
+

@@ -1026,7 +1026,6 @@ int restart_dnsmasq(int need_link_DownUp)
 }
 #endif
 
-
 #ifdef RTCONFIG_WIFI_SON
 void gen_apmode_dnsmasq(void)
 {
@@ -7725,9 +7724,9 @@ start_services(void)
 #ifdef RTCONFIG_QCA_PLC_UTILS
 	start_plchost();
 #endif
-//#ifdef RTCONFIG_NEW_USER_LOW_RSSI
+#ifdef RTCONFIG_NEW_USER_LOW_RSSI
 	start_roamast();
-//#endif
+#endif
 
 #if defined(RTCONFIG_KEY_GUARD)
 	start_keyguard();
@@ -9252,9 +9251,7 @@ again:
 				stop_lan_wl();
 				stop_dnsmasq();
 				stop_networkmap();
-#if defined(RTCONFIG_WPS)
 				stop_wpsaide();
-#endif
 #if defined(RTCONFIG_QCA) || defined(RTCONFIG_RALINK)
 #ifdef RTCONFIG_CONCURRENTREPEATER
 				stop_wlcconnect();
@@ -9517,9 +9514,7 @@ again:
 				stop_lan_wl();
 				stop_dnsmasq();
 				stop_networkmap();
-#if defined(RTCONFIG_WPS)
 				stop_wpsaide();
-#endif
 #if defined(RTCONFIG_QCA) || defined(RTCONFIG_RALINK)
 #ifdef RTCONFIG_CONCURRENTREPEATER
 				stop_wlcconnect();
@@ -12006,9 +12001,9 @@ retry_wps_enr:
 			start_dnsmasq();
 			start_httpd();
 			start_telnetd();
-//#ifdef RTCONFIG_NEW_USER_LOW_RSSI
+#ifdef RTCONFIG_NEW_USER_LOW_RSSI
 			start_roamast();
-//#endif
+#endif
 
 #ifdef RTCONFIG_SSH
 			start_sshd();
@@ -13829,7 +13824,7 @@ void start_roamast(void){
 		}
 	}
 }
-#elif defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S)
+#elif defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ)
 void start_roamast(void){
 	int rssi, i;
 	char prefix[] = "wl_XXXXX";
@@ -15432,3 +15427,4 @@ void reset_led(void)
 	setCentralLedLv(brightness_level);
 }
 #endif
+

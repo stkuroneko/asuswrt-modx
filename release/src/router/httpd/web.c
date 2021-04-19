@@ -12560,7 +12560,7 @@ err:
 static void
 do_upload_cert_key_cgi(char *url, FILE *stream)
 {
-	_dprintf("do_upload_cert_key_cgi\n");
+	//_dprintf("do_upload_cert_key_cgi\n");
 }
 #endif
 
@@ -13511,7 +13511,6 @@ FINISH:
 	json_object_put(root);
 	websWrite(wp, "{\"statusCode\":\"%d\"}", ret);
 }
-
 static void
 do_deleteOfflineClient_cgi(char *url, FILE *stream)
 {
@@ -15225,7 +15224,6 @@ login_cgi(webs_t wp, char_t *urlPrefix, char_t *webDir, int arg,
 		}else{
 			login_error_status = ACCOUNTFAIL;
 		}
-
 		HTTPD_DBG("authfail: login_error_status = %d\n", login_error_status);
 		if(fromapp_flag != 0){
 			if(login_error_status == LOGINLOCK)
@@ -15788,20 +15786,11 @@ do_appGet_image_path_cgi(char *url, FILE *stream)
 
 	websWrite(stream,"{\n" );
 
-#ifdef RTAC68U
-	if (is_ac66u_v2_series())
-	{
-		if(!strcmp(get_productid(), "RP-AC1900")){
-			snprintf(file_path, sizeof(file_path), "/images/RP-AC1900");
-			snprintf(file_path1, sizeof(file_path), "/images/RP-AC1900");
-		}else{
-			snprintf(file_path, sizeof(file_path), "/images/RT-AC66U_V2");
-			snprintf(file_path1, sizeof(file_path), "/images/RT-AC66U_V2");
-		}
+	if(nvram_match("odmpid", "RT-AC66U_B1") || nvram_match("odmpid", "RT-AC1750_B1")|| nvram_match("odmpid", "RT-N66U_C1")|| nvram_match("odmpid", "RT-AC1900U")){
+		snprintf(file_path, sizeof(file_path), "/images/RT-AC66U_V2");
+		snprintf(file_path1, sizeof(file_path), "/images/RT-AC66U_V2");
 	}
-	else
-#endif
-	{
+	else{
 		snprintf(file_path, sizeof(file_path), "/images");
 		snprintf(file_path1, sizeof(file_path), "/images/New_ui");
 	}
@@ -23852,7 +23841,7 @@ ej_get_vpnc_status(int eid, webs_t wp, int argc, char **argv)
 							break;
 					}
 				}				
-				else
+			else
 				{
 					sb_state_t = 0;
 				}				

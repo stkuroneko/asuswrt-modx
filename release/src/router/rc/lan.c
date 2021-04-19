@@ -4692,8 +4692,8 @@ void start_lan_wl(void)
 #if defined (RTCONFIG_WLMODULE_MT7615E_AP)
 #if !defined(RTCONFIG_CONCURRENTREPEATER)
 	if(strcmp(nvram_safe_get("lan_ifnames"),nvram_safe_get("lan_ifnames_guess"))){
-		if (module_loaded("mt_wifi"))
-			modprobe_r("mt_wifi");
+		if (module_loaded("mt_wifi_7615E"))
+			modprobe_r("mt_wifi_7615E");
 		nvram_set("lan_ifnames_guess", nvram_safe_get("lan_ifnames"));
 	}
 #endif
@@ -5845,9 +5845,9 @@ void restart_wireless(void)
 	if(nvram_get_int("AllLED") == 0) setAllLedOff();
 #endif
 
-//#ifdef RTCONFIG_NEW_USER_LOW_RSSI
+#ifdef RTCONFIG_NEW_USER_LOW_RSSI
 	start_roamast();
-//#endif
+#endif
 
 #if defined(RTCONFIG_RALINK_MT7621)
 	setup_smp();	/* for adjust smp_affinity of cpu */

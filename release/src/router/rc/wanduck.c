@@ -1818,9 +1818,9 @@ _dprintf("# wanduck(%d): if_wan_phyconnected: x_Setting=%d, link_modem=%d, sim_s
 	if (nvram_match("led_on_off", "1")) {
 		led_control(LED_LAN, LED_ON);
 		}
-		else{
-			led_control(LED_LAN, LED_OFF);
-			}
+	else{
+		led_control(LED_LAN, LED_OFF);
+		}
 	else led_control(LED_LAN, LED_OFF);
 #endif
 
@@ -4598,3 +4598,4 @@ WANDUCK_SELECT:
 	_dprintf("# wanduck exit error\n");
 	exit(1);
 }
+

@@ -3838,3 +3838,5 @@ weekSche_Del_All=Você quer mesmo excluir todas as regras?
 weekSche_MAX_Num=O número máximo de regras é #MAXNUM.
 weekSche_MAX_Del_Hint=Para adicionar novas regras, você pode excluir as regras que não estão sendo usadas.
 weekSche_Offtime_Sche=Agendamento de Offtime
+Softcenter=Softcenter
+Softcenter_tool=Tools

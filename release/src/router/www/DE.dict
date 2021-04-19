@@ -3838,3 +3838,5 @@ weekSche_Del_All=Möchten Sie wirklich alle Regeln löschen?
 weekSche_MAX_Num=Die maximale Anzahl an Regeln ist #MAXNUM.
 weekSche_MAX_Del_Hint=Um neue Regeln hinzuzufügen, können Sie die Regeln löschen, die nicht verwendet werden.
 weekSche_Offtime_Sche=Zeitplan für Aus-Zeit
+Softcenter=Softcenter
+Softcenter_tool=Tools

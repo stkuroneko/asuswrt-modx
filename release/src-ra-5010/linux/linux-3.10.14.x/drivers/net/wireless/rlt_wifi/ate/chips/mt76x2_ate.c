@@ -2342,8 +2342,7 @@ static void mt76x2_ate_single_sku(IN PRTMP_ADAPTER	pAd, IN BOOLEAN value)
 		pATEInfo->bDoSingleSKU = TRUE;
 		/* force reconfiguration of the channel , to apply single sku value */
 		pATEInfo->PreviousChannel = 0;
-		DBGPRINT(RT_DEBUG_ERROR, ("ATESINGLESKU = TRUE , enabled single sku in ATE! 
-		Force switch channel to calculate single sku\n"));
+		DBGPRINT(RT_DEBUG_ERROR, ("ATESINGLESKU = TRUE , enabled single sku in ATE! Force switch channel to calculate single sku\n"));
 	}
 	else
 	{

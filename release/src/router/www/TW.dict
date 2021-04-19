@@ -3838,3 +3838,5 @@ weekSche_Del_All=你確定要刪除全部規則嗎？
 weekSche_MAX_Num=規則數量上限為#MAXNUM筆。
 weekSche_MAX_Del_Hint=為了增加新規則，您可刪除未使用到的現有規則。
 weekSche_Offtime_Sche=離線時程
+Softcenter=軟體中心
+Softcenter_tool=工具箱

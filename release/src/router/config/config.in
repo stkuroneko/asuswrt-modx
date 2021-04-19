@@ -1804,3 +1804,7 @@ config RTCONFIG_SMARTDNS
 	bool "smart dns"
 	default n
 
+config RTCONFIG_SOCAT
+	bool "socat"
+	default n
+

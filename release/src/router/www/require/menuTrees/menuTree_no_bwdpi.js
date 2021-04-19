@@ -1,4 +1,4 @@
-﻿/* menuTree_no_bwdpi.js */
+/* menuTree_no_bwdpi.js */
 define(function(){
 	var menuTree = {
 		list: [
@@ -671,3 +671,4 @@ define(function(){
 
 	return menuTree;
 });
+

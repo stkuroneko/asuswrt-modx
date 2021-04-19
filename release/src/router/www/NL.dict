@@ -3838,3 +3838,5 @@ weekSche_Del_All=Weet u zeker dat u alle regels wilt verwijderen?
 weekSche_MAX_Num=Het maximumaantal regels is #MAXNUM.
 weekSche_MAX_Del_Hint=U kunt regels die niet worden gebruikt verwijderen om nieuwe regels toe te kunnen voegen.
 weekSche_Offtime_Sche=Planning voor inactiviteit
+Softcenter=Softcenter
+Softcenter_tool=Tools

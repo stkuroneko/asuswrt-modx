@@ -1,4 +1,4 @@
-﻿
+
 var keyPressed;
 var wItem;
 var ip = "";
@@ -1986,3 +1986,4 @@ function gen_tab_menu(_tab_list_array, _currentItem) {
 		return code;
 	}
 }
+

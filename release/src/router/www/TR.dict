@@ -3838,3 +3838,5 @@ weekSche_Del_All=Tüm kuralları silmek istediğinize emin misiniz?
 weekSche_MAX_Num=Maksimum kural sayısı #MAXNUM’tür.
 weekSche_MAX_Del_Hint=Yeni kural eklemek için kullanılmayan bu kuralları silebilirsiniz.
 weekSche_Offtime_Sche=Çalışmama planlaması
+Softcenter=Softcenter
+Softcenter_tool=Tools

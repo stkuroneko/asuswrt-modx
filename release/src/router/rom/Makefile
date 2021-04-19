@@ -186,7 +186,7 @@ ifeq ($(AC2900),y)
 endif
 
 ifeq ($(or $(RTCONFIG_BWDPI),$(RTCONFIG_BWDPI_DEP)),y)
-ifneq ($(or $(RTMIR3G),$(RTMIR3P),$(RTMIR4A),$(RTRM2100),$(RTR2100),$(RTNEWIFI2),$(RTNEWIFI3),$(RTHIWIFI4),$(RTE8820S)),y)
+ifneq ($(or $(RTMIR3G),$(RTMIR3P),$(RTMIR4A),$(RTRM2100),$(RTR2100),$(RTNEWIFI2),$(RTNEWIFI3),$(RTHIWIFI4),$(RTE8820S),$(RTA040WQ)),y)
 	cp -f webs_scripts/sig2nd_upgrade.sh $(INSTALLDIR)/usr/sbin/sig_upgrade.sh
 	cp -f webs_scripts/sig2nd_update.sh $(INSTALLDIR)/usr/sbin/sig_update.sh
 else
@@ -262,3 +262,4 @@ ifeq ($(HND_ROUTER),y)
 endif
 
 .PHONY: dummy
+

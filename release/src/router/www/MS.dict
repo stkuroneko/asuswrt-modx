@@ -3838,3 +3838,5 @@ weekSche_Del_All=Adakah anda pasti mahu memadamkan semua peraturan?
 weekSche_MAX_Num=Bilangan maksimum peraturan adalah #MAXNUM.
 weekSche_MAX_Del_Hint=Untuk menambah peraturan baharu, anda boleh memadam peraturan yang tidak digunakan.
 weekSche_Offtime_Sche=Jadual waktu tamat
+Softcenter=Softcenter
+Softcenter_tool=Tools

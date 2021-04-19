@@ -3838,3 +3838,5 @@ weekSche_Del_All=Действительно удалить все правила
 weekSche_MAX_Num=Максимальное число правил: #MAXNUM.
 weekSche_MAX_Del_Hint=Чтобы добавить новые правила, можно удалить правила, которые не используются.
 weekSche_Offtime_Sche=Расписание на время отключения
+Softcenter=Softcenter
+Softcenter_tool=Tools

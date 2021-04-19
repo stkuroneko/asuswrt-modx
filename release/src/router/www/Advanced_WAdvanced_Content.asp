@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <html xmlns:v>
 <head>
@@ -356,7 +356,7 @@ function initial(){
 			document.getElementById("wl_plcphdr_field").style.display = "none";
 		}
 
-		if(based_modelid == "RT-AC66U" || based_modelid == "RT-AC85U" || based_modelid == "RT-AC65U" || based_modelid == "RT-AC85P" || based_modelid == "RT-ACRH26" || based_modelid == "RT-MIR3G" || based_modelid == "RT-MIR4A" || based_modelid == "RT-MIR3P" || based_modelid == "RT-RM2100" || based_modelid == "RT-R2100" || based_modelid == "RT-NEWIFI2" || based_modelid == "RT-NEWIFI3" || based_modelid == "RT-HIWIFI4" || based_modelid == "RT-E8820S"){
+		if(based_modelid == "RT-AC66U" || based_modelid == "RT-AC85U" || based_modelid == "RT-AC65U" || based_modelid == "RT-AC85P" || based_modelid == "RT-ACRH26" || based_modelid == "RM-AC2100" || based_modelid == "RT-MIR3G" || based_modelid == "RT-MIR4A" || based_modelid == "RT-MIR3P" || based_modelid == "RT-RM2100" || based_modelid == "RT-R2100" || based_modelid == "RT-NEWIFI2" || based_modelid == "RT-NEWIFI3" || based_modelid == "RT-HIWIFI4" || based_modelid == "RT-E8820S" || based_modelid == "RT-A040WQ"){
 			document.getElementById('wl_txbf_desc').innerHTML = "<#WLANConfig11b_x_acBeam#>";
 			inputCtrl(document.form.wl_txbf, 1);
 		}
@@ -412,7 +412,7 @@ function initial(){
 				inputCtrl(document.form.wl_itxbf, 1);
 			}	
 		}	
-		if(based_modelid == "RT-AC88N" || based_modelid == "RT-AC88Q" || based_modelid == "BRT-AC828" || based_modelid == "RT-AD7200" || based_modelid == "RT-AC58U" || based_modelid == "RT-AC82U" || based_modelid == "MAP-AC1300" || based_modelid == "MAP-AC2200" || based_modelid == "VZW-AC1300" || based_modelid == "MAP-AC3000" || based_modelid == "RT-MIR3P")
+		if(based_modelid == "RT-AC88N" || based_modelid == "RT-AC88Q" || based_modelid == "BRT-AC828" || based_modelid == "RT-AD7200" || based_modelid == "RT-AC58U" || based_modelid == "RT-AC82U" || based_modelid == "MAP-AC1300" || based_modelid == "MAP-AC2200" || based_modelid == "VZW-AC1300" || based_modelid == "MAP-AC3000" || based_modelid == "RT-MIR3P" || based_modelid == "RT-A040WQ")
 		{
 			$('wl_txbf_desc').innerHTML = "<#WLANConfig11b_x_ExpBeam#>";
 			inputCtrl(document.form.wl_txbf, 1);
@@ -449,7 +449,7 @@ function initial(){
 		add_option(document.form.wl_mrate_x, mcast_rates[i][0], mcast_rates[i][1], (mcast_rate == mcast_rates[i][1]) ? 1 : 0);
 	}
 
-	if(1 - sw_mode % 2){		// repeater and media bridge
+	if(repeater_support || psta_support){		//with RE mode
 		document.getElementById("DLSCapable").style.display = "none";	
 	}	
 
@@ -492,7 +492,7 @@ function initial(){
 		document.form.wl_mumimo.disabled = false;
 
 		/* MODELDEP */
-		if((based_modelid == "RT-AC85U" || based_modelid == "RT-AC85P" || based_modelid == "RT-ACRH26" || based_modelid == "RT-AC65U" || based_modelid == "RT-RM2100" || based_modelid == "RT-R2100") && wl_unit_value == '0'){
+		if((based_modelid == "RT-AC85U" || based_modelid == "RT-AC85P" || based_modelid == "RT-ACRH26" || based_modelid == "RT-AC65U" || based_modelid == "RM-AC2100" || based_modelid == "RT-RM2100" || based_modelid == "RT-R2100") && wl_unit_value == '0'){
 			document.getElementById("wl_MU_MIMO_field").style.display = "none";
 		}
 	}
@@ -601,8 +601,8 @@ function generate_country_selection(){
 	var matched = false;
 	
 	code += '<select class="input_option" name="location_code">';
-	for(i=0; i<country_selection_list.length; i++){
-		var index = country_selection_list[i][0];
+	for(i=0; i<country_array.length; i++){
+		var index = country_array[i];
 		if(index == "NZ")
 			index = "AU";
 
@@ -615,7 +615,7 @@ function generate_country_selection(){
 		}
 	}
 
-	if(0){
+	if(!matched){
 		code += '<option value='+ tcode +' >Default</option>';
 	}
 
@@ -1883,3 +1883,4 @@ function checkWLReady(){
 <div id="footer"></div>
 </body>
 </html>
+

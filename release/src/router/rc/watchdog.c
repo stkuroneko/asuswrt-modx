@@ -2498,9 +2498,9 @@ void btn_check(void)
 	if (nvram_match("led_on_off", "1")) {
 		led_control(LED_LAN, LED_ON);
 		}
-		else{
-			led_control(LED_LAN, LED_OFF);
-			}
+	else{
+		led_control(LED_LAN, LED_OFF);
+		}
 						led_control(LED_WAN, LED_ON);
 						led_control(LED_WPS, LED_ON);
 					}
@@ -2597,9 +2597,9 @@ void btn_check(void)
 	if (nvram_match("led_on_off", "1")) {
 		led_control(LED_LAN, LED_ON);
 		}
-		else{
-			led_control(LED_LAN, LED_OFF);
-			}
+	else{
+		led_control(LED_LAN, LED_OFF);
+		}
 						led_control(LED_2G, LED_ON);
 #endif
 					}
@@ -2673,9 +2673,9 @@ void btn_check(void)
 	if (nvram_match("led_on_off", "1")) {
 		led_control(LED_LAN, LED_ON);
 		}
-		else{
-			led_control(LED_LAN, LED_OFF);
-			}
+	else{
+		led_control(LED_LAN, LED_OFF);
+		}
 				led_control(LED_2G, LED_ON);
 				sleep(1);
 				led_control(LED_WAN, LED_OFF);
@@ -2833,7 +2833,7 @@ void btn_check(void)
 			if (LED_status_on) {
 				TRACE_PT("LED turn to normal\n");
 				led_control(LED_POWER, LED_ON);
-#if defined(RTAC65U) || defined(RTAC85U) || defined(RTAC85P) || defined(RTN800HP) || defined(RTACRH26)
+#if defined(RTAC65U) || defined(RTAC85U) || defined(RTAC85P) || defined(RTN800HP) || defined(RTACRH26) || defined(RMAC2100)
 			if (nvram_match("wl0_radio", "1")) {
 				led_control(LED_2G, LED_ON);
 			}
@@ -3613,6 +3613,7 @@ int timecheck_reboot(char *activeSchedule)
 	return active;
 }
 
+
 int svcStatus[12] = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
 
 /* Check for time-reated service 	*/
@@ -4132,9 +4133,9 @@ void fake_etlan_led(void)
 	if (nvram_match("led_on_off", "1")) {
 		led_control(LED_LAN, LED_ON);
 		}
-		else{
-			led_control(LED_LAN, LED_OFF);
-			}
+	else{
+		led_control(LED_LAN, LED_OFF);
+		}
 				else
 					led_control(LED_LAN, LED_OFF);
 			}
@@ -4142,9 +4143,9 @@ void fake_etlan_led(void)
 	if (nvram_match("led_on_off", "1")) {
 		led_control(LED_LAN, LED_ON);
 		}
-		else{
-			led_control(LED_LAN, LED_OFF);
-			}
+	else{
+		led_control(LED_LAN, LED_OFF);
+		}
 	}
 
 	blink_etlan_check++;
@@ -5355,11 +5356,6 @@ static void softcenter_sig_check()
 {
 	//1=wan,2=nat,3=mount
 	if(nvram_match("sc_installed", "1")){
-		//if(!pids("perpd")){
-			//char *perp_argv[] = { "perpboot", "-d",NULL };
-			//pid_t pid;
-			//_eval(perp_argv, NULL, 0, &pid);
-		//}
 		if(nvram_match("sc_wan_sig", "1")) {
 			if(nvram_match("sc_mount", "1")) {
 				if(f_exists("/jffs/softcenter/bin/softcenter.sh")) {
@@ -6941,8 +6937,14 @@ void watchdog(int sig)
 #ifdef RTL_WTDOG
 	watchdog_func();
 #endif
+
 	/* handle button */
 	btn_check();
+
+
+	/* handle led */
+	led_on_off();
+
 
 	if (nvram_match("asus_mfg", "0")
 #if defined(RTCONFIG_LED_BTN) || defined(RTCONFIG_WPS_ALLLED_BTN)
@@ -7227,7 +7229,7 @@ wdp:
 	auto_firmware_check();
 #endif
 #ifdef RTCONFIG_BWDPI
-#if !defined(RTMIR3G) && !defined(RTMIR3P) && !defined(RTMIR4A) && !defined(RTRM2100) && !defined(RTR2100) && !defined(RTNEWIFI2) && !defined(RTNEWIFI3) && !defined(RTHIWIFI4) && !defined(RTE8820S)
+#if !defined(RTMIR3G) && !defined(RTMIR3P) && !defined(RTMIR4A) && !defined(RTRM2100) && !defined(RTR2100) && !defined(RTNEWIFI2) && !defined(RTNEWIFI3) && !defined(RTHIWIFI4) && !defined(RTE8820S) && !defined(RTA040WQ)
 	auto_sig_check();		// libbwdpi.so
 	web_history_save();		// libbwdpi.so
 	AiProtectionMonitor_mail_log();	// libbwdpi.so
@@ -7453,3 +7455,4 @@ int wdg_monitor_main(int argc, char *argv[])
 	return 0;
 }
 #endif
+

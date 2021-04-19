@@ -24,6 +24,7 @@
 #define __MERLINR_H__
 extern void merlinr_init(void);
 extern void merlinr_init_done(void);
+extern int merlinr_toolbox(int argc, char **argv);
 #ifdef RTCONFIG_UUPLUGIN
 extern void exec_uu_merlinr(void);
 #endif
@@ -39,6 +40,9 @@ enum {
 	SOFTCENTER_UNMOUNT
 };
 extern void softcenter_eval(int sig);
+#endif
+#if defined(RMAC2100)
+extern void patch_Factory(void);
 #endif
 #endif
 

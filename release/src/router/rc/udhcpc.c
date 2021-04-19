@@ -893,14 +893,12 @@ config(void)
 	nvram_unset("vivso");
 #endif
 #endif
-
 	/* Clean nat conntrack for this interface,
 	 * but skip physical VPN subinterface for PPTP/L2TP */
 	if (changed && !(unit < 0 &&
 	    (nvram_match(strcat_r(wanprefix, "proto", tmp), "l2tp") ||
 	     nvram_match(strcat_r(wanprefix, "proto", tmp), "pptp"))))
 		ifconfig(wan_ifname, IFUP, "0.0.0.0", NULL);
-
 	ifconfig(wan_ifname, IFUP,
 		 nvram_safe_get(strcat_r(prefix, "ipaddr", tmp)),
 		 nvram_safe_get(strcat_r(prefix, "netmask", tmp)));
@@ -1489,3 +1487,4 @@ void stop_6relayd(void)
 #endif // RTCONFIG_6RELAYD
 
 #endif // RTCONFIG_IPV6
+
