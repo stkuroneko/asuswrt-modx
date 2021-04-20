@@ -383,28 +383,40 @@ define platformKernelConfig
 		echo "CONFIG_MT7610_ED_MONITOR=y" >>$(1); \
 	fi; \
 	if [ "$(FIRST_IF)" = "MT7603E" ] ; then \
-		sed -i "/CONFIG_WIFI_MT7603E/d" $(1); \
-		echo "CONFIG_WIFI_MT7603E=m" >>$(1); \
-		sed -i "/CONFIG_UAPSD/d" $(1); \
-		echo "CONFIG_UAPSD=y" >>$(1); \
-		sed -i "/CONFIG_MT_MAC/d" $(1); \
-		echo "CONFIG_MT_MAC=y" >>$(1); \
-		sed -i "/CONFIG_RLT_MAC/d" $(1); \
-		echo "#CONFIG_RLT_MAC is not set" >>$(1); \
-		sed -i "/CONFIG_RLT_AP_SUPPORT/d" $(1); \
-		echo "#CONFIG_RLT_AP_SUPPORT is not set" >>$(1); \
-		sed -i "/CONFIG_SNIFFER_SUPPORT/d" $(1); \
-		echo "CONFIG_SNIFFER_SUPPORT=y" >>$(1); \
-		sed -i "/CONFIG_ACL_V2_SUPPORT/d" $(1); \
-		echo "CONFIG_ACL_V2_SUPPORT=y" >>$(1); \
-		sed -i "/CONFIG_SNIFFER_MIB_CMD/d" $(1); \
-		echo "# CONFIG_SNIFFER_MIB_CMD is not set" >>$(1); \
-		sed -i "/CONFIG_ALL_NET_EVENT/d" $(1); \
-		echo "# CONFIG_ALL_NET_EVENT is not set" >>$(1); \
-		sed -i "/CONFIG_MCAST_RATE_SPECIFIC/d" $(1); \
-		echo "# CONFIG_MCAST_RATE_SPECIFIC is not set" >>$(1); \
-		sed -i "/CONFIG_BTCOEX_CONCURRENT/d" $(1); \
-		echo "# CONFIG_BTCOEX_CONCURRENT is not set" >>$(1); \
+		sed -i "/CONFIG_MT7603E_RLT_WIFI/d" $(1); \
+		echo "CONFIG_MT7603E_RLT_WIFI=m" >>$(1); \
+		sed -i "/CONFIG_MT7603E_FIRST_IF_EEPROM_PROM/d" $(1); \
+		echo "# CONFIG_MT7603E_FIRST_IF_EEPROM_PROM is not set" >>$(1); \
+		sed -i "/CONFIG_MT7603E_FIRST_IF_EEPROM_EFUSE/d" $(1); \
+		echo "# CONFIG_MT7603E_FIRST_IF_EEPROM_EFUSE is not set" >>$(1); \
+		sed -i "/CONFIG_MT7603E_FIRST_IF_EEPROM_FLASH/d" $(1); \
+		echo "CONFIG_MT7603E_FIRST_IF_EEPROM_FLASH=y" >>$(1); \
+		sed -i "/CONFIG_MT7603E_RT_FIRST_CARD_EEPROM/d" $(1); \
+		echo "CONFIG_MT7603E_RT_FIRST_CARD_EEPROM=\"flash\"" >>$(1); \
+		sed -i "/CONFIG_MT7603E_RLT_AP_SUPPORT/d" $(1); \
+		echo "CONFIG_MT7603E_RLT_AP_SUPPORT=y" >>$(1); \
+		sed -i "/CONFIG_MT7603E_WDS_SUPPORT/d" $(1); \
+		echo "CONFIG_MT7603E_WDS_SUPPORT=y" >>$(1); \
+		sed -i "/CONFIG_MT7603E_MBSS_SUPPORT/d" $(1); \
+		echo "CONFIG_MT7603E_MBSS_SUPPORT=y" >>$(1); \
+		sed -i "/CONFIG_MT7603E_ACL_V2_SUPPORT/d" $(1); \
+		echo "CONFIG_MT7603E_ACL_V2_SUPPORT=y" >>$(1); \
+		sed -i "/CONFIG_MT7603E_RTMP_FLASH_SUPPORT/d" $(1); \
+		echo "CONFIG_MT7603E_RTMP_FLASH_SUPPORT=y" >>$(1); \
+		sed -i "/CONFIG_MT7603E_DOT11N_DRAFT3/d" $(1); \
+		echo "CONFIG_MT7603E_DOT11N_DRAFT3=y" >>$(1); \
+		sed -i "/CONFIG_MT7603E_IGMP_SNOOP_SUPPORT/d" $(1); \
+		echo "CONFIG_MT7603E_IGMP_SNOOP_SUPPORT=y" >>$(1); \
+		sed -i "/CONFIG_MT7603E_BLOCK_NET_IF/d" $(1); \
+		echo "CONFIG_MT7603E_BLOCK_NET_IF=y" >>$(1); \
+		sed -i "/CONFIG_MT7603E_QOS_DLS_SUPPORT/d" $(1); \
+		echo "CONFIG_MT7603E_QOS_DLS_SUPPORT=y" >>$(1); \
+		sed -i "/CONFIG_MT7603E_LED_CONTROL_SUPPORT/d" $(1); \
+		echo "CONFIG_MT7603E_LED_CONTROL_SUPPORT=y" >>$(1); \
+		sed -i "/CONFIG_MT7603E_ATE_SUPPORT/d" $(1); \
+		echo "# CONFIG_MT7603E_ATE_SUPPORT is not set" >>$(1); \
+		sed -i "/CONFIG_MT7603E_MULTI_INF_SUPPORT/d" $(1); \
+		echo "# CONFIG_MT7603E_MULTI_INF_SUPPORT is not set" >>$(1); \
 		if [ "$(RTN56UB1)" = "y" ] || [ "$(RTN56UB2)" = "y" ] ; then \
 			if [ "$(MT7603_INTERNAL_PA_EXTERNAL_LNA)" = "y" ] ; then \
 				sed -i "/CONFIG_MT7603E_INTERNAL_PA_EXTERNAL_LNA/d" $(1); \
@@ -421,6 +433,30 @@ define platformKernelConfig
 				echo "# CONFIG_MT7603E_EXTERNAL_PA_EXTERNAL_LNA is not set" >>$(1); \
 			fi; \
 		fi; \
+	fi; \
+	if [ "$(SECOND_IF)" = "MT7615E" ] ; then \
+		sed -i "/CONFIG_MT_WIFI/d" $(1); \
+		echo "CONFIG_MT_WIFI=m" >>$(1); \
+		sed -i "/CONFIG_MT_AP_SUPPORT/d" $(1); \
+		echo "CONFIG_MT_AP_SUPPORT=m" >>$(1); \
+		sed -i "/CONFIG_FIRST_IF_EEPROM_PROM/d" $(1); \
+		echo "# CONFIG_FIRST_IF_EEPROM_PROM is not set" >>$(1); \
+		sed -i "/CONFIG_FIRST_IF_EEPROM_EFUSE/d" $(1); \
+		echo "# CONFIG_FIRST_IF_EEPROM_EFUSE is not set" >>$(1); \
+		sed -i "/CONFIG_FIRST_IF_EEPROM_FLASH/d" $(1); \
+		echo "CONFIG_FIRST_IF_EEPROM_FLASH=y" >>$(1); \
+		sed -i "/CONFIG_RT_FIRST_CARD_EEPROM/d" $(1); \
+		echo "CONFIG_RT_FIRST_CARD_EEPROM=\"flash\"" >>$(1); \
+		sed -i "/CONFIG_SECOND_IF_EEPROM_PROM/d" $(1); \
+		echo "# CONFIG_SECOND_IF_EEPROM_PROM is not set" >>$(1); \
+		sed -i "/CONFIG_SECOND_IF_EEPROM_EFUSE/d" $(1); \
+		echo "# CONFIG_SECOND_IF_EEPROM_EFUSE is not set" >>$(1); \
+		sed -i "/CONFIG_SECOND_IF_EEPROM_FLASH/d" $(1); \
+		echo "CONFIG_SECOND_IF_EEPROM_FLASH=y" >>$(1); \
+		sed -i "/CONFIG_RT_SECOND_CARD_EEPROM/d" $(1); \
+		echo "CONFIG_RT_SECOND_CARD_EEPROM=\"flash\"" >>$(1); \
+		sed -i "/CONFIG_MULTI_INF_SUPPORT/d" $(1); \
+		echo "# CONFIG_MULTI_INF_SUPPORT is not set" >>$(1); \
 	fi; \
 	if [ "$(SECOND_IF)" = "MT7612E" ] ; then \
 		sed -i "/CONFIG_RLT_WIFI/d" $(1); \

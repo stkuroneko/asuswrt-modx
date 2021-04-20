@@ -1015,8 +1015,6 @@ void init_wl(void)
 	}
 	sprintf(tmpStr3, "regspec_5g=%s", dst);
 
-	if (!module_loaded("rt2860v2_ap"))
-		modprobe("rt2860v2_ap");
 #if defined (RTCONFIG_WLMODULE_RT3090_AP)
 	if (!module_loaded("RTPCI_ap"))
 	{
@@ -1038,9 +1036,9 @@ void init_wl(void)
 #endif
 
 #if defined (RTCONFIG_WLMODULE_RLT_WIFI)
-	if (!module_loaded("rlt_wifi_mt7612e"))
+	if (!module_loaded("rlt_wifi"))
 	{   
-		modprobe("rlt_wifi_mt7612e");
+		modprobe("rlt_wifi");
 	}
 #endif
 #if defined (RTCONFIG_WLMODULE_MT7603E_AP)
@@ -1048,15 +1046,14 @@ void init_wl(void)
 	if (!module_loaded("mt_wifi"))
 		modprobe("mt_wifi");
 #else
-	if (!module_loaded("rlt_wifi_7603e"))
-		modprobe("rlt_wifi_7603e");
+	if (!module_loaded("mt7603_wifi"))
+		modprobe("mt7603_wifi");
 #endif
 #endif
 
 #if defined (RTCONFIG_WLMODULE_MT7615E_AP)
-	if (!module_loaded("mt_wifi_7615E"))
-		//modprobe("mt_wifi_7615E", tmpStr1, tmpStr2, tmpStr3);
-		modprobe("mt_wifi_7615E");
+	if (!module_loaded("mt_wifi"))
+		modprobe("mt_wifi"/*, tmpStr1, tmpStr2, tmpStr3*/);
 #endif
 	sleep(1);
 }
@@ -1073,6 +1070,11 @@ void fini_wl(void)
 		modprobe_r("hw_nat");
 	}
 
+#if defined (RTCONFIG_WLMODULE_MT7615E_AP)
+	if (module_loaded("mt_wifi"))
+		modprobe_r("mt_wifi");
+#endif
+
 #if defined (RTCONFIG_WLMODULE_MT7610_AP)
 	if (module_loaded("MT7610_ap"))
 		modprobe_r("MT7610_ap");
@@ -1082,9 +1084,9 @@ void fini_wl(void)
 		modprobe_r("mt_wifi_7628");
 #endif
 #if defined (RTCONFIG_WLMODULE_RLT_WIFI)
-	if (module_loaded("rlt_wifi_mt7612e"))
+	if (module_loaded("rlt_wifi"))
 	{   
-		modprobe_r("rlt_wifi_mt7612e");
+		modprobe_r("rlt_wifi");
 #if defined(RTAC1200HP)
 		//remove wifi driver, 5G wifi gpio led turn off 
 		sleep(1);	
@@ -1097,8 +1099,8 @@ void fini_wl(void)
 	if (module_loaded("mt_wifi"))
 		modprobe_r("mt_wifi");
 #else
-	if (module_loaded("rlt_wifi_7603e"))
-		modprobe_r("rlt_wifi_7603e");
+	if (module_loaded("mt7603_wifi"))
+		modprobe_r("mt7603_wifi");
 #endif
 #endif
 #if defined (RTCONFIG_WLMODULE_RT3352_INIC_MII)
@@ -1112,9 +1114,6 @@ void fini_wl(void)
 		modprobe_r("RTPCI_ap");
 	}
 #endif
-
-	if (module_loaded("rt2860v2_ap"))
-		modprobe_r("rt2860v2_ap");
 
 }
 
