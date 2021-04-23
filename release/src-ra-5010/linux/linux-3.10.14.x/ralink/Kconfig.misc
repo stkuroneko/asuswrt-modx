@@ -51,4 +51,20 @@ config  DUAL_TRX
 	bool "Dual trx supported"
 	default n
 
+config  MODEL_RTNEWIFI2
+	bool "RT-NEWIFI2"
+	default n
+
+config  MODEL_RTNEWIFI3
+	bool "RT-NEWIFI3"
+	default n
+
+config  MODEL_RTHIWIFI4
+	bool "RT-HIWIFI4"
+	default n
+
+config  MODEL_RTE8820S
+	bool "RT-E8820S"
+	default n
+
 endmenu
