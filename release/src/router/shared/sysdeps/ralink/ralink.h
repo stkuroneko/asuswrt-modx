@@ -338,7 +338,7 @@ typedef enum _RT_802_11_PHY_MODE {
 #define OFFSET_MTD_FACTORY	0x40000
 #define OFFSET_EEPROM_VER	0x40002
 
-#if defined(RTAC85U) || defined(RTAC85P) || defined(RPAC87) || defined(RTAC1200GU) || defined(RTN800HP) || defined(RTACRH26) || defined(TUFAC1750) || defined(RMAC2100)
+#if defined(RTAC85U) || defined(RTAC85P) || defined(RPAC87) || defined(RTAC1200GU) || defined(RTN800HP) || defined(RTACRH26) || defined(TUFAC1750) || defined(RMAC2100) || defined(RTA040WQ)
 #define OFFSET_PIN_CODE		0x4ff70	// 8 bytes
 #define OFFSET_COUNTRY_CODE	0x4ff78	// 2 bytes
 #define OFFSET_BOOT_VER		0x4ff7a	// 4 bytes
@@ -394,7 +394,7 @@ typedef enum _RT_802_11_PHY_MODE {
 #if defined(RTCONFIG_NEW_REGULATION_DOMAIN)
 #define	MAX_REGDOMAIN_LEN	10
 #define	MAX_REGSPEC_LEN		4
-#if defined(RTAC85U) || defined(RTAC85P) || defined(RPAC87) || defined(RTAC1200GU) || defined(RTN800HP) || defined(RTACRH26) || defined(TUFAC1750)
+#if defined(RTAC85U) || defined(RTAC85P) || defined(RPAC87) || defined(RTAC1200GU) || defined(RTN800HP) || defined(RTACRH26) || defined(TUFAC1750) || defined(RTA040WQ)
 #define REG2G_EEPROM_ADDR	0x4ff40 //10 bytes
 #define REG5G_EEPROM_ADDR	0x4ff4a //10 bytes
 #define REGSPEC_ADDR		0x4ff54 // 4 bytes

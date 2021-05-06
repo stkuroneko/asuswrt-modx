@@ -31,16 +31,16 @@
 #define FIRST_APCLI_5G_DEVNAME "apclix"
 #endif
 #define SECOND_AP_2G_PROFILE_PATH	"/etc/Wireless/iNIC/iNIC_ap_2G.dat"
-#define SECOND_AP_5G_PROFILE_PATH	"/etc/Wireless/iNIC/iNIC_ap_5G.dat"
+#define SECOND_AP_5G_PROFILE_PATH	"/etc/Wireless/iNIC/iNIC_ap.dat"
 #define SECOND_AP_MERGE_PROFILE_PATH ""
 #if defined(BB_SOC) && !defined(MULTI_INF_SUPPORT)
 #define SECOND_AP_5G_DEVNAME "ra0"
 #define SECOND_MBSSID_5G_DEVNAME "ra"
 #define SECOND_APCLI_5G_DEVNAME "apcli"
 #else
-#define SECOND_AP_5G_DEVNAME "ray0"
-#define SECOND_MBSSID_5G_DEVNAME "ray"
-#define SECOND_APCLI_5G_DEVNAME "apcliiy"
+#define SECOND_AP_5G_DEVNAME "rai0"
+#define SECOND_MBSSID_5G_DEVNAME "rai"
+#define SECOND_APCLI_5G_DEVNAME "apclii"
 #endif
 #define THIRD_AP_2G_PROFILE_PATH	"/etc/Wireless/WIFI3/RT2870AP_2G.dat"
 #define THIRD_AP_5G_PROFILE_PATH	"/etc/Wireless/WIFI3/RT2870AP_5G.dat"

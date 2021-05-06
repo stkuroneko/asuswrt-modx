@@ -4092,6 +4092,7 @@ int init_nvram(void)
 		wl_ifaces[WL_2G_BAND] = "ra0";
 		wl_ifaces[WL_5G_BAND] = "rai0";
 
+
 		set_basic_ifname_vars("eth3", "vlan1", wl_ifaces, "usb", "vlan1", NULL, "vlan3", NULL, 0);
 		add_rc_support("2.4G 5G noupdate usbX1");
 
@@ -4118,11 +4119,11 @@ int init_nvram(void)
 		add_rc_support("app");
 		add_rc_support("gameMode");
 
-		nvram_set("wl0_HT_TxStream", "4");
-		nvram_set("wl0_HT_RxStream", "4");
+		nvram_set("wl0_HT_TxStream", "2");
+		nvram_set("wl0_HT_RxStream", "2");
 
-		nvram_set("wl1_HT_TxStream", "4");
-		nvram_set("wl1_HT_RxStream", "4");
+		nvram_set("wl1_HT_TxStream", "2");
+		nvram_set("wl1_HT_RxStream", "2");
 
 		break;
 #endif /* A040WQ */
@@ -10970,7 +10971,9 @@ int init_main(int argc, char *argv[])
 #endif
 #endif
 	}
-
+#if defined(RTA040WQ)
+                restart_wireless();
+#endif
 	for (;;) {
 //		TRACE_PT("main loop signal/state=%d\n", state);
 
