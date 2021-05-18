@@ -97,7 +97,6 @@ ifeq ($(or $(RTHIWIFI4),$(RTE8820S),$(RTMIR3G),$(RTNEWIFI2),$(RTNEWIFI3)),y)
 endif
 ifeq ("$(BUILD_NAME)","RT-A040WQ")
 	@install $(BUILD_NAME)/l1profile.dat $(SKUDIR)/l1profile.dat
-	@install $(BUILD_NAME)/MT7615E_EEPROM1.bin $(SKUDIR)/MT7615E_EEPROM1.bin
 	@install $(BUILD_NAME)/SingleSKU_mt7615e-sku.dat $(SKUDIR)/SingleSKU_mt7615e-sku.dat
 	@install $(BUILD_NAME)/SingleSKU_mt7615e-sku-bf.dat $(SKUDIR)/SingleSKU_mt7615e-sku-bf.dat
 endif

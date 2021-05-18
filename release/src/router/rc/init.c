@@ -4004,7 +4004,7 @@ int init_nvram(void)
 
 		set_basic_ifname_vars("eth3", "vlan1", wl_ifaces, "usb", "vlan1", NULL, "vlan3", NULL, 0);
 		add_rc_support("2.4G 5G noupdate usbX2");
-
+		nvram_set_int("pwr_usb_gpio", 12|GPIO_ACTIVE_LOW);
                 nvram_set_int("led_pwr_gpio",  6|GPIO_ACTIVE_LOW);
 		nvram_set_int("led_wan_gpio",  7);
                 nvram_set_int("btn_rst_gpio", 18|GPIO_ACTIVE_LOW);
@@ -4096,11 +4096,12 @@ int init_nvram(void)
 		set_basic_ifname_vars("eth3", "vlan1", wl_ifaces, "usb", "vlan1", NULL, "vlan3", NULL, 0);
 		add_rc_support("2.4G 5G noupdate usbX1");
 
-		nvram_set_int("btn_rst_gpio",  18|GPIO_ACTIVE_LOW);
-		nvram_set_int("btn_wps_gpio",  8|GPIO_ACTIVE_LOW);
-		nvram_set_int("btn_wifi_gpio",10|GPIO_ACTIVE_LOW);
-		nvram_set_int("led_pwr_gpio",  3|GPIO_ACTIVE_LOW);
-		nvram_set_int("led_lan_gpio",  16|GPIO_ACTIVE_LOW);
+		nvram_set_int("btn_rst_gpio",  15|GPIO_ACTIVE_LOW);
+		nvram_set_int("btn_wps_gpio",  18|GPIO_ACTIVE_LOW);
+		nvram_set_int("btn_wifi_gpio", 7|GPIO_ACTIVE_LOW);
+		nvram_set_int("led_5g_gpio", 3|GPIO_ACTIVE_LOW);
+		nvram_set_int("led_2g_gpio", 4|GPIO_ACTIVE_LOW);
+		nvram_set_int("led_usb_gpio", 13|GPIO_ACTIVE_LOW);
 
 		eval("rtkswitch", "11");
 

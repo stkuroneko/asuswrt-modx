@@ -4002,7 +4002,9 @@ else
 			cp $(LINUXDIR)/config_base_rte8820s $(LINUXDIR)/config_$(lowercase_B) ; \
 		elif [ "$(BUILD_NAME)" = "RT-A040WQ" ]; then \
 			cp $(LINUXDIR)/config_base_rta040wq $(LINUXDIR)/config_$(lowercase_B) ; \
-		elif [ "$(BUILD_NAME)" = "RT-HIWIFI4" ] || [ "$(BUILD_NAME)" = "RT-NEWIFI3" ] || [ "$(BUILD_NAME)" = "RT-MIR3G" ] || [ "$(BUILD_NAME)" = "RT-NEWIFI2" ]; then \
+		elif [ "$(BUILD_NAME)" = "RT-NEWIFI2" ]; then \
+			cp $(LINUXDIR)/config_base_rtnewifi2 $(LINUXDIR)/config_$(lowercase_B) ; \
+		elif [ "$(BUILD_NAME)" = "RT-HIWIFI4" ] || [ "$(BUILD_NAME)" = "RT-NEWIFI3" ] || [ "$(BUILD_NAME)" = "RT-MIR3G" ]; then \
 			cp $(LINUXDIR)/config_base_rthiwifi4 $(LINUXDIR)/config_$(lowercase_B) ; \
 		else \
 			cp $(LINUXDIR)/config_base $(LINUXDIR)/config_$(lowercase_B) ; \

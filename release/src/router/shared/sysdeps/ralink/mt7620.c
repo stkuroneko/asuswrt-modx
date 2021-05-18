@@ -186,10 +186,10 @@ enum {
 #elif  defined(RTNEWIFI2)
 enum {
 	WAN_PORT=4,
-	LAN1_PORT=1,
-	LAN2_PORT=2,
-	LAN3_PORT=3, 
-	LAN4_PORT=0, //unused
+	LAN1_PORT=2,
+	LAN2_PORT=1,
+	LAN3_PORT=0, 
+	LAN4_PORT=3, //unused
 	P5_PORT=5,
 	CPU_PORT=6,
 	P7_PORT=7,
