@@ -2414,7 +2414,7 @@ int gen_ralink_config(int band, int is_iNIC)
 		
 
 		//HT_BSSCoexistence
-#if defined(RMAC2100) || defined(RTA040WQ)
+#if defined(RMAC2100) || defined(RTA040WQ) || defined(RTMIR3G) || defined(RTE8820S) || defined(RTHIWIFI4) || defined(RTNEWIFI3) || defined(RTNEWIFI2)
 	fprintf(fp, "HT_BSSCoexistence=%d\n", 0);
 #else
 		if ((wl_bw > 1) && (HTBW_MAX == 1) 
