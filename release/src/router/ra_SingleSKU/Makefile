@@ -95,7 +95,7 @@ ifeq ($(or $(RTHIWIFI4),$(RTE8820S),$(RTMIR3G),$(RTNEWIFI2),$(RTNEWIFI3)),y)
 	@install $(BUILD_NAME)/SingleSKU_2.4G.dat $(SKUDIR)/SingleSKU_2.4G.dat
 	@install $(BUILD_NAME)/SingleSKU_5.8G.dat $(SKUDIR)/SingleSKU_5.8G.dat
 endif
-ifeq ("$(BUILD_NAME)","RT-A040WQ")
+ifeq ($(or $(RTA040WQ),$(RTMIR3P)),y))
 	@install $(BUILD_NAME)/l1profile.dat $(SKUDIR)/l1profile.dat
 	@install $(BUILD_NAME)/SingleSKU_mt7615e-sku.dat $(SKUDIR)/SingleSKU_mt7615e-sku.dat
 	@install $(BUILD_NAME)/SingleSKU_mt7615e-sku-bf.dat $(SKUDIR)/SingleSKU_mt7615e-sku-bf.dat
