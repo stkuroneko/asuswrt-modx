@@ -153,7 +153,7 @@ void __init prom_meminit(void)
  	add_memory_region(0x08000000, RAM_SIZE, BOOT_MEM_RAM);
 #elif defined(CONFIG_MT7621_ASIC) || defined(CONFIG_MT7621_FPGA)
 #if defined (CONFIG_RT2880_DRAM_512M)
-#if defined(CONFIG_SUPPORT_OPENWRT) || defined(CONFIG_MODEL_RTNEWIFI3)
+#if defined(CONFIG_SUPPORT_OPENWRT) || defined(CONFIG_MODEL_RTXYC3) || defined(CONFIG_MODEL_RTNEWIFI3)
  	add_memory_region(0x00000000, RAM_SIZE - 64*1024*1024, BOOT_MEM_RAM);
  	add_memory_region(0x20000000, 64*1024*1024, BOOT_MEM_RAM);
 #else

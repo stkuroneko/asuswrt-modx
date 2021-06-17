@@ -60,6 +60,8 @@ static const struct model_s model_list[] = {
 	{ "RT-R2100", MODEL_RTR2100},
 #elif defined(RTNEWIFI2)
 	{ "RT-NEWIFI2", MODEL_RTNEWIFI2},
+#elif defined(RTXYC3)
+	{ "RT-XYC3", MODEL_RTXYC3},
 #elif defined(RTNEWIFI3)
 	{ "RT-NEWIFI3", MODEL_RTNEWIFI3},
 #elif defined(RTHIWIFI4)
@@ -280,6 +282,8 @@ int get_model(void)
 	return MODEL_RTR2100;
 #elif defined(RTNEWIFI2)
 	return MODEL_RTNEWIFI2;
+#elif defined(RTXYC3)
+	return MODEL_RTXYC3;
 #elif defined(RTNEWIFI3)
 	return MODEL_RTNEWIFI3;
 #elif defined(RTHIWIFI4)

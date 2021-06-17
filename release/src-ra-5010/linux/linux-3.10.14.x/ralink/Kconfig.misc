@@ -59,6 +59,10 @@ config  MODEL_RTNEWIFI2
 	bool "RT-NEWIFI2"
 	default n
 
+config  MODEL_RTXYC3
+	bool "RT-XYC3"
+	default n
+
 config  MODEL_RTNEWIFI3
 	bool "RT-NEWIFI3"
 	default n
