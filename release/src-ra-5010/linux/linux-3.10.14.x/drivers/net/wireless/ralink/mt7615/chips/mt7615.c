@@ -42,7 +42,7 @@
 #ifdef INTELP6_SUPPORT
 #define DEFAULT_BIN_FILE "/nvram/MT7615_EEPROM_2G.bin"
 #else
-#define DEFAULT_BIN_FILE "/etc_ro/wlan/MT7615E_EEPROM1.bin"
+#define DEFAULT_BIN_FILE "/ra_SKU/MT7615E_EEPROM1.bin"
 #endif
 #else
 #define DEFAULT_BIN_FILE "/etc/MT7615E_EEPROM1.bin"

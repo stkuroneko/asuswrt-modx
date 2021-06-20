@@ -100,11 +100,7 @@ enum DstPort {
 	DP_GMAC2 = 61,
 	DP_PCI = 62,
 	DP_USB = 63,
-#ifdef ASUS_EXT
-	MAX_IF_NUM = 128
-#else
 	MAX_IF_NUM
-#endif
 };
 
 typedef struct {
@@ -223,7 +219,6 @@ typedef struct {
 #endif
 #define FOE_MAGIC_PCI		    0x7273
 #define FOE_MAGIC_WLAN		    0x7274
-#define FOE_MAGIC_EXTIF		    0x7274
 #define FOE_MAGIC_GE		    0x7275
 #define FOE_MAGIC_PPE		    0x7276
 
