@@ -2607,8 +2607,11 @@ int gen_ralink_config(int band, int is_iNIC)
 			}
 			else {
 				sprintf(prefix_mssid, "wl%d_", band);
-				//vbw = nvram_safe_get(strcat_r(prefix_mssid, "bw", temp));
+#if defined(RTA040WQ)
+				vbw = nvram_safe_get(strcat_r(prefix_mssid, "bw", temp));
+#else
 				vbw = get_bw_via_channel(band, Channel);
+#endif
 			}
 		}
 		

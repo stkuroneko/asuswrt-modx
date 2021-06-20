@@ -739,7 +739,7 @@ enum {
 #define MODEL_RTA040WQ MODEL_RTAC85U
 
 enum {
-	MODEL_MERLINRMIN = 0,
+	MODEL_SWRTMIN = 0,
 	MODEL_K3,
 	MODEL_XWR3100,
 	MODEL_R7000P,
@@ -754,7 +754,7 @@ enum {
 	MODEL_TY6201_BCM,
 	MODEL_RAX120,
 	//MODEL_RMAC2100,move to model_list
-	MODEL_MERLINRMAX
+	MODEL_SWRTMAX
 };
 /* NOTE: Do not insert new entries in the middle of this enum,
  * always add them to the end! */

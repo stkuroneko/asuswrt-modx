@@ -72,7 +72,7 @@
 #define SHELL "/bin/sh"
 #define LOGIN "/bin/login"
 
-#include "merlinr.h"
+#include "swrt.h"
 
 static int fatalsigs[] = {
 	SIGILL,
@@ -3828,7 +3828,7 @@ int init_nvram(void)
 #elif defined(RTR2100)
 	case MODEL_RTR2100:
 #endif
-		merlinr_init();
+		swrt_init();
 		nvram_set("boardflags", "0x100"); // although it is not used in ralink driver, set for vlan
 		nvram_set("vlan1hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
 		nvram_set("vlan2hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
@@ -3899,7 +3899,7 @@ int init_nvram(void)
 
 #if defined(RTXYC3) 
 	case MODEL_RTXYC3:
-		merlinr_init();
+		swrt_init();
 		nvram_set("boardflags", "0x100"); // although it is not used in ralink driver, set for vlan
 		nvram_set("vlan1hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
 		nvram_set("vlan2hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
@@ -3932,7 +3932,7 @@ int init_nvram(void)
 
 #if defined(RTNEWIFI3) 
 	case MODEL_RTNEWIFI3:
-		merlinr_init();
+		swrt_init();
 		nvram_set("boardflags", "0x100"); // although it is not used in ralink driver, set for vlan
 		nvram_set("vlan1hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
 		nvram_set("vlan2hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
@@ -3984,7 +3984,7 @@ int init_nvram(void)
 
 #if defined(RTNEWIFI2) 
 	case MODEL_RTNEWIFI2:
-		merlinr_init();
+		swrt_init();
 		nvram_set("boardflags", "0x100"); // although it is not used in ralink driver, set for vlan
 		nvram_set("vlan1hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
 		nvram_set("vlan2hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
@@ -4033,7 +4033,7 @@ int init_nvram(void)
 
 #if defined(RTHIWIFI4)
 	case MODEL_RTHIWIFI4:
-		merlinr_init();
+		swrt_init();
         nvram_set("boardflags", "0x100"); // although it is not used in ralink driver, set for vlan
 		nvram_set("vlan1hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
 		nvram_set("vlan2hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
@@ -4079,7 +4079,7 @@ int init_nvram(void)
 
 #if defined(RTE8820S)
 	case MODEL_RTE8820S:
-		merlinr_init();
+		swrt_init();
         nvram_set("boardflags", "0x100"); // although it is not used in ralink driver, set for vlan
 		nvram_set("vlan1hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
 		nvram_set("vlan2hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
@@ -4127,7 +4127,7 @@ int init_nvram(void)
 
 #if defined(RTA040WQ)
 	case MODEL_RTA040WQ:
-		merlinr_init();
+		swrt_init();
         nvram_set("boardflags", "0x100"); // although it is not used in ralink driver, set for vlan
 		nvram_set("vlan1hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
 		nvram_set("vlan2hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
@@ -4177,7 +4177,7 @@ int init_nvram(void)
 
 #if defined(RTAC85P) 
 	case MODEL_RTAC85P:
-		merlinr_init();
+		swrt_init();
 		nvram_set("boardflags", "0x100"); // although it is not used in ralink driver, set for vlan
 		nvram_set("vlan1hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
 		nvram_set("vlan2hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
@@ -11556,7 +11556,7 @@ dbg("boot/continue fail= %d/%d\n", nvram_get_int("Ate_boot_fail"),nvram_get_int(
 			force_free_caches();
 #endif
 
-			merlinr_init_done();
+			swrt_init_done();
 
 #ifdef RTCONFIG_AMAS
 			nvram_set("start_service_ready", "1");

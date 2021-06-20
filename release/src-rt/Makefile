@@ -67,13 +67,8 @@ export SRCBASEDIR := $(shell pwd | sed 's/.*release\///g')
 RELEASEDIR := $(shell (cd $(SRC_ROOT)/.. && pwd -P))
 export PATH := $(RELEASEDIR)/tools:$(SRCBASE)/ctools:$(PATH)
 
-#K3C/K3/SBRAC1900P/SBRAC3200P/R7000/R8000/R7900P/R8000P/RTACRH17/RTAC85P/GTAC2900/GTAC5300/RTAC86U/RTAC68U/RTAC3100/RTAC3200/RTAC68P/BLUECAVE/EA6700
-#aimesh:R(384 and 385),non-aimesh:B(382 and 384),special:X(382/384/385/386)
-export MERLINR_NAME := RTAC85P
-export MERLINR_VER_MAJOR :=B
-export MERLINR_VER_MINOR :=5.1.4
-export MERLINR_VER := $(MERLINR_VER_MAJOR)$(MERLINR_VER_MINOR)
-export MERLINRVER := $(MERLINR_NAME)_$(MERLINR_VER)
+export SWRT_VER := $(SWRT_VER_MAJOR)$(SWRT_VER_MINOR)
+export SWRTVER := $(SWRT_NAME)_$(SWRT_VER)
 
 # tmp depend on busybox
 E2FSPROGS := $(if $(filter $(BUSYBOX),busybox-1.17.4),n,y)
@@ -208,7 +203,7 @@ lowercase_B = $(shell echo $(BUILD_NAME) | tr A-Z a-z)
 BUILD_TIME := $(shell LC_ALL=C date -u)
 BUILD_USER ?= $(shell whoami)
 ifeq ($(BUILD_USER),paldier)
-BUILD_INFO := MerlinRdev
+BUILD_INFO := SWRTdev
 else
 BUILD_INFO := $(shell git log --pretty="%h" -n 1|sed -e "s,\([0-9a-z]\{7\}\)[0-9a-z]*,\1,")
 endif
@@ -406,6 +401,7 @@ endif
 endif
 	@echo '$(BUILD_NAME)_$(KERNEL_VER).$(FS_VER) $(BUILD_TIME)' > router/shared/version
 	@echo 'EXTENDNO=$(EXTENDNO)' > router/extendno.conf
+	@echo '#define RT_FWVER "$(SWRT_VER_MINOR)"' >> router/shared/version.h
 
 rt_ver_ntools:
 	-@rm -f ntools/version
@@ -2643,9 +2639,17 @@ define RouterOptions
 	sed -i "/RTCONFIG_SMARTDNS/d" $(1); \
 	echo "RTCONFIG_SMARTDNS=y" >>$(1); \
 	fi; \
+	if [ "$(SWRT)" = "y" ]; then \
+	sed -i "/RTCONFIG_SWRT/d" $(1); \
+	echo "RTCONFIG_SWRT=y" >>$(1); \
+	fi; \
 	if [ "$(SOCAT)" = "y" ]; then \
 	sed -i "/RTCONFIG_SOCAT/d" $(1); \
 	echo "RTCONFIG_SOCAT=y" >>$(1); \
+	fi; \
+	if [ "$(DBDC_MODE)" = "y" ]; then \
+	sed -i "/RTCONFIG_DBDC_MODE/d" $(1); \
+	echo "RTCONFIG_DBDC_MODE=y" >>$(1); \
 	fi; \
 	)
 	$(call platformRouterOptions, $(1))
@@ -3592,6 +3596,46 @@ fi; \
 		echo "CONFIG_RTN53=y" >>$(1); \
 	else \
 		echo "# CONFIG_RTN53 is not set" >>$(1); \
+	fi; \
+	if [ "$(TCPLUGIN)" = "y" ] || [ "$(SWRT)" = "y" ]; then \
+		sed -i "/CONFIG_NETFILTER_XT_SET/d" $(1); \
+		echo "CONFIG_NETFILTER_XT_SET=y" >>$(1); \
+		sed -i "/CONFIG_IP_SET/d" $(1); \
+		echo "CONFIG_IP_SET=m" >>$(1); \
+		sed -i "/CONFIG_IP_SET_MAX/d" $(1); \
+		echo "CONFIG_IP_SET_MAX=256" >>$(1); \
+		sed -i "/CONFIG_IP_SET_BITMAP_IP/d" $(1); \
+		echo "CONFIG_IP_SET_BITMAP_IP=m" >>$(1); \
+		sed -i "/CONFIG_IP_SET_BITMAP_IPMAC/d" $(1); \
+		echo "CONFIG_IP_SET_BITMAP_IPMAC=m" >>$(1); \
+		sed -i "/CONFIG_IP_SET_BITMAP_PORT/d" $(1); \
+		echo "CONFIG_IP_SET_BITMAP_PORT=m" >>$(1); \
+		sed -i "/CONFIG_IP_SET_HASH_IP/d" $(1); \
+		echo "CONFIG_IP_SET_HASH_IP=m" >>$(1); \
+		sed -i "/CONFIG_IP_SET_HASH_IPMARK/d" $(1); \
+		echo "CONFIG_IP_SET_HASH_IPMARK=m" >>$(1); \
+		sed -i "/CONFIG_IP_SET_HASH_IPPORT/d" $(1); \
+		echo "CONFIG_IP_SET_HASH_IPPORT=m" >>$(1); \
+		sed -i "/CONFIG_IP_SET_HASH_IPPORTIP/d" $(1); \
+		echo "CONFIG_IP_SET_HASH_IPPORTIP=m" >>$(1); \
+		sed -i "/CONFIG_IP_SET_HASH_IPPORTNET/d" $(1); \
+		echo "CONFIG_IP_SET_HASH_IPPORTNET=m" >>$(1); \
+		sed -i "/CONFIG_IP_SET_HASH_MAC/d" $(1); \
+		echo "CONFIG_IP_SET_HASH_MAC=m" >>$(1); \
+		sed -i "/CONFIG_IP_SET_HASH_NET/d" $(1); \
+		echo "CONFIG_IP_SET_HASH_NET=m" >>$(1); \
+		sed -i "/CONFIG_IP_SET_HASH_NETNET/d" $(1); \
+		echo "CONFIG_IP_SET_HASH_NETNET=m" >>$(1); \
+		sed -i "/CONFIG_IP_SET_HASH_NETPORT/d" $(1); \
+		echo "CONFIG_IP_SET_HASH_NETPORT=m" >>$(1); \
+		sed -i "/CONFIG_IP_SET_HASH_NETPORTNET/d" $(1); \
+		echo "CONFIG_IP_SET_HASH_NETPORTNET=m" >>$(1); \
+		sed -i "/CONFIG_IP_SET_HASH_NETIFACE/d" $(1); \
+		echo "CONFIG_IP_SET_HASH_NETIFACE=m" >>$(1); \
+		sed -i "/CONFIG_IP_SET_LIST_SET/d" $(1); \
+		echo "CONFIG_IP_SET_LIST_SET=m" >>$(1); \
+		sed -i "/CONFIG_IP_SET_HASH_IPMAC/d" $(1); \
+		echo "CONFIG_IP_SET_HASH_IPMAC=m" >>$(1); \
 	fi; \
 	if [ "$(GMAC3)" = "y" ]; then \
 		sed -i "/CONFIG_BCM_GMAC3/d" $(1); \

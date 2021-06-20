@@ -77,7 +77,7 @@
 #include <cfg_event.h>
 #endif
 
-#include "merlinr.h"
+#include "swrt.h"
 
 #define BCM47XX_SOFTWARE_RESET	0x40		/* GPIO 6 */
 #define RESET_WAIT		2		/* seconds */

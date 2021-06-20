@@ -1804,7 +1804,15 @@ config RTCONFIG_SMARTDNS
 	bool "smart dns"
 	default n
 
+config RTCONFIG_SWRT
+	bool "RTCONFIG_SWRT"
+	default n
+
 config RTCONFIG_SOCAT
 	bool "socat"
+	default n
+
+config RTCONFIG_DBDC_MODE
+	bool "DBDC MODE"
 	default n
 

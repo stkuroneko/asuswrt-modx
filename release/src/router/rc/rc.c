@@ -39,7 +39,7 @@ int check_wrs_switch()
 #include <lp5523led.h>
 #endif
 
-#include "merlinr.h"
+#include "swrt.h"
 
 #ifndef ARRAYSIZE
 #define ARRAYSIZE(a) (sizeof(a) / sizeof(a[0]))
@@ -926,7 +926,7 @@ static const applets_t applets[] = {
 #ifdef RTCONFIG_ADTBW
 	{ "adtbw",			adtbw_main		},
 #endif
-	{ "toolbox",			merlinr_toolbox		},
+	{ "toolbox",			swrt_toolbox		},
 	{NULL, NULL}
 };
 
