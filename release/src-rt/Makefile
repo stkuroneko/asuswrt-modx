@@ -202,11 +202,7 @@ uppercase_B = $(shell echo $(BUILD_NAME) | tr a-z  A-Z)
 lowercase_B = $(shell echo $(BUILD_NAME) | tr A-Z a-z)
 BUILD_TIME := $(shell LC_ALL=C date -u)
 BUILD_USER ?= $(shell whoami)
-ifeq ($(BUILD_USER),paldier)
-BUILD_INFO := SWRTdev
-else
 BUILD_INFO := $(shell git log --pretty="%h" -n 1|sed -e "s,\([0-9a-z]\{7\}\)[0-9a-z]*,\1,")
-endif
 
 ifeq ($(CONFIG_LINUX26),y)
 mips_rev = $(if $(filter $(MIPS32),r2),MIPSR2,MIPSR1)
@@ -4040,7 +4036,7 @@ else
 		elif [ "$(BUILD_NAME)" = "RT-AC51U+" ] ||[ "$(BUILD_NAME)" = "RT-AC53" ]; then \
 			cp $(LINUXDIR)/ralink/Kconfig_$(lowercase_B) $(LINUXDIR)/ralink/Kconfig ; \
 			cp $(LINUXDIR)/config_base.MT7620 $(LINUXDIR)/config_$(lowercase_B) ; \
-		elif [ "$(BUILD_NAME)" = "RM-AC2100" ]; then \
+		elif [ "$(BUILD_NAME)" = "RM-AC2100" ] || [ "$(BUILD_NAME)" = "RT-RM2100" ] || [ "$(BUILD_NAME)" = "RT-R2100" ]; then \
 			cp $(LINUXDIR)/config_base_rmac2100 $(LINUXDIR)/config_$(lowercase_B) ; \
 		elif [ "$(BUILD_NAME)" = "RT-E8820S" ]; then \
 			cp $(LINUXDIR)/config_base_rte8820s $(LINUXDIR)/config_$(lowercase_B) ; \

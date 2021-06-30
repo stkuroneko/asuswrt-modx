@@ -385,7 +385,7 @@ typedef enum _RT_802_11_PHY_MODE {
 #endif
 #if defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTN56UB2) || defined(RTAC1200GA1) || defined(RTAC1200GU)
 #define OFFSET_FIX_CHANNEL      0x40170
-#elif defined(RTAC85U) || defined(RTAC85P) || defined(RTN800HP) || defined(RTACRH26) || defined(TUFAC1750) || defined(RMAC2100) || defined(RTRM2100) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTXYC3) || defined(RTNEWIFI3)  || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ)
+#elif defined(RTAC85U) || defined(RTAC85P) || defined(RTN800HP) || defined(RTACRH26) || defined(TUFAC1750) || defined(RMAC2100) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTXYC3) || defined(RTNEWIFI3)  || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ)
 #define OFFSET_BR_STP      0x4ff7e	// 1 bytes
 #endif
 
