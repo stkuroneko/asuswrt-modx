@@ -4814,7 +4814,7 @@ int mtk_nand_probe()
     }
 #endif
 
-#if defined(CONFIG_MODEL_RMAC2100) || defined(CONFIG_MODEL_RTMIR3G) || defined(CONFIG_MODEL_RTRM2100) || defined(CONFIG_MODEL_RTR2100)
+#if defined(CONFIG_MODEL_RMAC2100)
 #if defined (__KERNEL_NAND__)
     MSG(INIT, "[mtk_nand] Line = %d!\n", __LINE__);
 
@@ -5073,7 +5073,7 @@ int mtk_nand_probe()
 // HIWIFI4
 
 // MIR3P
-#if defined(CONFIG_MODEL_RTMIR3P)
+#if defined(CONFIG_MODEL_RTMIR3P) || defined(CONFIG_MODEL_RTMIR3G) || defined(CONFIG_MODEL_RTRM2100) || defined(CONFIG_MODEL_RTR2100)
         offs = 0x200000;
 #endif 
 // MIR3P
@@ -5104,7 +5104,7 @@ int mtk_nand_probe()
         if (rfs_offset != 0) {
             MSG(INIT, "[mtk_nand] Line = %d!\n", __LINE__);
 // HIWIFI4
-#if defined(CONFIG_MODEL_RTHIWIFI4) || defined(CONFIG_MODEL_RTE8820S) || defined(CONFIG_MODEL_RTA040WQ) || defined(CONFIG_MODEL_RTMIR3P)
+#if defined(CONFIG_MODEL_RTHIWIFI4) || defined(CONFIG_MODEL_RTE8820S) || defined(CONFIG_MODEL_RTA040WQ) || defined(CONFIG_MODEL_RTMIR3P) || defined(CONFIG_MODEL_RTMIR3G) || defined(CONFIG_MODEL_RTRM2100) || defined(CONFIG_MODEL_RTR2100)
             g_pasStatic_Partition[4 + shift].offset = offs + trx_firmware_size;
             g_pasStatic_Partition[5 + shift].offset = offs + trx_firmware_size + rfs_offset;
             g_pasStatic_Partition[5 + shift].mask_flags |= MTD_WRITEABLE;
@@ -5149,6 +5149,17 @@ int mtk_nand_probe()
 	g_pasStatic_Partition[6].size = MTDPART_SIZ_FULL;
 #endif 
 // MIR3P
+
+// MIR3G
+#if defined(CONFIG_MODEL_RTMIR3G) || defined(CONFIG_MODEL_RTRM2100) || defined(CONFIG_MODEL_RTR2100)
+	g_pasStatic_Partition[1].offset = 0x80000;
+	g_pasStatic_Partition[2].offset = 0x100000;
+	g_pasStatic_Partition[3].offset = 0xc0000;
+	g_pasStatic_Partition[6].offset = g_pasStatic_Partition[4].offset + g_pasStatic_Partition[4].size ;
+	g_pasStatic_Partition[6].size = MTDPART_SIZ_FULL;
+#endif 
+// MIR3G
+
 	err = add_mtd_partitions(mtd, g_pasStatic_Partition, part_num);
 	//err = mtd_device_register(mtd, g_pasStatic_Partition, part_num);
 #endif

@@ -4036,7 +4036,7 @@ else
 		elif [ "$(BUILD_NAME)" = "RT-AC51U+" ] ||[ "$(BUILD_NAME)" = "RT-AC53" ]; then \
 			cp $(LINUXDIR)/ralink/Kconfig_$(lowercase_B) $(LINUXDIR)/ralink/Kconfig ; \
 			cp $(LINUXDIR)/config_base.MT7620 $(LINUXDIR)/config_$(lowercase_B) ; \
-		elif [ "$(BUILD_NAME)" = "RM-AC2100" ] || [ "$(BUILD_NAME)" = "RT-RM2100" ] || [ "$(BUILD_NAME)" = "RT-R2100" ]; then \
+		elif [ "$(BUILD_NAME)" = "RM-AC2100" ]; then \
 			cp $(LINUXDIR)/config_base_rmac2100 $(LINUXDIR)/config_$(lowercase_B) ; \
 		elif [ "$(BUILD_NAME)" = "RT-E8820S" ]; then \
 			cp $(LINUXDIR)/config_base_rte8820s $(LINUXDIR)/config_$(lowercase_B) ; \
@@ -4220,7 +4220,7 @@ endif
 		echo "RTCONFIG_WLMODULE_MT7628_AP=y" >> router/.config; \
 	fi
 
-	@if grep -q "CONFIG_CHIP_MT7615E=y" $(LINUXDIR)/.config ; then \
+	@if grep -q "CONFIG_MT_WIFI=m" $(LINUXDIR)/.config ; then \
 		sed -i "/RTCONFIG_WLMODULE_MT7615E_AP/d" router/.config; \
 		echo "RTCONFIG_WLMODULE_MT7615E_AP=y" >> router/.config; \
 	fi
