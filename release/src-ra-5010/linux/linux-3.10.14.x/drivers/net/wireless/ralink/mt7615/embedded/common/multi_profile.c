@@ -18,17 +18,17 @@
 #include "rt_config.h"
 
 /*Local definition*/
-#define FIRST_AP_2G_PROFILE_PATH	"/etc/Wireless/RT2860/RT2860.dat"
-#define FIRST_AP_5G_PROFILE_PATH	"/etc/Wireless/iNIC/iNIC_ap.dat"
+#define FIRST_AP_2G_PROFILE_PATH	"/etc/Wireless/RT2860/RT2860_2G.dat"
+#define FIRST_AP_5G_PROFILE_PATH	"/etc/Wireless/RT2860/RT2860_5G.dat"
 #define FIRST_AP_MERGE_PROFILE_PATH ""
 #if defined(BB_SOC) && !defined(MULTI_INF_SUPPORT)
 #define FIRST_AP_5G_DEVNAME "rai0"
 #define FIRST_MBSSID_5G_DEVNAME "rai"
 #define FIRST_APCLI_5G_DEVNAME "apclii"
 #else
-#define FIRST_AP_5G_DEVNAME "rai0"
-#define FIRST_MBSSID_5G_DEVNAME "rai"
-#define FIRST_APCLI_5G_DEVNAME "apclii"
+#define FIRST_AP_5G_DEVNAME "rax0"
+#define FIRST_MBSSID_5G_DEVNAME "rax"
+#define FIRST_APCLI_5G_DEVNAME "apclix"
 #endif
 #define SECOND_AP_2G_PROFILE_PATH	"/etc/Wireless/iNIC/iNIC_ap_2G.dat"
 #define SECOND_AP_5G_PROFILE_PATH	"/etc/Wireless/iNIC/iNIC_ap.dat"

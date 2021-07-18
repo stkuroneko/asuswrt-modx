@@ -3736,7 +3736,9 @@ NDIS_STATUS	RTMPSetProfileParameters(
 
 #ifdef CONFIG_AP_SUPPORT
 		/*AutoChannelSelect*/
+#ifdef DBDC_MODE
 		pAd->ApCfg.AutoChannelAlg = 3; //force using busytime ACS alg
+#endif
 		if (RTMPGetKeyParameter("AutoChannelSelect", tmpbuf, 10, pBuffer, TRUE)) {
 			
 			if (os_str_tol(tmpbuf, 0, 10) != 0) { /*Enable*/
@@ -3746,6 +3748,9 @@ NDIS_STATUS	RTMPSetProfileParameters(
 					pAd->ApCfg.bAutoChannelAtBootup = FALSE;
 				else { /*Enable*/
 					pAd->ApCfg.bAutoChannelAtBootup = TRUE;
+#ifndef DBDC_MODE
+					pAd->ApCfg.AutoChannelAlg = SelAlg;
+#endif
 				}
 			} else /*Disable*/
 				pAd->ApCfg.bAutoChannelAtBootup = FALSE;
@@ -3760,7 +3765,13 @@ NDIS_STATUS	RTMPSetProfileParameters(
 
 		/*Channel*/
 		/*Note: AutoChannelSelect must be put before Channel in dat file*/
-		if (RTMPGetKeyParameter("Channel", tmpbuf, 100, pBuffer, TRUE)) {
+		if (RTMPGetKeyParameter("Channel", tmpbuf, 100, pBuffer, TRUE)
+#ifndef DBDC_MODE
+#ifdef CONFIG_AP_SUPPORT
+			&& !pAd->ApCfg.bAutoChannelAtBootup
+#endif
+#endif
+			) {
 			RTMPChannelCfg(pAd, tmpbuf);
 		}
 

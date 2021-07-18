@@ -178,7 +178,7 @@ typedef struct usb_ctrlrequest devctrlrequest;
 
 
 #ifdef SINGLE_SKU_V2
-#define SINGLE_SKU_TABLE_FILE_NAME	"/ra_SKU/SingleSKU_2.4G.dat"
+#define SINGLE_SKU_TABLE_FILE_NAME	"/etc/Wireless/RT2860AP/SingleSKU.dat"
 #endif /* SINGLE_SKU_V2 */
 
 #endif /* CONFIG_AP_SUPPORT */

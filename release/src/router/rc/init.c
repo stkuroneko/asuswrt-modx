@@ -1503,9 +1503,6 @@ misc_defaults(int restore_defaults)
 		case MODEL_RTAC85U:
 		case MODEL_RTAC85P:
 		case MODEL_RTACRH26:
-#if defined(RMAC2100)
-		case MODEL_RMAC2100:
-#endif
 			nvram_set("reboot_time", "90");		// default is 70 sec
 			break;
 #endif
@@ -9407,7 +9404,7 @@ int init_nvram(void)
 	add_rc_support("vht80_80");
 #endif
 #if defined(RTCONFIG_VHT160)
-	add_rc_support("vht160");
+	// add_rc_support("vht160");
 #endif
 #ifdef RTCONFIG_BCMWL6
 	add_rc_support("wl6");
@@ -11024,6 +11021,7 @@ int init_main(int argc, char *argv[])
 #endif
 #endif
 	}
+
 #if defined(RTA040WQ)
                 restart_wireless();
 #endif

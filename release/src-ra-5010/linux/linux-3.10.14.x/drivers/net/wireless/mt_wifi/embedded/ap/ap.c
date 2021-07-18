@@ -245,6 +245,7 @@ UCHAR ApAutoChannelAtBootUp(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 #endif
 	UCHAR vht_bw = wlan_config_get_vht_bw(wdev);
 
+#ifdef DBDC_MODE
 	if (!wdev) {
 		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
 				 ("\x1b[41m %s(): wdev is NULL !!\x1b[m\n", __func__));
@@ -255,6 +256,11 @@ UCHAR ApAutoChannelAtBootUp(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s----------------->\n", __func__));
 	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s: AutoChannelBootup = %d, pAd: %p, ifname: %s, channel: %d\n",
 			 __func__, pAd->ApCfg.bAutoChannelAtBootup, pAd, pAd->net_dev->name, wdev->channel));
+#else
+	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s----------------->\n", __func__));
+	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s: AutoChannelBootup = %d\n",
+			 __func__, pAd->ApCfg.bAutoChannelAtBootup));
+#endif
 
 #ifdef DFS_VENDOR10_CUSTOM_FEATURE
 	if (IS_SUPPORT_V10_DFS(pAd) && (IS_V10_BOOTACS_INVALID(pAd) == FALSE) && (IS_V10_APINTF_DOWN(pAd) == FALSE)) {
@@ -272,6 +278,15 @@ UCHAR ApAutoChannelAtBootUp(RTMP_ADAPTER *pAd, struct wifi_dev *wdev)
 	if (!pAd->ApCfg.bAutoChannelAtBootup)
 #endif
 	{
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s<-----------------\n", __func__));
+		return FALSE;
+	}
+#endif
+
+#ifndef DBDC_MODE
+	if (!wdev) {
+		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+				 ("\x1b[41m %s(): wdev is NULL !!\x1b[m\n", __func__));
 		MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s<-----------------\n", __func__));
 		return FALSE;
 	}

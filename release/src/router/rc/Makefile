@@ -961,9 +961,9 @@ endif
 ifeq ($(RTCONFIG_TR069),y)
 	@cd $(INSTALLDIR)/sbin && ln -sf rc dhcpc_lease
 endif
-ifeq ($(SWRT_NAME), $(filter $(SWRT_NAME), SBRAC3200P RTAC85P RMAC2100))
+
 	@cd $(INSTALLDIR)/sbin && ln -sf rc dhcpc_lease
-endif
+
 
 ifeq ($(RTCONFIG_NEW_USER_LOW_RSSI),y)
 	@cd $(INSTALLDIR)/sbin && ln -sf rc roamast

@@ -4814,76 +4814,6 @@ int mtk_nand_probe()
     }
 #endif
 
-#if defined(CONFIG_MODEL_RMAC2100)
-#if defined (__KERNEL_NAND__)
-    MSG(INIT, "[mtk_nand] Line = %d!\n", __LINE__);
-
-    	int len = 0;
-
-	loff_t offs;
-	struct __image_header {
-		uint8_t unused[60];
-		uint32_t ih_ksz;
-	};
-
-	int j;
-	image_header_t hdr;
-	version_t *hw2 = &hdr.u.tail.hw[0];
-	uint32_t rfs_offset = 0;
-	union {
-		uint32_t rfs_offset_net_endian;
-		uint8_t p[4];
-	} u;
-    
-        offs = 0x200000;
-
-        len =  ranand_read((u_char *)(&hdr), offs, sizeof(hdr));
-   
-        /* Looking for rootfilesystem offset */
-        MSG(INIT, "[mtk_nand] start find root file system!\n");
-        u.rfs_offset_net_endian = 0;
-
-        for (j = 0; j < (MAX_VER*2); ++j, ++hw2) {
-            MSG(INIT, "[mtk_nand] Line = %d  hw2->major = %02x!\n", __LINE__,  hw2->major);                   
-
-            if (hw2->major != ROOTFS_OFFSET_MAGIC){
-                MSG(INIT, "[mtk_nand] Line = %d!\n", __LINE__);                   
-                continue;
-            }
-            MSG(INIT, "[mtk_nand] Line = %d!\n", __LINE__);        
-            u.p[1] = hw2->minor;
-            hw2++;
-            u.p[2] = hw2->major;
-            u.p[3] = hw2->minor;
-            MSG(INIT, "[mtk_nand] Line = %d!\n", __LINE__);        
-            rfs_offset = ntohl(u.rfs_offset_net_endian);
-            MSG(INIT, "[mtk_nand] Line = %d rfs_offset = %08X!\n", __LINE__, rfs_offset);
-        }
-    
-        if (rfs_offset != 0) {
-            MSG(INIT, "[mtk_nand] Line = %d!\n", __LINE__);
-    	    g_pasStatic_Partition[4].offset = 0x200000;
-            g_pasStatic_Partition[5].offset = 0x200000 + rfs_offset;
-            g_pasStatic_Partition[5].mask_flags |= MTD_WRITEABLE;
-            g_pasStatic_Partition[7].offset = 0x200000 + rfs_offset;
-            g_pasStatic_Partition[7].mask_flags |= MTD_WRITEABLE;
-            g_pasStatic_Partition[10].offset = 0x200000 + rfs_offset;
-            g_pasStatic_Partition[10].mask_flags |= MTD_WRITEABLE;
-       
-            MSG(INIT, "[mtk_nand] Line = %d!\n", __LINE__);
-            g_pasStatic_Partition[4].size = 0x2800000;
-            g_pasStatic_Partition[5].size = 0x2800000 - rfs_offset;
-            g_pasStatic_Partition[7].size = 0x2800000 - rfs_offset;
-            g_pasStatic_Partition[10].size = 0x2800000 - rfs_offset;
-
-            MSG(INIT, "[mtk_nand] Line = %d!\n", __LINE__);
-            MSG(INIT, "partition %d: %x %x\n", 4, (unsigned int)g_pasStatic_Partition[4].offset, (unsigned int)g_pasStatic_Partition[4].size);
-            MSG(INIT, "partition %d: %x %x\n", 5, (unsigned int)g_pasStatic_Partition[5].offset, (unsigned int)g_pasStatic_Partition[5].size);
-        }
-        MSG(INIT, "[mtk_nand] end find root file system!\n");
-	err = add_mtd_partitions(mtd, g_pasStatic_Partition, part_num);
-#endif
-#else
 #ifdef PMT
     nand_chip->chipsize -= (PMT_POOL_SIZE) << nand_chip->phys_erase_shift;
     mtd->size = nand_chip->chipsize;	
@@ -5162,7 +5092,6 @@ int mtk_nand_probe()
 
 	err = add_mtd_partitions(mtd, g_pasStatic_Partition, part_num);
 	//err = mtd_device_register(mtd, g_pasStatic_Partition, part_num);
-#endif
 #endif
 #endif
 
