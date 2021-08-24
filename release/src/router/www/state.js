@@ -488,7 +488,7 @@ function isSupport(_ptn){
 
 		if(( based_modelid == "BRT-AC828" || based_modelid == "GT-AC5300" || based_modelid == "GT-AC9600" || based_modelid == "RT-AC5300" || based_modelid == "RT-AC3200" || based_modelid == "RT-AC3100" || 
 			based_modelid == "RT-AC88U" || based_modelid == "RT-AC87U" || based_modelid == "RT-AC86U" || based_modelid == "AC2900" || based_modelid == "RT-AC85U" || based_modelid == "RT-MIR3G" || based_modelid == "RT-MIR3P" || based_modelid == "RT-MIR4A" || based_modelid == "RT-RM2100" || based_modelid == "RT-R2100" ||
-			based_modelid == "RT-NEWIFI2" ||based_modelid == "RT-XYC3" ||based_modelid == "RT-NEWIFI3" || based_modelid == "RT-HIWIFI4" || based_modelid == "RT-A040WQ" ||
+			based_modelid == "RT-NEWIFI2" ||based_modelid == "RT-XYC3" ||based_modelid == "RT-NEWIFI3" || based_modelid == "RT-HIWIFI4" || based_modelid == "RT-A040WQ" || based_modelid == "RT-MSG1500" ||
 			based_modelid == "RT-AC65U" || based_modelid == "RT-AC85P" || based_modelid == "4G-AC68U" || based_modelid == "DSL-AC68U" || based_modelid == "RT-AC68U" || based_modelid == "RT-AC68R" || 
 			based_modelid == "RT-AC68W" || based_modelid == "RT-AC68RW" || based_modelid == "RT-AC1900P" || 
 			based_modelid == "RT-AC67U" || based_modelid == "RT-AC56U" || based_modelid == "RT-AC56R" || based_modelid == "BLUECAVE" ||
@@ -1360,7 +1360,7 @@ function showMenuTree(menuList, menuExclude){
 						menu_code += '" id="';
 						menu_code += curMenu.tab[firstEntry].url.split(".")[0];
 						menu_code += '_menu"><table><tr><td><div class="menu_Icon ';
-						if((based_modelid == "RT-AC85U" || based_modelid == "RT-AC85P" || based_modelid == "RM-AC2100" || based_modelid == "RT-MIR3G" || based_modelid == "RT-MIR3P" || based_modelid == "RT-MIR4A" || based_modelid == "RT-RM2100" || based_modelid == "RT-R2100" ||based_modelid == "RT-NEWIFI2" ||based_modelid == "RT-NEWIFI3" || based_modelid == "RT-HIWIFI4" || based_modelid == "RT-A040WQ" ) && curMenu.index == 'menu_QoS')	//MODELDEP : RT-AC85U change icon
+						if((based_modelid == "RT-AC85U" || based_modelid == "RT-AC85P" || based_modelid == "RM-AC2100" || based_modelid == "RT-MIR3G" || based_modelid == "RT-MIR3P" || based_modelid == "RT-MIR4A" || based_modelid == "RT-RM2100" || based_modelid == "RT-R2100" ||based_modelid == "RT-NEWIFI2" ||based_modelid == "RT-NEWIFI3" || based_modelid == "RT-HIWIFI4" || based_modelid == "RT-A040WQ" || based_modelid == "RT-MSG1500" ) && curMenu.index == 'menu_QoS')	//MODELDEP : RT-AC85U change icon
 							menu_code += 'menu_BandwidthMonitor';
 						else
 							menu_code += curMenu.index;
@@ -2615,7 +2615,7 @@ function refreshStatus(xhr){
 		document.getElementById("bwdpi_status").onmouseover = function(){overHint("A");}
 		document.getElementById("bwdpi_status").onmouseout = function(){nd();}
 		
-		if(based_modelid == "RT-AC85U" || based_modelid == "RT-AC85P"  || based_modelid == "RT-AC68A" || based_modelid == "RT-AC65U" || based_modelid == "RM-AC2100" ||  based_modelid == "RT-MIR3G" || based_modelid == "RT-MIR3P" || based_modelid == "RT-MIR4A" || based_modelid == "RT-RM2100" || based_modelid == "RT-R2100" ||based_modelid == "RT-NEWIFI2" ||based_modelid == "RT-XYC3" ||based_modelid == "RT-NEWIFI3" || based_modelid == "RT-HIWIFI4" || based_modelid == "RT-A040WQ" ){	//MODELDEP : Spec special fine tune
+		if(based_modelid == "RT-AC85U" || based_modelid == "RT-AC85P"  || based_modelid == "RT-AC68A" || based_modelid == "RT-AC65U" || based_modelid == "RM-AC2100" ||  based_modelid == "RT-MIR3G" || based_modelid == "RT-MIR3P" || based_modelid == "RT-MIR4A" || based_modelid == "RT-RM2100" || based_modelid == "RT-R2100" ||based_modelid == "RT-NEWIFI2" ||based_modelid == "RT-XYC3" ||based_modelid == "RT-NEWIFI3" || based_modelid == "RT-HIWIFI4" || based_modelid == "RT-A040WQ" || based_modelid == "RT-MSG1500" ){	//MODELDEP : Spec special fine tune
 			document.getElementById("bwdpi_status").style.display = "none";
 		}	
 	}

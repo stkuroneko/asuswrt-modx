@@ -75,4 +75,8 @@ config  MODEL_RTA040WQ
 	bool "RT-A040WQ"
 	default n
 
+config  MODEL_RTMSG1500
+	bool "RT-MSG1500"
+	default n
+
 endmenu

@@ -201,7 +201,7 @@ function initial(){
 	}
 
 	/* MODELDEP */
-	if(based_modelid == "AC2900" || based_modelid == "RT-MIR3G" || based_modelid == "RT-MIR3P" || based_modelid == "RT-MIR4A" || based_modelid == "RT-RM2100" || based_modelid == "RT-R2100" || based_modelid == "RT-NEWIFI2" || based_modelid == "RT-XYC3" || based_modelid == "RT-NEWIFI3" || based_modelid == "RT-HIWIFI4" || based_modelid == "RT-E8820S" || based_modelid == "RT-A040WQ"){	//MODELDEP: AC2900(RT-AC86U)
+	if(based_modelid == "AC2900" || based_modelid == "RT-MIR3G" || based_modelid == "RT-MIR3P" || based_modelid == "RT-MIR4A" || based_modelid == "RT-RM2100" || based_modelid == "RT-R2100" || based_modelid == "RT-NEWIFI2" || based_modelid == "RT-XYC3" || based_modelid == "RT-NEWIFI3" || based_modelid == "RT-HIWIFI4" || based_modelid == "RT-E8820S" || based_modelid == "RT-A040WQ" || based_modelid == "RT-MSG1500"){	//MODELDEP: AC2900(RT-AC86U)
 		document.form.btn_ez_radiotoggle[0].disabled = true;
 		document.form.btn_ez_radiotoggle[1].disabled = true;
 		document.form.btn_ez_radiotoggle[2].disabled = true;

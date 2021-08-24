@@ -2833,7 +2833,7 @@ void btn_check(void)
 			if (LED_status_on) {
 				TRACE_PT("LED turn to normal\n");
 				led_control(LED_POWER, LED_ON);
-#if defined(RTAC65U) || defined(RTAC85U) || defined(RTAC85P) || defined(RTN800HP) || defined(RTACRH26) || defined(RMAC2100) || defined(RTA040WQ)
+#if defined(RTAC65U) || defined(RTAC85U) || defined(RTAC85P) || defined(RTN800HP) || defined(RTACRH26) || defined(RMAC2100) || defined(RTA040WQ) || defined(RTMSG1500)
 			if (nvram_match("wl0_radio", "1")) {
 				led_control(LED_2G, LED_ON);
 			}
@@ -7229,7 +7229,7 @@ wdp:
 	auto_firmware_check();
 #endif
 #ifdef RTCONFIG_BWDPI
-#if !defined(RTMIR3G) && !defined(RTMIR3P) && !defined(RTMIR4A) && !defined(RTRM2100) && !defined(RTR2100) && !defined(RTNEWIFI2) && !defined(RTXYC3) && !defined(RTNEWIFI3) && !defined(RTHIWIFI4) && !defined(RTE8820S) && !defined(RTA040WQ)
+#if !defined(RTMIR3G) && !defined(RTMIR3P) && !defined(RTMIR4A) && !defined(RTRM2100) && !defined(RTR2100) && !defined(RTNEWIFI2) && !defined(RTXYC3) && !defined(RTNEWIFI3) && !defined(RTHIWIFI4) && !defined(RTE8820S) && !defined(RTA040WQ) && !defined(RTMSG1500)
 	auto_sig_check();		// libbwdpi.so
 	web_history_save();		// libbwdpi.so
 	AiProtectionMonitor_mail_log();	// libbwdpi.so

@@ -1816,3 +1816,7 @@ config RTCONFIG_DBDC_MODE
 	bool "DBDC MODE"
 	default n
 
+config RTCONFIG_SWRT_FULLCONE
+	bool "RTCONFIG_SWRT_FULLCONE"
+	default n
+
