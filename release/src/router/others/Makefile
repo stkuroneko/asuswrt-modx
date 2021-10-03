@@ -13,6 +13,10 @@ ifeq ($(TCONFIG_USB),y)
 	ln -sf /opt/bin/perl $(INSTALLDIR)/usr/bin/perl
 endif
 
+ifeq ($(RTCONFIG_ENTWARE),y)
+	install -m 0755 entware.sh $(INSTALLDIR)/usr/sbin
+endif
+
 # cron helper
 	install -m 0700 cru $(INSTALLDIR)/usr/sbin
 

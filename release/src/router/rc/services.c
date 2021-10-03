@@ -1147,11 +1147,6 @@ void start_dnsmasq(void)
 			}
 		}
 #endif
-#if defined(RTCONFIG_SOFTCENTER)
-//anti dns hijacking
-		fprintf(fp, "121.40.153.145 wufan.softcenter.site\n");
-		fprintf(fp, "123.56.45.194 sc.softcenter.site\n");
-#endif
 		fclose(fp);
 	} else
 		perror("/etc/hosts");
@@ -1663,7 +1658,7 @@ int dnsmasq_script_main(int argc, char **argv)
 {
 #if defined(RTCONFIG_SOFTCENTER)
 	if(nvram_get("sc_dhcp_script"))
-		doSystem("/jffs/softcenter/scripts/%s",nvram_get("sc_dhcp_script"));
+		doSystem("/jffs/softcenter/scripts/%s &",nvram_get("sc_dhcp_script"));
 #endif
 	return 0;
 }
@@ -4136,6 +4131,7 @@ start_smartdns(void)
 	fprintf(fp, "server-name SWRT-smartdns\n");
 	fprintf(fp, "conf-file /etc/blacklist-ip.conf\n");
 	fprintf(fp, "conf-file /etc/whitelist-ip.conf\n");
+	fprintf(fp, "conf-file /etc/seconddns.conf\n");
 	//fprintf(fp, "conf-file /etc/seconddns.conf\n");
 	fprintf(fp, "bind [::]:9053 -group master\n");
 	//fprintf(fp, "bind-tcp [::]:5353\n");
@@ -7787,8 +7783,13 @@ start_services(void)
 	start_dblog(0);
 #endif /* RTCONFIG_DBLOG */
 #endif /* RTCONFIG_FRS_FEEDBACK */
+#if defined(RTCONFIG_ENTWARE)
+	init_entware();
+#endif
 	run_custom_script("services-start", 0, NULL, NULL);
-	nvram_set_int("sc_services_sig", 1);
+#if defined(RTCONFIG_SOFTCENTER)
+	nvram_set_int("sc_services_start_sig", 1);
+#endif
 	return 0;
 }
 
@@ -7805,8 +7806,11 @@ void
 stop_services(void)
 {
 	run_custom_script("services-stop", 0, NULL, NULL);
-#ifdef RTCONFIG_SOFTCENTER
-	stop_skipd();
+#if defined(RTCONFIG_SOFTCENTER)
+	nvram_set_int("sc_services_stop_sig", 1);
+#endif
+#if defined(RTCONFIG_ENTWARE)
+	nvram_set_int("entware_stop_sig", 1);
 #endif
 #ifdef RTCONFIG_ADTBW
 	stop_adtbw();
@@ -7955,6 +7959,9 @@ stop_services(void)
 	stop_telnetd();
 #ifdef RTCONFIG_SSH
 	stop_sshd();
+#endif
+#ifdef RTCONFIG_SOFTCENTER
+	stop_skipd();
 #endif
 #ifdef RTCONFIG_PROTECTION_SERVER
 	stop_ptcsrv();
@@ -9362,20 +9369,12 @@ again:
 		}
 	}
 	else if(strcmp(script, "upgrade") == 0) {
-//we must make sure that usb can umount and do not start skipd again
-//don't delete scripts in init.d
-#if defined(RTCONFIG_SOFTCENTER)
-//#if defined(RTCONFIG_LANTIQ) || defined(RTCONFIG_BCMARM) || defined(RTCONFIG_QCA) || defined(RTCONFIG_RALINK)
-//		doSystem("/usr/sbin/plugin.sh stop");
-//#endif
-#endif
 		if(action&RC_SERVICE_STOP) {
 			g_upgrade = 1;
 #ifdef RTCONFIG_WIRELESSREPEATER
 			if(sw_mode() == SW_MODE_REPEATER)
 			stop_wlcconnect();
 #endif
-
 			stop_hour_monitor_service();
 #if defined(RTCONFIG_USB_MODEM) && (defined(RTCONFIG_JFFS2) || defined(RTCONFIG_BRCM_NAND_JFFS2) || defined(RTCONFIG_UBIFS))
 			_dprintf("modem data: save the data during upgrading\n");
@@ -10975,6 +10974,13 @@ check_ddr_done:
 	{
 		if(action & RC_SERVICE_STOP) stop_uu();
 		if(action & RC_SERVICE_START) start_uu();
+	}
+#endif
+#if defined(RTCONFIG_ENTWARE)
+	else if (strcmp(script, "entware") == 0)
+	{
+		if (action & RC_SERVICE_STOP) stop_entware();
+		if (action & RC_SERVICE_START) start_entware();
 	}
 #endif
 #if defined(RTCONFIG_USB) && defined(RTCONFIG_USB_PRINTER)

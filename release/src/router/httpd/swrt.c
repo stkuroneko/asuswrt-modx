@@ -14,7 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307 USA
  *
- * Copyright 2018-2020, paldier <paldier@hotmail.com>.
+ * Copyright 2018-2021, paldier <paldier@hotmail.com>.
  * All Rights Reserved.
  * 
  */

@@ -1820,3 +1820,6 @@ config RTCONFIG_SWRT_FULLCONE
 	bool "RTCONFIG_SWRT_FULLCONE"
 	default n
 
+config RTCONFIG_ENTWARE
+	bool "install entware"
+	default n

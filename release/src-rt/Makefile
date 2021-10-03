@@ -2651,6 +2651,10 @@ define RouterOptions
 	sed -i "/RTCONFIG_SWRT_FULLCONE/d" $(1); \
 	echo "RTCONFIG_SWRT_FULLCONE=y" >>$(1); \
 	fi; \
+	if [ "$(ENTWARE)" = "y" ]; then \
+	sed -i "/RTCONFIG_ENTWARE/d" $(1); \
+	echo "RTCONFIG_ENTWARE=y" >>$(1); \
+	fi; \
 	)
 	$(call platformRouterOptions, $(1))
 endef

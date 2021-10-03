@@ -36,13 +36,19 @@ enum {
 	SOFTCENTER_WAN=1,
 	SOFTCENTER_NAT,
 	SOFTCENTER_MOUNT,
-	SOFTCENTER_SERVICES,
+	SOFTCENTER_SERVICES_START,
+	SOFTCENTER_SERVICES_STOP,
 	SOFTCENTER_UNMOUNT
 };
 extern void softcenter_eval(int sig);
 #endif
 #if defined(RMAC2100)
 extern void patch_Factory(void);
+#endif
+#if defined(RTCONFIG_ENTWARE)
+extern void start_entware(void);
+extern void stop_entware(void);
+extern void init_entware(void);
 #endif
 #endif
 
