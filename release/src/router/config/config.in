@@ -1796,6 +1796,14 @@ config RTCONFIG_CAPTCHA
 	bool "Web UI supports captcha"
 	default n
 
+config RTCONFIG_SOCAT
+	bool "socat"
+	default n
+
+config RTCONFIG_DBDC_MODE
+	bool "DBDC MODE"
+	default n
+
 config RTCONFIG_SOFTCENTER
 	bool "softcenter"
 	default n
@@ -1808,15 +1816,10 @@ config RTCONFIG_SWRT
 	bool "RTCONFIG_SWRT"
 	default n
 
-config RTCONFIG_SOCAT
-	bool "socat"
-	default n
-
-config RTCONFIG_DBDC_MODE
-	bool "DBDC MODE"
-	default n
-
 config RTCONFIG_SWRT_FULLCONE
 	bool "RTCONFIG_SWRT_FULLCONE"
 	default n
 
+config RTCONFIG_ENTWARE
+	bool "install entware"
+	default n

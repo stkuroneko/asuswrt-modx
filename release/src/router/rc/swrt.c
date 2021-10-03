@@ -68,7 +68,12 @@ void swrt_init()
 	nvram_set("sc_nat_sig", "0");
 	nvram_set("sc_mount_sig", "0");
 	nvram_set("sc_unmount_sig", "0");
-	nvram_set("sc_services_sig", "0");	
+	nvram_set("sc_services_start_sig", "0");
+	nvram_set("sc_services_stop_sig", "0");	
+#endif
+#if defined(RTCONFIG_ENTWARE)
+	nvram_set("entware_wan_sig", "0");
+	nvram_set("entware_stop_sig", "0");
 #endif
 	swrt_insmod();
 }
@@ -546,10 +551,17 @@ void softcenter_eval(int sig)
 	} else if (SOFTCENTER_MOUNT == sig){
 		snprintf(path, sizeof(path), "%s/softcenter-mount.sh", sc);
 		snprintf(action, sizeof(action), "start");
-	} else if (SOFTCENTER_SERVICES == sig){
+	} else if (SOFTCENTER_SERVICES_START == sig){
 		snprintf(path, sizeof(path), "%s/softcenter-services.sh", sc);
 		snprintf(action, sizeof(action), "start");
-	//enable it after 1.3.0
+	} else if (SOFTCENTER_SERVICES_STOP == sig){//only reboot
+		char *eval_argv[] = { "/jffs/softcenter/bin/softcenter-mount.sh", "stop", NULL };
+		_eval(eval_argv, NULL, 0, &pid);
+		eval_argv[0] = "/jffs/softcenter/bin/softcenter-services.sh";
+		_eval(eval_argv, NULL, 0, &pid);
+		eval_argv[0] = "/jffs/softcenter/bin/softcenter-wan.sh";
+		_eval(eval_argv, NULL, 0, &pid);
+		return;
 	//} else if (SOFTCENTER_UNMOUNT == sig){
 	//	snprintf(path, sizeof(path), "%s/softcenter-unmount.sh", sc);
 	//	snprintf(action, sizeof(action), "unmount");
@@ -602,3 +614,125 @@ swrt_toolbox(int argc, char **argv)
 	return 0;
 }
 
+#if defined(RTCONFIG_ENTWARE)
+void stop_entware(void)
+{
+	nvram_set_int("entware_busy", 0);
+	nvram_unset("entware_app");
+	nvram_unset("entware_action");
+	nvram_unset("entware_arg");
+}
+
+void init_entware(void)
+{
+	if(strlen(nvram_get("apps_mounted_path"))){
+		logmessage("[Entware]", "Downloadmaster/Aicloud is installed already! Entware can't install!\n");
+		return;
+	}
+	if(nvram_get_int("entware_mount") == 0)
+		return;
+	/* /opt->/tmp/opt->/jffs/opt->/tmp/mnt/sda/opt */
+	unlink("/tmp/opt");
+	symlink("/jffs/opt", "/tmp/opt");
+#if defined(RTCONFIG_LANTIQ)
+	doSystem("mount --bind /tmp/opt /opt");
+#endif
+	stop_entware();
+}
+
+#define ENTWARE_ACT_INSTALL		1
+#define ENTWARE_ACT_UPDATE		2
+#define ENTWARE_ACT_REMOVE		4
+#define ENTWARE_ACT_START		8
+#define ENTWARE_ACT_STOP		16
+#define	ENTWARE_ACT_MASK (ENTWARE_ACT_INSTALL | ENTWARE_ACT_UPDATE | ENTWARE_ACT_REMOVE)
+#define	ENTWARE_ACT_MASK2 (ENTWARE_ACT_START | ENTWARE_ACT_STOP)
+
+void start_entware(void)
+{
+	char *ent_app, *ent_arg;
+	int ent_action;
+	char cmd[128], app[32];
+	
+	if (nvram_get_int("entware_busy") != 1)
+		return;
+	
+	nvram_set_int("entware_busy", 2);
+	ent_action = nvram_get_int("entware_action");
+	ent_app = nvram_safe_get("entware_app");
+	ent_arg = nvram_safe_get("entware_arg");
+	
+	if (strcmp(ent_app, "entware") == 0)
+	{
+		if (ent_action & ENTWARE_ACT_INSTALL)
+		{
+			snprintf(cmd, sizeof(cmd), "wget http://bin.entware.net/%s/installer/%s.sh -O /tmp/doentware.sh", nvram_get("entware_arch"), ent_arg);
+			system(cmd);
+			system("chmod +x /tmp/doentware.sh");
+			system("/tmp/doentware.sh");
+			nvram_set("entware_installed", "1");
+		}
+		else if (ent_action & ENTWARE_ACT_UPDATE)
+		{
+			system("/opt/bin/opkg update");
+			system("/opt/bin/opkg upgrade");
+		}
+		else
+		{
+			logmessage("[Entware]", "Unregistered action\n");
+		}
+	}
+	else if (ent_action & ENTWARE_ACT_MASK2)
+	{
+		snprintf(app, sizeof(app), "/opt/etc/init.d/%s", ent_app);
+		if (f_exists(app))
+		{
+			if (ent_action & ENTWARE_ACT_STOP)
+			{
+				snprintf(cmd, sizeof(cmd), "%s stop", app);
+				system(cmd);
+			}
+			if (ent_action & ENTWARE_ACT_START)
+			{
+				snprintf(cmd, sizeof(cmd), "%s start", app);
+				system(cmd);
+			}
+		}
+		else
+		{
+			logmessage("[Entware]", "Nonexistent service\n");
+		}
+	}
+	else if (ent_action & ENTWARE_ACT_MASK)
+	{
+		if (ent_app)
+		{
+			if (ent_action & ENTWARE_ACT_REMOVE)
+			{
+				snprintf(cmd, sizeof(cmd), "/opt/bin/opkg %s remove %s", ent_arg, ent_app);
+				system(cmd);
+			}
+			if (ent_action & ENTWARE_ACT_UPDATE)
+			{
+				system("/opt/bin/opkg update");
+				snprintf(cmd, sizeof(cmd), "/opt/bin/opkg %s upgrade %s", ent_arg, ent_app);
+				system(cmd);
+			}
+			if (ent_action & ENTWARE_ACT_INSTALL)
+			{
+				system("/opt/bin/opkg update");
+				snprintf(cmd, sizeof(cmd), "/opt/bin/opkg %s install %s", ent_arg, ent_app);
+				system(cmd);
+			}
+		}
+	}
+	else
+	{
+		logmessage("[Entware]", "Nonexistent app and Unregistered action\n");
+	}
+	nvram_set_int("entware_busy", 0);
+	nvram_unset("entware_app");
+	nvram_unset("entware_action");
+	nvram_unset("entware_arg");
+}
+#endif

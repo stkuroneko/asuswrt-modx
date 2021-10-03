@@ -2627,6 +2627,14 @@ define RouterOptions
 		sed -i "/RTCONFIG_UUPLUGIN/d" $(1); \
 		echo "RTCONFIG_UUPLUGIN=y" >>$(1); \
 	fi; \
+	if [ "$(SOCAT)" = "y" ]; then \
+	sed -i "/RTCONFIG_SOCAT/d" $(1); \
+	echo "RTCONFIG_SOCAT=y" >>$(1); \
+	fi; \
+	if [ "$(DBDC_MODE)" = "y" ]; then \
+	sed -i "/RTCONFIG_DBDC_MODE/d" $(1); \
+	echo "RTCONFIG_DBDC_MODE=y" >>$(1); \
+	fi; \
 	if [ "$(SOFTCENTER)" = "y" ]; then \
 	sed -i "/RTCONFIG_SOFTCENTER/d" $(1); \
 	echo "RTCONFIG_SOFTCENTER=y" >>$(1); \
@@ -2639,17 +2647,13 @@ define RouterOptions
 	sed -i "/RTCONFIG_SWRT/d" $(1); \
 	echo "RTCONFIG_SWRT=y" >>$(1); \
 	fi; \
-	if [ "$(SOCAT)" = "y" ]; then \
-	sed -i "/RTCONFIG_SOCAT/d" $(1); \
-	echo "RTCONFIG_SOCAT=y" >>$(1); \
-	fi; \
-	if [ "$(DBDC_MODE)" = "y" ]; then \
-	sed -i "/RTCONFIG_DBDC_MODE/d" $(1); \
-	echo "RTCONFIG_DBDC_MODE=y" >>$(1); \
-	fi; \
 	if [ "$(SWRT_FULLCONE)" = "y" ]; then \
 	sed -i "/RTCONFIG_SWRT_FULLCONE/d" $(1); \
 	echo "RTCONFIG_SWRT_FULLCONE=y" >>$(1); \
+	fi; \
+	if [ "$(ENTWARE)" = "y" ]; then \
+	sed -i "/RTCONFIG_ENTWARE/d" $(1); \
+	echo "RTCONFIG_ENTWARE=y" >>$(1); \
 	fi; \
 	)
 	$(call platformRouterOptions, $(1))

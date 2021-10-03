@@ -236,7 +236,14 @@ int get_channel_list_via_driver(int unit, char *buffer, int len)
 	memset(&wrq, 0, sizeof(wrq));
 	wrq.u.data.pointer = buffer;
 	wrq.u.data.length  = len;
+#if defined(RTA040WQ) || defined(RTMSG1500)
+if(unit)
+	wrq.u.data.flags   = ASUS_SUBCMD_CHLIST2;
+	else
 	wrq.u.data.flags   = ASUS_SUBCMD_CHLIST;
+#else
+	wrq.u.data.flags   = ASUS_SUBCMD_CHLIST;
+#endif
 	if (wl_ioctl(ifname, RTPRIV_IOCTL_ASUSCMD, &wrq) < 0)
 		return -1;
 

@@ -16500,6 +16500,26 @@ INT RTMP_AP_IoctlHandle(
 			//Channel[wrq->u.data.length] = '\0';
 			if (copy_to_user(wrq->u.data.pointer, Channel, wrq->u.data.length))
 				Status = -EFAULT;
+#ifdef DBDC_MODE
+		} else if ( subcmd == ASUS_SUBCMD_CHLIST2) {
+			UCHAR BandIdx = 1, ChIdx;
+			CHANNEL_CTRL *pChCtrl;
+			RTMP_STRING Channel[256], Tmp[4];
+			memset(Channel, 0, 256);
+			pChCtrl = hc_get_channel_ctrl(pAd->hdev_ctrl, BandIdx);
+			if (pChCtrl->ChListNum > 0) {
+				for (ChIdx = 0; ChIdx < pChCtrl->ChListNum; ChIdx++) {
+					if(ChIdx > 0)
+						strcat(Channel,",");
+					snprintf(Tmp, sizeof(Tmp), "%d", pChCtrl->ChList[ChIdx].Channel);
+					strcat(Channel,Tmp);
+				}
+			}
+			wrq->u.data.length = strlen(Channel);
+			//Channel[wrq->u.data.length] = '\0';
+			if (copy_to_user(wrq->u.data.pointer, Channel, wrq->u.data.length))
+				Status = -EFAULT;
+#endif
 		} else if ( subcmd == ASUS_SUBCMD_DRIVERVER ) {
 			RTMP_STRING driverVersion[16];
 			wrq->u.data.length = strlen(AP_DRIVER_VERSION);
