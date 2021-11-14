@@ -531,7 +531,7 @@ ifeq ($(CONFIG_RALINK),y)
 	PAD2=`expr $${ISIZE} - $${KSIZE} - $${RSIZE}` ; \
 	RFSOFFSET=`expr 64 + $${KSIZE} + $${PAD2}` ; \
 	echo "PAD2: $${PAD2}" ; \
-	if [ "$(BUILD_NAME)" = "RT-N56UB1" ] || [ "$(BUILD_NAME)" = "RT-N56UB2" ] || [ "$(BUILD_NAME)" = "RT-AC1200GA1" ] || [ "$(BUILD_NAME)" = "RT-AC1200GU" ] || [ "$(BUILD_NAME)" = "RP-AC56" ] || [ "$(BUILD_NAME)" = "RP-AC87" ] || [ "$(BUILD_NAME)" = "RT-AC85U" ] || [ "$(BUILD_NAME)" = "RT-AC85P" ] || [ "$(BUILD_NAME)" = "RT-AC65U" ] || [ "$(BUILD_NAME)" = "RT-N800HP" ] || [ "$(BUILD_NAME)" = "RT-ACRH26" ] || [ "$(BUILD_NAME)" = "RT-MIR3G" ] || [ "$(BUILD_NAME)" = "RT-MIR3P" ] || [ "$(BUILD_NAME)" = "RT-MIR4A" ] || [ "$(BUILD_NAME)" = "RT-RM2100" ] || [ "$(BUILD_NAME)" = "RT-R2100" ] || [ "$(BUILD_NAME)" = "RT-NEWIFI2" ]|| [ "$(BUILD_NAME)" = "RT-XYC3" ] || [ "$(BUILD_NAME)" = "RT-NEWIFI3" ] || [ "$(BUILD_NAME)" = "RT-HIWIFI4" ] || [ "$(BUILD_NAME)" = "RT-E8820S" ] || [ "$(BUILD_NAME)" = "RT-A040WQ" ] || [ "$(BUILD_NAME)" = "RT-MSG1500" ]; then \
+	if [ "$(BUILD_NAME)" = "RT-N56UB1" ] || [ "$(BUILD_NAME)" = "RT-N56UB2" ] || [ "$(BUILD_NAME)" = "RT-AC1200GA1" ] || [ "$(BUILD_NAME)" = "RT-AC1200GU" ] || [ "$(BUILD_NAME)" = "RP-AC56" ] || [ "$(BUILD_NAME)" = "RP-AC87" ] || [ "$(BUILD_NAME)" = "RT-AC85U" ] || [ "$(BUILD_NAME)" = "RT-AC85P" ] || [ "$(BUILD_NAME)" = "RT-AC65U" ] || [ "$(BUILD_NAME)" = "RT-N800HP" ] || [ "$(BUILD_NAME)" = "RT-ACRH26" ] || [ "$(BUILD_NAME)" = "RT-MIR3G" ] || [ "$(BUILD_NAME)" = "RT-MIR3P" ] || [ "$(BUILD_NAME)" = "RT-MIR4A" ] || [ "$(BUILD_NAME)" = "RT-RM2100" ] || [ "$(BUILD_NAME)" = "RT-R2100" ] || [ "$(BUILD_NAME)" = "RT-NEWIFI2" ]|| [ "$(BUILD_NAME)" = "RT-XYC3" ] || [ "$(BUILD_NAME)" = "RT-NEWIFI3" ] || [ "$(BUILD_NAME)" = "RT-HIWIFI4" ] || [ "$(BUILD_NAME)" = "RT-E8820S" ] || [ "$(BUILD_NAME)" = "RT-A040WQ" ] || [ "$(BUILD_NAME)" = "RT-MSG1500" ] || [ "$(BUILD_NAME)" = "RT-JDC1" ] || [ "$(BUILD_NAME)" = "RT-MT1300" ]; then \
 		asustools/mkimage -A mips -O linux -T kernel -C lzma -a 80001000 -e $${ENTRY} -r $${RFSOFFSET} \
 		-n $(BUILD_NAME) -V "$(KERNEL_VER)" "$(FS_VER)"  "$(SERIALNO)" "$(EXTENDNO)" "0" "0" "0" "0" "0" "0"  \
 		-d $(PLATFORMDIR)/zImage.img image/$(IMGNAME).trx ; \
@@ -2647,9 +2647,33 @@ define RouterOptions
 	sed -i "/RTCONFIG_SWRT/d" $(1); \
 	echo "RTCONFIG_SWRT=y" >>$(1); \
 	fi; \
+	if [ "$(SWRT_LED)" = "y" ]; then \
+	sed -i "/RTCONFIG_SWRT_LED/d" $(1); \
+	echo "RTCONFIG_SWRT_LED=y" >>$(1); \
+	else \
+	echo "# RTCONFIG_SWRT_LED is not set" >>$(1); \
+	fi; \
+	if [ "$(SWRT_UU)" = "y" ]; then \
+	sed -i "/RTCONFIG_SWRT_UU/d" $(1); \
+	echo "RTCONFIG_SWRT_UU=y" >>$(1); \
+	else \
+	echo "# RTCONFIG_SWRT_UU is not set" >>$(1); \
+	fi; \
 	if [ "$(SWRT_FULLCONE)" = "y" ]; then \
 	sed -i "/RTCONFIG_SWRT_FULLCONE/d" $(1); \
 	echo "RTCONFIG_SWRT_FULLCONE=y" >>$(1); \
+	fi; \
+	if [ "$(SWRT_I2CLED)" = "y" ]; then \
+	sed -i "/RTCONFIG_SWRT_I2CLED/d" $(1); \
+	echo "RTCONFIG_SWRT_I2CLED=y" >>$(1); \
+	else \
+	echo "# RTCONFIG_SWRT_I2CLED is not set" >>$(1); \
+	fi; \
+	if [ "$(SWRT_KVR)" = "y" ]; then \
+	sed -i "/RTCONFIG_SWRT_KVR/d" $(1); \
+	echo "RTCONFIG_SWRT_KVR=y" >>$(1); \
+	else \
+	echo "# RTCONFIG_SWRT_KVR is not set" >>$(1); \
 	fi; \
 	if [ "$(ENTWARE)" = "y" ]; then \
 	sed -i "/RTCONFIG_ENTWARE/d" $(1); \
@@ -3917,7 +3941,7 @@ fi; \
 		sed -i "/CONFIG_NETFILTER is not set/d" $(1); \
 		echo "CONFIG_NETFILTER=y" >>$(1); \
 		sed -i "/CONFIG_NETFILTER_XTABLES is not set/d" $(1); \
-		echo "CCONFIG_NETFILTER_XTABLES=y" >>$(1); \
+		echo "CONFIG_NETFILTER_XTABLES=y" >>$(1); \
 		sed -i "/CONFIG_NETFILTER_XT_MATCH_POLICY is not set/d" $(1); \
 		echo "CONFIG_NETFILTER_XT_MATCH_POLICY=y" >>$(1); \
 		echo "# CONFIG_XFRM_SUB_POLICY is not set" >>$(1); \
@@ -4044,14 +4068,20 @@ else
 		elif [ "$(BUILD_NAME)" = "RT-AC51U+" ] ||[ "$(BUILD_NAME)" = "RT-AC53" ]; then \
 			cp $(LINUXDIR)/ralink/Kconfig_$(lowercase_B) $(LINUXDIR)/ralink/Kconfig ; \
 			cp $(LINUXDIR)/config_base.MT7620 $(LINUXDIR)/config_$(lowercase_B) ; \
-		elif [ "$(BUILD_NAME)" = "RM-AC2100" ]; then \
+		elif [ "$(BUILD_NAME)" = "RM-AC2100" ] || [ "$(BUILD_NAME)" = "RT-RM2100" ] || [ "$(BUILD_NAME)" = "RT-R2100" ]; then \
 			cp $(LINUXDIR)/config_base_rmac2100 $(LINUXDIR)/config_$(lowercase_B) ; \
+		elif [ "$(BUILD_NAME)" = "RT-MIR3P" ]; then \
+			cp $(LINUXDIR)/config_base_rtmir3p $(LINUXDIR)/config_$(lowercase_B) ; \
 		elif [ "$(BUILD_NAME)" = "RT-E8820S" ]; then \
 			cp $(LINUXDIR)/config_base_rte8820s $(LINUXDIR)/config_$(lowercase_B) ; \
 		elif [ "$(BUILD_NAME)" = "RT-A040WQ" ] || [ "$(BUILD_NAME)" = "RT-MSG1500" ]; then \
 			cp $(LINUXDIR)/config_base_rta040wq $(LINUXDIR)/config_$(lowercase_B) ; \
 		elif [ "$(BUILD_NAME)" = "RT-NEWIFI2" ]; then \
 			cp $(LINUXDIR)/config_base_rtnewifi2 $(LINUXDIR)/config_$(lowercase_B) ; \
+		elif [ "$(BUILD_NAME)" = "RT-MT1300" ]; then \
+			cp $(LINUXDIR)/config_base_rtmt1300 $(LINUXDIR)/config_$(lowercase_B) ; \
+		elif [ "$(BUILD_NAME)" = "RT-JDC1" ]; then \
+			cp $(LINUXDIR)/config_base_rtjdc1 $(LINUXDIR)/config_$(lowercase_B) ; \
                 elif [ "$(BUILD_NAME)" = "RT-XYC3" ]; then \
 			cp $(LINUXDIR)/config_base_rtxyc3 $(LINUXDIR)/config_$(lowercase_B) ; \
 		elif [ "$(BUILD_NAME)" = "RT-HIWIFI4" ] || [ "$(BUILD_NAME)" = "RT-NEWIFI3" ] || [ "$(BUILD_NAME)" = "RT-MIR3G" ]; then \

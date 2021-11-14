@@ -3326,7 +3326,7 @@ INT RTMPAPSetInformation(
 #ifndef WAPP_SUPPORT
 	case OID_802_11_WNM_COMMAND:
 		{
-			UCHAR *Buf;
+			UCHAR *Buf = NULL;
 			struct wnm_command *cmd_data;
 
 			os_alloc_mem(Buf, (UCHAR **)&Buf, wrq->u.data.length);
@@ -14790,8 +14790,8 @@ INT RTMP_AP_IoctlHandle(
 					{
 						UINT modetmp = 0;
 						DBGPRINT(RT_DEBUG_TRACE, ("Query::Get phy mode (%02X) \n", pAd->CommonCfg.PhyMode));
-						modetmp = (UINT) pAd->CommonCfg.PhyMode;
-						wrq->u.data.length = 4;
+						modetmp = (UINT)wmode_2_cfgmode(pAd->CommonCfg.PhyMode);
+						wrq->u.data.length = 1;
 						/**(ULONG *)pData = (ULONG)pAd->CommonCfg.PhyMode; */
 						if (copy_to_user(pData, &modetmp, wrq->u.data.length))
 							Status = -EFAULT;
@@ -15135,7 +15135,7 @@ INT RTMP_AP_IoctlHandle(
 				pChannel[wrq->u.data.length] = '\0';
 				Status = copy_to_user(wrq->u.data.pointer, pChannel, wrq->u.data.length);
 			} else if ( subcmd == ASUS_SUBCMD_DRIVERVER ) {
-				RTMP_STRING driverVersion[16];
+				RTMP_STRING driverVersion[16] = {0};
 				wrq->u.data.length = strlen(AP_DRIVER_VERSION);
 				snprintf(driverVersion, sizeof(driverVersion), "%s", AP_DRIVER_VERSION);
 				driverVersion[wrq->u.data.length] = '\0';
@@ -15153,6 +15153,13 @@ INT RTMP_AP_IoctlHandle(
 				temperature = MtAsicGetThemalSensor(pAd, 0);
 				wrq->u.data.length = sizeof(UINT32);
 				Status = copy_to_user(wrq->u.data.pointer, &temperature, wrq->u.data.length);
+			} else if ( subcmd == ASUS_SUBCMD_CONN_STATUS ) {
+				UINT32 pCurrState = 0;
+				PAPCLI_STRUCT pApCliEntry;
+				pApCliEntry = &pAd->ApCfg.ApCliTab[pObj->ioctl_if];
+				pCurrState = pApCliEntry->CtrlCurrState;
+				wrq->u.data.length = sizeof(UINT32);
+				Status = copy_to_user(wrq->u.data.pointer, &pCurrState, wrq->u.data.length);
 			}
 			break;
 

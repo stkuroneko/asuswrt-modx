@@ -7790,6 +7790,9 @@ start_services(void)
 #if defined(RTCONFIG_SOFTCENTER)
 	nvram_set_int("sc_services_start_sig", 1);
 #endif
+#if defined(RTCONFIG_SWRT_KVR)
+	system("/usr/bin/iappd.sh restart");
+#endif
 	return 0;
 }
 
@@ -13830,7 +13833,7 @@ void start_roamast(void){
 		}
 	}
 }
-#elif defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500)
+#elif defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300)
 void start_roamast(void){
 	int rssi, i;
 	char prefix[] = "wl_XXXXX";

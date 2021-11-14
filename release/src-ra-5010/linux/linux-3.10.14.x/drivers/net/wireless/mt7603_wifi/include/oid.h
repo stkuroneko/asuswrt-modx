@@ -1290,7 +1290,7 @@ typedef enum _RT_802_11_PHY_MODE {
 	PHY_11G = 4,
 #ifdef DOT11_N_SUPPORT
 	PHY_11ABGN_MIXED = 5,	/* both band   5 */
-	PHY_11N_2_4G = 6,		/* 11n-only with 2.4G band      6 */
+	PHY_11N = 6,		/* 11n-only with 2.4G band      6 */
 	PHY_11GN_MIXED = 7,		/* 2.4G band      7 */
 	PHY_11AN_MIXED = 8,		/* 5G  band       8 */
 	PHY_11BGN_MIXED = 9,	/* if check 802.11b.      9 */
@@ -1379,14 +1379,6 @@ typedef struct _RT_802_11_MAC_ENTRY {
 	UINT32 ConnectedTime;
 	MACHTTRANSMIT_SETTING TxRate;
 	UINT32 LastRxRate;
-
-//sync with WEB UI's structure for ioctl usage.
-//#ifdef RTMP_RBUS_SUPPORT
-	SHORT StreamSnr[3];				/* BF SNR from RXWI. Units=0.25 dB. 22 dB offset removed */
-	SHORT SoundingRespSnr[3];			/* SNR from Sounding Response. Units=0.25 dB. 22 dB offset removed */
-/*	SHORT TxPER;	*/					/* TX PER over the last second. Percent */
-/*	SHORT reserved;*/
-//#endif /* RTMP_RBUS_SUPPORT */
 
 } RT_802_11_MAC_ENTRY, *PRT_802_11_MAC_ENTRY;
 

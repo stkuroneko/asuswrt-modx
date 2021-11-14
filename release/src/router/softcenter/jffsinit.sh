@@ -34,7 +34,12 @@ if [ "$(nvram get sc_mount)" == 1 ];then
 		exit 1
 	else
 		rm -rf jffs/softcenter/bin /jffs/softcenter/res /jffs/softcenter/webs /jffs/softcenter/scripts /jffs/softcenter/lib
+		rm -rf jffs/softcenter/koolproxy /jffs/softcenter/adbyby /jffs/softcenter/acme /jffs/softcenter/ss /jffs/softcenter/uu
 		mkdir -p /jffs/softcenter
+		mkdir -p /jffs/softcenter/etc
+		mkdir -p /jffs/softcenter/init.d
+		mkdir -p /jffs/softcenter/configs
+		mkdir -p /jffs/softcenter/perp
 		mkdir -p $usb_disk/bin
 		mkdir -p $usb_disk/res
 		mkdir -p $usb_disk/webs
@@ -45,16 +50,6 @@ if [ "$(nvram get sc_mount)" == 1 ];then
 		mkdir -p $usb_disk/acme
 		mkdir -p $usb_disk/ss
 		mkdir -p $usb_disk/uu
-		mkdir -p /jffs/softcenter/etc
-		mkdir -p /jffs/softcenter/init.d
-		mkdir -p /jffs/softcenter/configs
-		mkdir -p /jffs/softcenter/ss
-		mkdir -p /jffs/softcenter/perp
-		mkdir -p /jffs/softcenter/koolproxy
-		mkdir -p /jffs/softcenter/adbyby
-		mkdir -p /jffs/softcenter/acme
-		mkdir -p /jffs/softcenter/ss
-		mkdir -p /jffs/softcenter/uu
 		ln -sf $usb_disk/bin /jffs/softcenter/
 		ln -sf $usb_disk/res /jffs/softcenter/
 		ln -sf $usb_disk/webs /jffs/softcenter/

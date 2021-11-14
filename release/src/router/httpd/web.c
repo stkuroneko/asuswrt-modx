@@ -10198,7 +10198,13 @@ prepare_restore(webs_t wp){
 	int offset = 10;
 #ifdef RTCONFIG_RALINK
 	int model = get_model();
-	if (model == MODEL_RTN65U || model == MODEL_RTAC85U || model == MODEL_RTAC85P || model == MODEL_RTACRH26 || model == MODEL_RTRM2100)
+	if (model == MODEL_RTN65U || model == MODEL_RTAC85U || model == MODEL_RTAC85P || model == MODEL_RTACRH26 
+#if defined(RMAC2100)
+	|| model == MODEL_RMAC2100
+#elif defined(R6800)
+	|| model == MODEL_R6800
+#endif
+	)
 		offset = 15;
 #endif
 

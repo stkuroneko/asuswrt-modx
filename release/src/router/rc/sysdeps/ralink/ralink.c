@@ -53,7 +53,7 @@
 char *wlc_nvname(char *keyword);
 //#endif
 
-#if defined(RTAC52U) || defined(RTAC51U) || defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTAC54U) || defined(RTN56UB2) || defined(RTAC1200GA1)  || defined(RTAC1200GU) || defined(RTAC1200) || defined(RTCONFIG_MTK_REP) || defined(RTAC51UP) || defined(RTAC53) || defined(RTAC85P) || defined(RTACRH26) || defined(RMAC2100) || defined(RTMIR3G) || defined(RTNEWIFI2) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTRM2100) || defined(RTR2100) || defined(RTMIR3P) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500)
+#if defined(RTAC52U) || defined(RTAC51U) || defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTAC54U) || defined(RTN56UB2) || defined(RTAC1200GA1)  || defined(RTAC1200GU) || defined(RTAC1200) || defined(RTCONFIG_MTK_REP) || defined(RTAC51UP) || defined(RTAC53) || defined(RTAC85P) || defined(RTACRH26) || defined(RMAC2100) || defined(R6800) || defined(RTMIR3G) || defined(RTNEWIFI2) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTRM2100) || defined(RTR2100) || defined(RTMIR3P) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300)
 #define VHT_SUPPORT /* 11AC */
 #endif
 
@@ -769,6 +769,7 @@ int gen_ralink_config(int band, int is_iNIC)
 	char tmp1[128];
 	int wlc_express = nvram_get_int("wlc_express");
 #endif
+	char *tcode = nvram_safe_get("territory_code");
 
 	if (!is_iNIC)
 	{
@@ -862,7 +863,7 @@ int gen_ralink_config(int band, int is_iNIC)
 #endif	/* CE_ADAPTIVITY */
 	if (str && strlen(str))
 	{
-#if defined(RTAC1200HP) || defined(RTCONFIG_WLMODULE_MT7615E_AP) || defined(RTAC85P) || defined(RMAC2100) || defined(RTMIR3G) || defined(RTNEWIFI2) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTRM2100) || defined(RTR2100) || defined(RTMIR3P) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500)
+#if defined(RTAC1200HP) || defined(RTCONFIG_WLMODULE_MT7615E_AP) || defined(RTAC85P) || defined(RMAC2100) || defined(R6800) || defined(RTMIR3G) || defined(RTNEWIFI2) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTRM2100) || defined(RTR2100) || defined(RTMIR3P) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300)
 		if(nvram_match("JP_CS","1"))
 			fprintf(fp, "CountryCode=JP\n");
 		else
@@ -1272,16 +1273,26 @@ int gen_ralink_config(int band, int is_iNIC)
 	snprintf(prefix, sizeof(prefix), "wl%d_", band);
 //	snprintf(prefix2, sizeof(prefix2), "wl%d_", band);
 
-	//APSDCapable
+	//APSDCapable UAPSDCapable
 	str = nvram_safe_get(strcat_r(prefix, "wme_apsd", tmp));
-	if (str && strlen(str))
+	if (str && strlen(str)){
 		fprintf(fp, "APSDCapable=%d\n", strcmp(str, "off") ? 1 : 0);
+		fprintf(fp, "UAPSDCapable=%d\n", strcmp(str, "off") ? 1 : 0);
+		fprintf(fp, "ApCliAPSDCapable=%d\n", strcmp(str, "off") ? 1 : 0);
+	}
 	else
 	{
 		warning = 18;
 		fprintf(fp, "APSDCapable=%d\n", 1);
+		fprintf(fp, "UAPSDCapable=%d\n", 1);
+		fprintf(fp, "ApCliAPSDCapable=%d\n", 1);
 	}
 
+
+	fprintf(fp, "ApCliMuMimoDlEnable=%d\n", 0);
+	fprintf(fp, "ApCliMuMimoUlEnable=%d\n", 0);
+	fprintf(fp, "ApCliMuOfdmaUlEnable=%d\n", 0);
+	fprintf(fp, "ApCliMuOfdmaDlEnable=%d\n", 0);
 	//DLSDCapable
 	str = nvram_safe_get(strcat_r(prefix, "DLSCapable", tmp));
 	if (str && strlen(str))
@@ -1306,7 +1317,8 @@ int gen_ralink_config(int band, int is_iNIC)
 			sprintf(tmpstr, "%s%s", tmpstr, str);
 		}
 		fprintf(fp, "NoForwarding=%s\n", tmpstr);
-		#if defined(RTA040WQ) || defined(RTMSG1500)
+		fprintf(fp, "NoForwardingMBCast=%s\n", tmpstr);
+		#if defined(RTA040WQ) || defined(RTMSG1500) || defined(RTMT1300)
 		fprintf(fp, "NoForwardingBTNBSSID=%d\n", 0);
 		#else
 		fprintf(fp, "NoForwardingBTNBSSID=%d\n", atoi(str));
@@ -1324,6 +1336,7 @@ int gen_ralink_config(int band, int is_iNIC)
 			sprintf(tmpstr, "%s%s", tmpstr, "0");
 		}
 		fprintf(fp, "NoForwarding=%s\n", tmpstr);
+		fprintf(fp, "NoForwardingMBCast=%s\n", tmpstr);
 		fprintf(fp, "NoForwardingBTNBSSID=%d\n", 0);
 	}
 
@@ -1371,7 +1384,11 @@ int gen_ralink_config(int band, int is_iNIC)
 #endif
 			)
 		{ 
-			fprintf(fp, "AutoChannelSelect=%d\n", 1);
+#if defined(RTCONFIG_WLMODULE_MT7615E_AP) || defined(RTCONFIG_WLMODULE_MT7915E_AP)
+			fprintf(fp, "AutoChannelSelect=%d\n", 3);
+#else
+			fprintf(fp, "AutoChannelSelect=%d\n", 2);
+#endif
 #ifdef RTCONFIG_RALINK_DFS
 			if(band){
 					snprintf(prefix_mssid, sizeof(prefix_mssid), "wl%d.1_", band);
@@ -1402,7 +1419,11 @@ int gen_ralink_config(int band, int is_iNIC)
 					fprintf(fp, "AutoChannelSelect=%d\n", 1);			//NEED rule 1 for DFS
 				else
 #endif	/* RTCONFIG_RALINK_DFS */
+#if defined(RTCONFIG_WLMODULE_MT7615E_AP) || defined(RTCONFIG_WLMODULE_MT7915E_AP)
+				fprintf(fp, "AutoChannelSelect=%d\n", 3);
+#else
 				fprintf(fp, "AutoChannelSelect=%d\n", 2);
+#endif
 				memset(tmpstr, 0x0, sizeof(tmpstr));
 				if (band && nvram_get_int(strcat_r(prefix, "bw", tmp)) > 0) {
 #ifdef RTN56U
@@ -1508,7 +1529,7 @@ int gen_ralink_config(int band, int is_iNIC)
 						if(!strncmp(nvram_safe_get("territory_code"),&t_code_noselect_5G[i][0],2)){
 							if(atoi(nvram_safe_get("acs_dfs")) == 0) {							
 								memset(tmpstr, 0x00, sizeof(tmpstr));
-								sprintf(tmpstr,"%d;%d;%d;%d;%d;%d;%d;%d;%d;%d;%d",52,56,60,64,100,104,108,112,116,120,124,128,132,136,140);	
+								sprintf(tmpstr,"%d;%d;%d;%d;%d;%d;%d;%d;%d;%d;%d;%d;%d;%d;%d",52,56,60,64,100,104,108,112,116,120,124,128,132,136,140);	
 								fprintf(fp,"AutoChannelSkipList=%s\n",tmpstr);	
 							}
 							nvram_set("skip_channel_5g", "band23");								
@@ -1523,12 +1544,12 @@ int gen_ralink_config(int band, int is_iNIC)
 				{
 					if (strchr(nvram_safe_get("wl_reg_5g"), '4')) {	//check band4 support?
 						if (strchr(nvram_safe_get("wl_reg_5g"), '1')){	//skip band 1
-				      if(strlen(tmpstr)) sprintf(tmpstr,"%s;",tmpstr);
-							sprintf(tmpstr,"%s%d;%d;%d;%d",tmpstr,36,40,44,48);
+				     		if(strlen(tmpstr)) sprintf(tmpstr,"%s;",tmpstr);
+								sprintf(tmpstr,"%s%d;%d;%d;%d",tmpstr,36,40,44,48);
 						}
 						if (strchr(nvram_safe_get("wl_reg_5g"), '2')) {	//skip band 2
-              if(strlen(tmpstr)) sprintf(tmpstr,"%s;",tmpstr);
-							sprintf(tmpstr,"%s%d;%d;%d;%d",tmpstr,52,56,60,64);
+              				if(strlen(tmpstr)) sprintf(tmpstr,"%s;",tmpstr);
+								sprintf(tmpstr,"%s%d;%d;%d;%d",tmpstr,52,56,60,64);
 						}
 					}
 				}
@@ -1542,7 +1563,11 @@ int gen_ralink_config(int band, int is_iNIC)
 		else
 		{
 			warning = 21;
+#if defined(RTCONFIG_WLMODULE_MT7615E_AP) || defined(RTCONFIG_WLMODULE_MT7915E_AP)
+			fprintf(fp, "AutoChannelSelect=%d\n", 3);
+#else
 			fprintf(fp, "AutoChannelSelect=%d\n", 2);
+#endif
 		}
 	}				
 
@@ -1585,7 +1610,7 @@ int gen_ralink_config(int band, int is_iNIC)
 	fprintf(fp, "IEEE80211H=%d\n", IEEE80211H);
 
 #ifdef RTCONFIG_RALINK_DFS
-#if defined (RTCONFIG_WLMODULE_MT7615E_AP)
+#if defined (RTCONFIG_WLMODULE_MT7615E_AP) || (RTCONFIG_WLMODULE_MT7915E_AP)
 	if (band) {
 		if (IEEE80211H)
 			fprintf(fp, "DfsEnable=%d\n", 1);
@@ -1609,7 +1634,7 @@ int gen_ralink_config(int band, int is_iNIC)
 #endif
 	{
 #ifdef RTCONFIG_RALINK_DFS
-#if defined (RTCONFIG_WLMODULE_MT7615E_AP)
+#if defined (RTCONFIG_WLMODULE_MT7615E_AP) || (RTCONFIG_WLMODULE_MT7915E_AP)
 		if (band && nvram_match("reg_spec", "JP"))
 			fprintf(fp, "RDRegion=%s\n", "JAP");
 		else
@@ -1621,7 +1646,7 @@ int gen_ralink_config(int band, int is_iNIC)
 		fprintf(fp, "CarrierDetect=%d\n", 0);
 	}
 //	if (band)
-//	fprintf(fp, "ChannelGeography=%d\n", 2);
+	fprintf(fp, "ChannelGeography=%d\n", 2);
 	fprintf(fp, "PreAntSwitch=\n");
 	fprintf(fp, "PhyRateLimit=%d\n", 0);
 	fprintf(fp, "DebugFlags=%d\n", 0);
@@ -1635,7 +1660,11 @@ int gen_ralink_config(int band, int is_iNIC)
 	fprintf(fp, "StreamModeMac2=\n");
 	fprintf(fp, "StreamModeMac3=\n");
 	fprintf(fp, "StationKeepAlive=%d\n", 0);
+#if defined (RTCONFIG_WLMODULE_MT7615E_AP) || (RTCONFIG_WLMODULE_MT7915E_AP)
+	fprintf(fp, "CSPeriod=6\n");
+#else
 	fprintf(fp, "CSPeriod=10\n");
+#endif
 	fprintf(fp, "DfsLowerLimit=%d\n", 0);
 	fprintf(fp, "DfsUpperLimit=%d\n", 0);
 	fprintf(fp, "DfsIndoor=%d\n", 0);
@@ -1667,7 +1696,7 @@ int gen_ralink_config(int band, int is_iNIC)
 	{
 		fprintf(fp, "GreenAP=%d\n", 1);
 	}
-#elif defined(RTN14U) || defined(RTAC52U) || defined(RTAC51U) || defined(RTAC51UP) || defined(RTAC53) || defined(RTN11P) || defined(RTN300) || defined(RTN54U) || defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTAC54U) || defined(RTN56UB2) || defined(RTAC1200GA1)  || defined(RTAC1200GU) || defined(RTCONFIG_MTK_REP) || defined(RTMIR3G) || defined(RTNEWIFI2) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTRM2100) || defined(RTR2100) || defined(RTMIR3P) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500)
+#elif defined(RTN14U) || defined(RTAC52U) || defined(RTAC51U) || defined(RTAC51UP) || defined(RTAC53) || defined(RTN11P) || defined(RTN300) || defined(RTN54U) || defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTAC54U) || defined(RTN56UB2) || defined(RTAC1200GA1)  || defined(RTAC1200GU) || defined(RTCONFIG_MTK_REP) || defined(RTMIR3G) || defined(RTNEWIFI2) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTRM2100) || defined(RTR2100) || defined(RTMIR3P) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300)
 	/// MT7620 GreenAP will impact TSSI, force to disable GreenAP here..
 	//  MT7620 GreenAP cause bad site survey result on RTAC52 2G.
 	{
@@ -1686,7 +1715,7 @@ int gen_ralink_config(int band, int is_iNIC)
 		fprintf(fp, "GreenAP=%d\n", 0);
 	}
 #endif
-#if defined(RTA040WQ) || defined(RTMSG1500)
+#if defined(RTA040WQ) || defined(RTMSG1500) || defined(RTMT1300)
 	fprintf(fp, "DBDC_MODE=%d\n", 1);
 #endif
 
@@ -2229,13 +2258,6 @@ int gen_ralink_config(int band, int is_iNIC)
 		fprintf(fp, "%s", tmpstr);
 	}
 
-/*
-	fprintf(fp, "SecurityMode=%d\n", 0);
-	fprintf(fp, "VLANEnable=%d\n", 0);
-	fprintf(fp, "VLANName=\n");
-	fprintf(fp, "VLANID=%d\n", 0);
-	fprintf(fp, "VLANPriority=%d\n", 0);
-*/
 	fprintf(fp, "HSCounter=%d\n", 0);
 
 	//HT_HTC
@@ -2371,6 +2393,7 @@ int gen_ralink_config(int band, int is_iNIC)
 
 	//HT_BW
 	//str = nvram_safe_get(strcat_r(prefix, "bw", tmp));
+#if 0 //Override wl_bw?
 		for (i = 0; i < MAX_NO_MSSID; i++)
 		{
 			if (sw_mode == SW_MODE_REPEATER
@@ -2396,7 +2419,7 @@ int gen_ralink_config(int band, int is_iNIC)
 					wl_bw = get_bw_via_channel(band, Channel);
 				}			
 		} // for	
-	
+#endif	
 
 		if(wl_bw == 0)
 				fprintf(fp, "HT_BW=%d\n", 0);
@@ -2414,7 +2437,7 @@ int gen_ralink_config(int band, int is_iNIC)
 		
 
 		//HT_BSSCoexistence
-#if defined(RMAC2100) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTMIR3G) || defined(RTE8820S) || defined(RTHIWIFI4) || defined(RTNEWIFI3) || defined(RTNEWIFI2) || defined(RTRM2100) || defined(RTR2100) || defined(RTMIR3P)
+#if defined(RMAC2100) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTMIR3G) || defined(RTE8820S) || defined(RTHIWIFI4) || defined(RTNEWIFI3) || defined(RTNEWIFI2) || defined(RTRM2100) || defined(RTR2100) || defined(RTMIR3P) || defined(RTJDC1) || defined(RTMT1300)
 	fprintf(fp, "HT_BSSCoexistence=%d\n", 0);
 #else
 		if ((wl_bw > 1) && (HTBW_MAX == 1) 
@@ -2474,9 +2497,10 @@ int gen_ralink_config(int band, int is_iNIC)
 	if (str && strlen(str))
 	{
 		fprintf(fp, "HT_GI=%d\n", atoi(str));
-#if defined(RTN54U) || defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTAC54U) ||defined(RTN56UB2) || defined(RTAC1200GA1) || defined(RTAC1200GU) || defined(RTAC1200) || defined(RTCONFIG_MTK_REP) || defined(RTAC85P) || defined(RTACRH26) || defined(RMAC2100) || defined(RTMIR3G) || defined(RTNEWIFI2) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTRM2100) || defined(RTR2100) || defined(RTA040WQ) || defined(RTMIR3P) || defined(RTMSG1500)
+#if defined(RTN54U) || defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTAC54U) ||defined(RTN56UB2) || defined(RTAC1200GA1) || defined(RTAC1200GU) || defined(RTAC1200) || defined(RTCONFIG_MTK_REP) || defined(RTAC85P) || defined(RTACRH26) || defined(RMAC2100) || defined(R6800) || defined(RTMIR3G) || defined(RTNEWIFI2) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTRM2100) || defined(RTR2100) || defined(RTA040WQ) || defined(RTMIR3P) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300)
 #if defined(VHT_SUPPORT)
-		fprintf(fp, "VHT_SGI=%d\n", atoi(str));
+		if(band)
+			fprintf(fp, "VHT_SGI=%d\n", atoi(str));
 #endif
 #endif
 	}
@@ -2484,17 +2508,20 @@ int gen_ralink_config(int band, int is_iNIC)
 	{
 		warning = 39;
 		fprintf(fp, "HT_GI=%d\n", 1);
-#if defined(RTN54U) || defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTAC54U) || defined(RTN56UB2) || defined(RTAC1200GA1)  || defined(RTAC1200GU) || defined(RTAC1200) || defined(RTCONFIG_MTK_REP) || defined(RTAC85P) || defined(RTACRH26) || defined(RMAC2100) || defined(RTMIR3G) || defined(RTNEWIFI2) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTRM2100) || defined(RTR2100) || defined(RTA040WQ) || defined(RTMIR3P) || defined(RTMSG1500)
+#if defined(RTN54U) || defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTAC54U) || defined(RTN56UB2) || defined(RTAC1200GA1)  || defined(RTAC1200GU) || defined(RTAC1200) || defined(RTCONFIG_MTK_REP) || defined(RTAC85P) || defined(RTACRH26) || defined(RMAC2100) || defined(R6800) || defined(RTMIR3G) || defined(RTNEWIFI2) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTRM2100) || defined(RTR2100) || defined(RTA040WQ) || defined(RTMIR3P) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300)
 #if defined(VHT_SUPPORT)
-		fprintf(fp, "VHT_SGI=%d\n", 1);
+		if(band)
+			fprintf(fp, "VHT_SGI=%d\n", 1);
 #endif
 #endif
 	}
 
-#if defined(RTN54U) || defined(RTAC1200HP) || defined(RTAC54U) || defined(RTN56UB1) || defined(RTN56UB2) || defined(RTAC1200GA1)  || defined(RTAC1200GU) || defined(RTAC1200) || defined(RTCONFIG_MTK_REP) || defined(RTAC85P) || defined(RTACRH26)|| defined(RTMIR3G) || defined(RTNEWIFI2) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTRM2100) || defined(RTR2100) || defined(RTA040WQ) || defined(RTMIR3P) || defined(RTMSG1500)
+#if defined(RTN54U) || defined(RTAC1200HP) || defined(RTAC54U) || defined(RTN56UB1) || defined(RTN56UB2) || defined(RTAC1200GA1)  || defined(RTAC1200GU) || defined(RTAC1200) || defined(RTCONFIG_MTK_REP) || defined(RTAC85P) || defined(RTACRH26) || defined(RMAC2100) || defined(R6800) || defined(RTMIR3G) || defined(RTNEWIFI2) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTRM2100) || defined(RTR2100) || defined(RTA040WQ) || defined(RTMIR3P) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300)
 #if defined(VHT_SUPPORT)
+	if(band){
 		fprintf(fp, "VHT_STBC=%d\n",1);
 		fprintf(fp, "VHT_LDPC=%d\n",1);
+	}
 #endif
 #endif
 
@@ -2583,7 +2610,9 @@ int gen_ralink_config(int band, int is_iNIC)
 
 #endif
 
-		int vbw = 0;						
+
+#if 0
+		int vbw = 0;		
 		for (i = 0; i < MAX_NO_MSSID; i++)
 		{
 			if (sw_mode == SW_MODE_REPEATER
@@ -2614,7 +2643,13 @@ int gen_ralink_config(int band, int is_iNIC)
 #endif
 			}
 		}
-		
+#else
+#if defined(RTA040WQ) || defined(RTMSG1500) || defined(RTMT1300)
+		int vbw = nvram_safe_get(strcat_r(prefix_mssid, "bw", temp));
+#else
+		int vbw = get_bw_via_channel(band, Channel);
+#endif
+#endif	
 		if (band) {
 			if (vbw > 0)
 			{
@@ -2636,6 +2671,7 @@ int gen_ralink_config(int band, int is_iNIC)
 				fprintf(fp, "VHT_DisallowNonVHT=%d\n", atoi(str));
 			else
 				fprintf(fp, "VHT_DisallowNonVHT=%d\n", 0);
+			fprintf(fp, "VHT_BW_SIGNAL=%d\n", 0);
 		}
 		
 
@@ -2683,6 +2719,10 @@ int gen_ralink_config(int band, int is_iNIC)
 #if defined(RTCONFIG_MUMIMO_2G) || defined(RTCONFIG_MUMIMO_5G)
 			if (band)
 				fprintf(fp, "MUTxRxEnable=%d\n", (mumimo ? 1 : 0));
+#if defined (RTCONFIG_WLMODULE_MT7615E_AP)
+			fprintf(fp, "MuMimoDlEnable=%d\n", (mumimo ? 1 : 0));
+			fprintf(fp, "MuMimoUlEnable=%d\n", 0);
+#endif
 #endif
 		}
 		else
@@ -2743,7 +2783,6 @@ int gen_ralink_config(int band, int is_iNIC)
 	}
 
 	fprintf(fp, "WscVendorPinCode=%s\n", nvram_safe_get("secret_code"));
-//	fprintf(fp, "ApCliWscPinCode=%s\n", nvram_safe_get("secret_code"));	// removed from SDK 3.3.0.0
 
 #if !defined(OLD_ACL)
 	memset(mac_filter,0,sizeof(mac_filter));
@@ -3091,7 +3130,7 @@ int gen_ralink_config(int band, int is_iNIC)
 		nvram_set(strcat_r(prefix, "hide_pap", tmp), nvram_safe_get(strcat_r(prefix_wlc, "hide_pap", tmp1)));
 		nvram_set(strcat_r(prefix, "wifipxy", tmp), nvram_safe_get(strcat_r(prefix_wlc, "wifipxy", tmp1)));
 
-		fprintf(fp, "ApCliEnable=0\n");
+		fprintf(fp, "ApCliEnable=1\n");
 		fprintf(fp, "ApCliSsid%d=%s\n", 1, nvram_safe_get(strcat_r(prefix_wlc, "ssid", tmp1)));
 		fprintf(fp, "ApCliBssid=\n");
 		fprintf(fp, "MACRepeaterEn=%s\n", nvram_safe_get(strcat_r(prefix_wlc, "wifipxy", tmp1)));
@@ -3208,11 +3247,18 @@ int gen_ralink_config(int band, int is_iNIC)
 
 		nvram_set(strcat_r(prefix, "crypto", tmp), nvram_safe_get("wlc_crypto"));
 		nvram_set(strcat_r(prefix, "wpa_psk", tmp), nvram_safe_get("wlc_wpa_psk"));
+#if defined (RTCONFIG_WLMODULE_MT7615E_AP)
+// ui force 40,but 7615 support 80 and 160
+		if(band)
+			nvram_set(strcat_r(prefix, "bw", tmp), "1");
+		else
+#endif
 		nvram_set(strcat_r(prefix, "bw", tmp), nvram_safe_get("wlc_nbw_cap"));
 
 
-		fprintf(fp, "ApCliEnable=0\n");
-		fprintf(fp, "ApCliSsid%d=%s\n", 1, nvram_safe_get("wlc_ssid"));
+
+		fprintf(fp, "ApCliEnable=1\n");
+		fprintf(fp, "ApCliSsid=%s\n", nvram_safe_get("wlc_ssid"));
 		fprintf(fp, "ApCliBssid=\n");
 
 		str = nvram_safe_get("wlc_auth_mode");
@@ -3243,7 +3289,7 @@ int gen_ralink_config(int band, int is_iNIC)
 					fprintf(fp, "ApCliEncrypType=%s\n", "AES");
 
 				//WPAPSK
-				fprintf(fp, "ApCliWPAPSK%d=%s\n", 1, nvram_safe_get("wlc_wpa_psk"));
+				fprintf(fp, "ApCliWPAPSK=%s\n", nvram_safe_get("wlc_wpa_psk"));
 			}
 			else
 			{
@@ -3538,6 +3584,11 @@ next_mrate:
 #if defined (RTCONFIG_WLMODULE_MT7615E_AP)
 	fprintf(fp, "EfuseBufferMode=0\n");
 	fprintf(fp, "E2pAccessMode=2\n");
+	fprintf(fp, "VOW_RX_En=%d\n", 1);
+	fprintf(fp, "TxCmdMode=%d\n", 1);
+	fprintf(fp, "AMSDU_NUM=%d\n", 4);
+	fprintf(fp, "CP_SUPPORT=%d\n", 2);
+	fprintf(fp, "RED_Enable=%d\n", 1);
 #if defined (RTCONFIG_QAM256_2G)
 	/* 2.4G 256QAM */
 	if(!band) {
@@ -3546,12 +3597,21 @@ next_mrate:
 			fprintf(fp, "G_BAND_256QAM=%d\n", atoi(str));
 	}
 #endif
-	fprintf(fp, "SKUenable=1\n");
+	if(*tcode)
+		fprintf(fp, "SKUenable=1\n");
+	else
+		fprintf(fp, "SKUenable=0\n");
 	fprintf(fp, "WirelessEvent=1\n");
 #endif
-	/* kv */
-	//fprintf(fp, "WNMEnable=1;1\n");
-	//fprintf(fp, "RRMEnable=1;1\n");
+#if defined(RTCONFIG_SWRT_KVR)
+	fprintf(fp, "WNMEnable=1\n");
+	fprintf(fp, "RRMEnable=1\n");
+	if(nvram_get("swrt_ftenable")){
+		fprintf(fp, "FtSupport=1\n");
+		fprintf(fp, "FtOtd=0\n");
+		fprintf(fp, "FtRic=1\n");
+	}
+#endif
 
 	if (warning)
 	{
@@ -3937,7 +3997,7 @@ getSiteSurvey(int band,char* ofile)
 		return 0;
 	}
 	memset(header, 0, sizeof(header));
-	sprintf(header, "%-4s%-33s%-20s%-9s%-16s%-9s%-7s%-7s%-3s%-4s%-5s\n", "Ch", "SSID", "BSSID", "Enc", "Auth", "Signal(%)", "W-Mode", "ExtCH", "NT", "WPS", "DPID");
+	sprintf(header, "%-4s%-33s%-20s%-23s%-9s%-12s%-7s%-3s%-4s%-5s\n", "Ch", "SSID", "BSSID", "Security", "Signal(%)", "W-Mode", "ExtCH", "NT", "WPS", "DPID");
 	dbg("\n%s", header);
 
 	if (wrq.u.data.length > 0 && strlen(wrq.u.data.pointer)>0)
@@ -3952,10 +4012,9 @@ getSiteSurvey(int band,char* ofile)
 			ssap->SiteSurvey[i].channel[3] = '\0';
 			ssap->SiteSurvey[i].ssid[32] = '\0';
 			ssap->SiteSurvey[i].bssid[19] = '\0';
-			ssap->SiteSurvey[i].encryption[8] = '\0';
-			ssap->SiteSurvey[i].authmode[15] = '\0';
+			ssap->SiteSurvey[i].security[22] = '\0';
 			ssap->SiteSurvey[i].signal[8] = '\0';
-			ssap->SiteSurvey[i].wmode[6] = '\0';
+			ssap->SiteSurvey[i].wmode[11] = '\0';
 			ssap->SiteSurvey[i].extch[6] = '\0';
 			ssap->SiteSurvey[i].nt[2] = '\0';
 			ssap->SiteSurvey[i].wps[3] = '\0';
@@ -3966,12 +4025,11 @@ getSiteSurvey(int band,char* ofile)
 
 		for (i=0;i<apCount;i++)
 		{
-			dbg("%-4s%-33s%-20s%-9s%-16s%-9s%-7s%-7s%-3s%-4s%-5s\n",
+			dbg("%-4s%-33s%-20s%-23s%-9s%-12s%-7s%-3s%-4s%-5s\n",
 			ssap->SiteSurvey[i].channel,
 			(char*)ssap->SiteSurvey[i].ssid,
 			ssap->SiteSurvey[i].bssid,
-			ssap->SiteSurvey[i].encryption,
-			ssap->SiteSurvey[i].authmode,
+			ssap->SiteSurvey[i].security,
 			ssap->SiteSurvey[i].signal,
 			ssap->SiteSurvey[i].wmode,
 			ssap->SiteSurvey[i].extch,
@@ -3995,6 +4053,11 @@ getSiteSurvey(int band,char* ofile)
 				printf("[wlcscan] Output %s error\n", ofile);
 			}else{
 				for (i = 0; i < apCount; i++){
+					char buf[33];
+					char auth[16], enc[9];
+					memset(buf, 0, sizeof(buf));
+					memset(auth, 0, sizeof(auth));
+					memset(enc, 0, sizeof(enc));
 					if(atoi(ssap->SiteSurvey[i].channel) < 0 )
 					{
 						fprintf(fp, "\"ERR_BNAD\",");
@@ -4027,16 +4090,20 @@ getSiteSurvey(int band,char* ofile)
 
 					fprintf(fp, "\"%d\",", atoi(ssap->SiteSurvey[i].channel));
 
-					if(strstr(ssap->SiteSurvey[i].authmode,"WPA-Enterprise"))
-						fprintf(fp, "\"%s\",","WPA-Enterprise");
-					else if(strstr(ssap->SiteSurvey[i].authmode,"WPA2-Enterprise"))
-						fprintf(fp, "\"%s\",","WPA2-Enterprise");
-					else if(strstr(ssap->SiteSurvey[i].authmode,"WPA-Personal"))
-						fprintf(fp, "\"%s\",","WPA-Personal");
-					else if(strstr(ssap->SiteSurvey[i].authmode,"WPA2-Personal"))
+					snprintf(buf, sizeof(buf), "%s", ssap->SiteSurvey[i].security);
+					sscanf(buf, "%[A-Z0-9]/%[A-Z]", auth, enc);
+					if(!strcmp(auth,"WPAPSKWPA2PSK"))
 						fprintf(fp, "\"%s\",","WPA2-Personal");
-					else if(strstr(ssap->SiteSurvey[i].authmode,"Open System")) {
-						if(strstr(ssap->SiteSurvey[i].encryption, "WEP"))
+					else if(!strcmp(auth,"WPA2PSK"))
+						fprintf(fp, "\"%s\",","WPA2-Personal");
+					else if(!strcmp(auth,"WPAPSK"))
+						fprintf(fp, "\"%s\",","WPA-Personal");
+					else if(!strcmp(auth,"WPA2"))
+						fprintf(fp, "\"%s\",","WPA2-Enterprise");
+					else if(!strcmp(auth,"WPA"))
+						fprintf(fp, "\"%s\",","WPA-Enterprise");
+					else if(!strcmp(auth,"OPEN")) {
+						if(!strcmp(enc, "WEP"))
 							fprintf(fp, "\"%s\",","Unknown");
 						else
 							fprintf(fp, "\"%s\",","Open System");
@@ -4044,14 +4111,16 @@ getSiteSurvey(int band,char* ofile)
 					else
 						fprintf(fp, "\"%s\",","Unknown");
 
-					if(strstr(ssap->SiteSurvey[i].encryption, "NONE"))
+					if(!strcmp(enc, "NONE"))
 						fprintf(fp, "\"%s\",", "NONE");
-					else if(strstr(ssap->SiteSurvey[i].encryption, "WEP"))
+					else if(!strcmp(enc, "WEP"))
 						fprintf(fp, "\"%s\",", "WEP");
-					else if(strstr(ssap->SiteSurvey[i].encryption, "TKIP"))
+					else if(!strcmp(enc, "TKIP"))
 						fprintf(fp, "\"%s\",", "TKIP");
-					else if(strstr(ssap->SiteSurvey[i].encryption, "AES"))
+					else if(!strcmp(enc, "AES"))
 						fprintf(fp, "\"%s\",", "AES");
+					else if(!strcmp(enc, "TKIPAES"))
+						fprintf(fp, "\"%s\",", "TKIPAES");
 					else
 						fprintf(fp, "\"%s\",", "UNKNOW");
 
@@ -4100,18 +4169,18 @@ getSiteSurvey(int band,char* ofile)
 #endif
 					fprintf(fp, "\"%d\",", atoi(ssap->SiteSurvey[i].signal));
 					fprintf(fp, "\"%s\",", ssap->SiteSurvey[i].bssid);
-					if(strcmp(ssap->SiteSurvey[i].wmode,"11b    ")==0)
-						fprintf(fp, "\"%s\",", "b");
-					else if(strcmp(ssap->SiteSurvey[i].wmode,"11a    ")==0)
-						fprintf(fp, "\"%s\",", "a");
-					else if(strcmp(ssap->SiteSurvey[i].wmode,"11a/n  ")==0)
-						fprintf(fp, "\"%s\",", "an");
-					else if(strcmp(ssap->SiteSurvey[i].wmode,"11b/g  ")==0)
-						fprintf(fp, "\"%s\",", "bg");
-					else if(strcmp(ssap->SiteSurvey[i].wmode,"11b/g/n")==0)
-						fprintf(fp, "\"%s\",", "bgn");
-					else if(strcmp(ssap->SiteSurvey[i].wmode,"11ac   ")==0)
+					if(strncmp(ssap->SiteSurvey[i].wmode, "11a/n/ac", 8)==0)
 						fprintf(fp, "\"%s\",", "ac");
+					else if(strncmp(ssap->SiteSurvey[i].wmode, "11b/g/n", 7)==0)
+						fprintf(fp, "\"%s\",", "bgn");
+					else if(strncmp(ssap->SiteSurvey[i].wmode, "11a/n", 5)==0)
+						fprintf(fp, "\"%s\",", "an");
+					else if(strncmp(ssap->SiteSurvey[i].wmode, "11b/g", 5)==0)
+						fprintf(fp, "\"%s\",", "bg");
+					else if(strncmp(ssap->SiteSurvey[i].wmode, "11a", 3)==0)
+						fprintf(fp, "\"%s\",", "a");
+					else if(strncmp(ssap->SiteSurvey[i].wmode, "11b", 3)==0)
+						fprintf(fp, "\"%s\",", "b");
 					else
 						fprintf(fp, "\"%s\",", "");
 
@@ -4288,7 +4357,7 @@ int site_survey_for_channel(int n, const char *wif, int *HT_EXT)
 	}
 
 	memset(header, 0, sizeof(header));
-	sprintf(header, "%-4s%-33s%-20s%-9s%-16s%-9s%-7s%-7s%-3s%-4s%-5s\n", "Ch", "SSID", "BSSID", "Enc", "Auth", "Signal(%)", "W-Mode", "ExtCH", "NT", "WPS", "DPID");
+	sprintf(header, "%-4s%-33s%-20s%-23s%-9s%-12s%-7s%-3s%-4s%-5s\n", "Ch", "SSID", "BSSID", "Security", "Signal(%)", "W-Mode", "ExtCH", "NT", "WPS", "DPID");
 	//dbg("\n%s", header);
 	if (wrq.u.data.length > 0) {
 		char commch[4];
@@ -4303,10 +4372,9 @@ int site_survey_for_channel(int n, const char *wif, int *HT_EXT)
 			ssap->SiteSurvey[i].channel[3] = '\0';
 			ssap->SiteSurvey[i].ssid[32] = '\0';
 			ssap->SiteSurvey[i].bssid[19] = '\0';
-			ssap->SiteSurvey[i].encryption[8] = '\0';
-			ssap->SiteSurvey[i].authmode[15] = '\0';
+			ssap->SiteSurvey[i].security[22] = '\0';
 			ssap->SiteSurvey[i].signal[8] = '\0';
-			ssap->SiteSurvey[i].wmode[6] = '\0';
+			ssap->SiteSurvey[i].wmode[11] = '\0';
 			ssap->SiteSurvey[i].extch[6] = '\0';
 			ssap->SiteSurvey[i].nt[2] = '\0';
 			ssap->SiteSurvey[i].wps[3] = '\0';
@@ -4320,7 +4388,6 @@ int site_survey_for_channel(int n, const char *wif, int *HT_EXT)
 				memset(commch,0,sizeof(commch));
 				memcpy(commch,ssap->SiteSurvey[i].channel,3);
 				commonchannel=atoi(commch);
-
 				//fprintf(stderr, "##common ch=%d##\n",commonchannel);
 #if 0
 				memset(cench,0,sizeof(cench));

@@ -79,9 +79,13 @@ void swrt_init()
 }
 void swrt_init_done()
 {
+	#if defined(RTNEWIFI2) || defined(RTJDC1) || defined(RTMT1300)
+		doSystem("/usr/sbin/mount_mmc.sh &");
+     #endif
 	_dprintf("############################ SWRT init done #################################\n");
 #ifdef RTCONFIG_SOFTCENTER
 	if (!f_exists("/jffs/softcenter/scripts/ks_tar_install.sh") && nvram_match("sc_mount","0")){
+
 		doSystem("/usr/sbin/jffsinit.sh &");
 		logmessage("Softcenter/软件中心", "Installing/开始安装......");
 		logmessage("Softcenter/软件中心", "Wait a minute/1分钟后完成安装");

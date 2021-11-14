@@ -140,7 +140,7 @@ typedef struct usb_ctrlrequest devctrlrequest;
  *	Profile related sections
  ***********************************************************************************/
 
-#define L1_PROFILE_PATH	"/etc/wireless/l1profile.dat"
+#define L1_PROFILE_PATH	"/ra_SKU/l1profile.dat"
 
 #define L1PROFILE_INDEX_LEN		10
 #define	L1PROFILE_ATTRNAME_LEN	30
@@ -155,17 +155,17 @@ typedef struct usb_ctrlrequest devctrlrequest;
 
 #if defined(CONFIG_FIRST_IF_MT7603E) || defined(CONFIG_SECOND_IF_MT7603E)
 //for SDK's PATH
-#define AP_PROFILE_PATH			"/etc/Wireless/RT2860/RT2860.dat"
-#else /* CONFIG_FIRST_IF_MT7603E */
+#define AP_PROFILE_PATH			"/etc/Wireless/RT2860/RT2860AP.dat"
+#else
 //for PC's PATH
 #define AP_PROFILE_PATH			"/etc/Wireless/RT2860AP/RT2860AP.dat"
-#endif /* !CONFIG_FIRST_IF_MT7603E */
+#endif
 #define AP_RTMP_FIRMWARE_FILE_NAME "/etc/Wireless/RT2860AP/RT2860AP.bin"
 
 #endif
 
 
-#define AP_DRIVER_VERSION			"4.0.1.0rev2.P3"
+#define AP_DRIVER_VERSION			"4.1.2.0_20190222"
 #ifdef MULTIPLE_CARD_SUPPORT
 #define CARD_INFO_PATH			"/etc/Wireless/RT2860AP/RT2860APCard.dat"
 #endif /* MULTIPLE_CARD_SUPPORT */
@@ -749,7 +749,7 @@ extern ULONG		RTDebugFunc;
 do{                                   \
 	ULONG __gLevel = (Level) & 0xff;\
 	ULONG __fLevel = ((Level) & 0xffffff00);\
-    if (((Level & 0xff) <= RT_DEBUG_WARN) && (((RTDebugLevel == RT_DEBUG_FPGA) && (__gLevel == RTDebugLevel)) || ((RTDebugLevel != RT_DEBUG_FPGA) && (__gLevel <= RTDebugLevel))))      \
+    if (((RTDebugLevel == RT_DEBUG_FPGA) && (__gLevel == RTDebugLevel)) || ((RTDebugLevel != RT_DEBUG_FPGA) && (__gLevel <= RTDebugLevel)))      \
     {                               \
     	if ((RTDebugFunc == 0) || \
 		((RTDebugFunc != 0) && (((__fLevel & RTDebugFunc)!= 0) || (__gLevel <= RT_DEBUG_ERROR))))\
@@ -762,7 +762,7 @@ do{                                   \
 do{                                   \
 	ULONG __gLevel = (Level) & 0xff;\
 	ULONG __fLevel = ((Level) & 0xffffff00);\
-    if (((Level & 0xff) <= RT_DEBUG_WARN) && (__gLevel <= RTDebugLevel))      \
+    if (__gLevel <= RTDebugLevel)      \
     {                               \
     	if ((RTDebugFunc == 0) || \
 		((RTDebugFunc != 0) && (((__fLevel & RTDebugFunc)!= 0) || (__gLevel <= RT_DEBUG_ERROR))))\
@@ -839,7 +839,7 @@ do{                                   \
 
 #define MTWF_LOG(Category, SubCategory, Level, Fmt)	\
 do{	\
-				if ((Level <= RT_DEBUG_WARN) && (Level <= RTDebugLevel))	\
+				if ((Level) <= RTDebugLevel)	\
 					MTWF_PRINT Fmt;	\
 				else {	\
 				}	\
@@ -1289,7 +1289,7 @@ do { \
 
 #ifdef CONFIG_RAETH
 #if !defined(CONFIG_RA_NAT_NONE)
-extern int (*ra_sw_nat_hook_tx)(VOID *skb);
+extern int (*ra_sw_nat_hook_tx)(VOID *skb, int gmac_no);
 extern int (*ra_sw_nat_hook_rx)(VOID *skb);
 #ifdef CONFIG_RA_HW_NAT_WIFI_NEW_ARCH
 extern void (*ppe_dev_register_hook)(VOID  *dev);

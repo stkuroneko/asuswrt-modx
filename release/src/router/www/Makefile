@@ -9,13 +9,13 @@ MODELS_HAVE_USB3 = AC2900 \
 	RT-AC5300 GT-AC5300 GT-AC9600 RT-AC95U RT-AC3100 RT-AC3200 \
 	RT-AC55U RT-AC55UHP RT-AC58U 4G-AC53U RT-AC82U RT-AC88Q \
 	RT-AC86U RT-AC88U RT-AC87U RT-AC85U RT-AC85P RT-ACRH26 RT-MIR3G RT-MIR3P RT-AC68U RT-AC68A 4G-AC68U RT-AC65U RT-AC56S RT-AC56U \
-	RT-NEWIFI2 RT-XYC3 RT-NEWIFI3 RT-HIWIFI4 \
+	RT-NEWIFI2 RT-XYC3 RT-NEWIFI3 RT-HIWIFI4 RT-JDC1 RT-MT1300 \
 	RT-N65U \
 	RT-N18U \
 	RP-AC68U
 
 MODELS_HAVE_TRAFFIC_ANALYZER = RT-AC3200 RT-AC87U RT-AC88U RT-AX88U RT-AC86U GT-AC2900 RT-AC3100 RT-AC5300 GT-AC5300 GT-AC9600 DSL-AC68U RT-AC68U \
-	4G-AC68U RT-AC68R RT-AC68W RT-AC68RW GT-AX11000 RT-AC1900P RT-AC67U RT-AC56U RT-AC56R RT-AC85U RT-MIR3G RT-MIR3P RT-MIR4A RT-RM2100 RT-R2100 RT-AC85P RT-AC65U BRT-AC828 BLUECAVE RT-AX92U RT-NEWIFI2 RT-XYC3 RT-NEWIFI3 RT-HIWIFI4 RT-E8820S RT-A040WQ RT-MSG1500
+	4G-AC68U RT-AC68R RT-AC68W RT-AC68RW GT-AX11000 RT-AC1900P RT-AC67U RT-AC56U RT-AC56R RT-AC85U RT-MIR3G RT-MIR3P RT-MIR4A RT-RM2100 RT-R2100 RT-AC85P RT-AC65U BRT-AC828 BLUECAVE RT-AX92U RT-NEWIFI2 RT-XYC3 RT-NEWIFI3 RT-HIWIFI4 RT-E8820S RT-A040WQ RT-MSG1500 RT-JDC1 RT-MT1300
 
 MODELS_QIS_SLIDER = GT-AX11000 GT-AX6000 GT-AC5400
 
@@ -470,65 +470,65 @@ ifneq ($(RTCONFIG_ADBLOCK),y)
 endif
 
 #ifeq ($(or $(RTMIR3G),$(RTMIR3P),$(RTMIR4A),$(RTRM2100),$(RTR2100),$(RTNEWIFI2),$(RTNEWIFI3),$(RTHIWIFI4),$(RTE8820S)),y)
-	#rm -rf $(INSTALLDIR)/www/AiProtection_HomeSecurity.asp
-	#rm -rf $(INSTALLDIR)/www/AiProtection_Group.asp
-	#rm -rf $(INSTALLDIR)/www/AiProtection_HomeProtection.asp
-	#rm -rf $(INSTALLDIR)/www/AiProtection_WebProtector.asp
-	#rm -rf $(INSTALLDIR)/www/AiProtection_InfectedDevicePreventBlock.asp
-	#rm -rf $(INSTALLDIR)/www/AiProtection_IntrusionPreventionSystem.asp
-	#rm -rf $(INSTALLDIR)/www/AiProtection_MaliciousSitesBlocking.asp
-	#rm -rf $(INSTALLDIR)/www/images/New_ui/infected.svg
-	#rm -rf $(INSTALLDIR)/www/images/New_ui/IPS.svg
-	#rm -rf $(INSTALLDIR)/www/images/New_ui/mals.svg
-	#rm -rf $(INSTALLDIR)/www/images/New_ui/recount.svg
-	#rm -rf $(INSTALLDIR)/www/images/New_ui/recount_hover.svg
-	#rm -rf $(INSTALLDIR)/www/images/New_ui/add.svg
-	#rm -rf $(INSTALLDIR)/www/images/New_ui/add_hover.svg
-	#rm -rf $(INSTALLDIR)/www/images/New_ui/disable.svg
-	#rm -rf $(INSTALLDIR)/www/images/save.svg
-	#rm -rf $(INSTALLDIR)/www/images/save_hover.svg
-	#rm -rf $(INSTALLDIR)/www/images/save_active.svg
-	#rm -rf $(INSTALLDIR)/www/images/delete_active.svg
-	#rm -rf $(INSTALLDIR)/www/images/edit.svg
-	#rm -rf $(INSTALLDIR)/www/images/edit_hover.svg
-	#rm -rf $(INSTALLDIR)/www/images/edit_active.svg
-	#rm -rf $(INSTALLDIR)/www/images/New_ui/AiProtection_01.png
-	#rm -rf $(INSTALLDIR)/www/images/New_ui/AiProtection_02.png
-	#rm -rf $(INSTALLDIR)/www/images/New_ui/AiProtection_03.png
-	#rm -rf $(INSTALLDIR)/www/images/New_ui/Home_Protection_Scenario.png
-	#rm -rf $(INSTALLDIR)/www/getAiProtectionEvent.asp
-	#rm -rf $(INSTALLDIR)/www/getIPSChart.asp
-	#rm -rf $(INSTALLDIR)/www/getIPSDetailEvent.asp
-	#rm -rf $(INSTALLDIR)/www/getIPSEvent.asp
-	#rm -rf $(INSTALLDIR)/www/getNonIPSChart.asp
-	#rm -rf $(INSTALLDIR)/www/images/New_ui/HomeProtection.png
-	#rm -rf $(INSTALLDIR)/www/images/New_ui/Web_Apps_Restriction.png
-	#rm -rf $(INSTALLDIR)/www/images/New_ui/tm_logo_power.png
-	#rm -rf $(INSTALLDIR)/www/css/gameprofile.css
-	#rm -rf $(INSTALLDIR)/www/GameBoost.asp
-	#rm -rf $(INSTALLDIR)/www/GameProfile.asp
-	#rm -rf $(INSTALLDIR)/www/images/gameprofile
-	#rm -rf $(INSTALLDIR)/www/images/mainimage_img_Game.jpg
-	#rm -rf $(INSTALLDIR)/www/images/New_ui/coolerstatus.png
-	#rm -rf $(INSTALLDIR)/www/images/New_ui/GameBoost_gamePriority.svg
-	#rm -rf $(INSTALLDIR)/www/images/New_ui/GameBoost_mobileGame.svg
-	#rm -rf $(INSTALLDIR)/www/images/New_ui/GameBoost_openNAT.svg
-	#rm -rf $(INSTALLDIR)/www/images/New_ui/GameBoost_WTFast.png
-	#rm -rf $(INSTALLDIR)/www/images/New_ui/icon_ifttt.png
-	#rm -rf $(INSTALLDIR)/www/images/New_ui/mainimage_img_Game.jpg
-	#rm -rf $(INSTALLDIR)/www/images/New_ui/networkmap/icon_guest1.svg
-	#rm -rf $(INSTALLDIR)/www/images/New_ui/networkmap/icon_guest2.svg
-	#rm -rf $(INSTALLDIR)/www/images/New_ui/networkmap/icon_guest3.svg
-	#rm -rf $(INSTALLDIR)/www/images/New_ui/networkmap/icon_guest.svg
-	#rm -rf $(INSTALLDIR)/www/images/New_ui/open_NAT.svg
-	#rm -rf $(INSTALLDIR)/www/images/New_ui/openNAT.svg
-	#rm -rf $(INSTALLDIR)/www/images/New_ui/pvid.png
-	#rm -rf $(INSTALLDIR)/www/images/qis/lyra_io.png
-	#rm -rf $(INSTALLDIR)/www/images/qis/trio_io.png
-	#rm -rf $(INSTALLDIR)/www/images/uu_accelerator.png
-	#rm -rf $(INSTALLDIR)/www/images/vpn_illustration.png
-	#rm -rf $(INSTALLDIR)/www/js/gameProfile.js
-	#rm -rf $(INSTALLDIR)/www/UUAccelerator.asp
+#rm -rf $(INSTALLDIR)/www/AiProtection_HomeSecurity.asp
+#rm -rf $(INSTALLDIR)/www/AiProtection_Group.asp
+#rm -rf $(INSTALLDIR)/www/AiProtection_HomeProtection.asp
+#rm -rf $(INSTALLDIR)/www/AiProtection_WebProtector.asp
+#rm -rf $(INSTALLDIR)/www/AiProtection_InfectedDevicePreventBlock.asp
+#rm -rf $(INSTALLDIR)/www/AiProtection_IntrusionPreventionSystem.asp
+#rm -rf $(INSTALLDIR)/www/AiProtection_MaliciousSitesBlocking.asp
+#rm -rf $(INSTALLDIR)/www/images/New_ui/infected.svg
+#rm -rf $(INSTALLDIR)/www/images/New_ui/IPS.svg
+#rm -rf $(INSTALLDIR)/www/images/New_ui/mals.svg
+#rm -rf $(INSTALLDIR)/www/images/New_ui/recount.svg
+#rm -rf $(INSTALLDIR)/www/images/New_ui/recount_hover.svg
+#rm -rf $(INSTALLDIR)/www/images/New_ui/add.svg
+#rm -rf $(INSTALLDIR)/www/images/New_ui/add_hover.svg
+#rm -rf $(INSTALLDIR)/www/images/New_ui/disable.svg
+#rm -rf $(INSTALLDIR)/www/images/save.svg
+#rm -rf $(INSTALLDIR)/www/images/save_hover.svg
+#rm -rf $(INSTALLDIR)/www/images/save_active.svg
+#rm -rf $(INSTALLDIR)/www/images/delete_active.svg
+#rm -rf $(INSTALLDIR)/www/images/edit.svg
+#rm -rf $(INSTALLDIR)/www/images/edit_hover.svg
+#rm -rf $(INSTALLDIR)/www/images/edit_active.svg
+#rm -rf $(INSTALLDIR)/www/images/New_ui/AiProtection_01.png
+#rm -rf $(INSTALLDIR)/www/images/New_ui/AiProtection_02.png
+#rm -rf $(INSTALLDIR)/www/images/New_ui/AiProtection_03.png
+#rm -rf $(INSTALLDIR)/www/images/New_ui/Home_Protection_Scenario.png
+#rm -rf $(INSTALLDIR)/www/getAiProtectionEvent.asp
+#rm -rf $(INSTALLDIR)/www/getIPSChart.asp
+#rm -rf $(INSTALLDIR)/www/getIPSDetailEvent.asp
+#rm -rf $(INSTALLDIR)/www/getIPSEvent.asp
+#rm -rf $(INSTALLDIR)/www/getNonIPSChart.asp
+#rm -rf $(INSTALLDIR)/www/images/New_ui/HomeProtection.png
+#rm -rf $(INSTALLDIR)/www/images/New_ui/Web_Apps_Restriction.png
+#rm -rf $(INSTALLDIR)/www/images/New_ui/tm_logo_power.png
+#rm -rf $(INSTALLDIR)/www/css/gameprofile.css
+#rm -rf $(INSTALLDIR)/www/GameBoost.asp
+#rm -rf $(INSTALLDIR)/www/GameProfile.asp
+#rm -rf $(INSTALLDIR)/www/images/gameprofile
+#rm -rf $(INSTALLDIR)/www/images/mainimage_img_Game.jpg
+#rm -rf $(INSTALLDIR)/www/images/New_ui/coolerstatus.png
+#rm -rf $(INSTALLDIR)/www/images/New_ui/GameBoost_gamePriority.svg
+#rm -rf $(INSTALLDIR)/www/images/New_ui/GameBoost_mobileGame.svg
+#rm -rf $(INSTALLDIR)/www/images/New_ui/GameBoost_openNAT.svg
+#rm -rf $(INSTALLDIR)/www/images/New_ui/GameBoost_WTFast.png
+#rm -rf $(INSTALLDIR)/www/images/New_ui/icon_ifttt.png
+#rm -rf $(INSTALLDIR)/www/images/New_ui/mainimage_img_Game.jpg
+#rm -rf $(INSTALLDIR)/www/images/New_ui/networkmap/icon_guest1.svg
+#rm -rf $(INSTALLDIR)/www/images/New_ui/networkmap/icon_guest2.svg
+#rm -rf $(INSTALLDIR)/www/images/New_ui/networkmap/icon_guest3.svg
+#rm -rf $(INSTALLDIR)/www/images/New_ui/networkmap/icon_guest.svg
+#rm -rf $(INSTALLDIR)/www/images/New_ui/open_NAT.svg
+#rm -rf $(INSTALLDIR)/www/images/New_ui/openNAT.svg
+#rm -rf $(INSTALLDIR)/www/images/New_ui/pvid.png
+#rm -rf $(INSTALLDIR)/www/images/qis/lyra_io.png
+#rm -rf $(INSTALLDIR)/www/images/qis/trio_io.png
+#rm -rf $(INSTALLDIR)/www/images/uu_accelerator.png
+#rm -rf $(INSTALLDIR)/www/images/vpn_illustration.png
+#rm -rf $(INSTALLDIR)/www/js/gameProfile.js
+#rm -rf $(INSTALLDIR)/www/UUAccelerator.asp
 #endif
 
 ifneq ($(RTCONFIG_ROG),y)

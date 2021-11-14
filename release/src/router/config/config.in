@@ -1816,8 +1816,25 @@ config RTCONFIG_SWRT
 	bool "RTCONFIG_SWRT"
 	default n
 
+config RTCONFIG_SWRT_LED
+	bool "RTCONFIG_SWRT_LED"
+	default n
+
+config RTCONFIG_SWRT_UU
+	bool "RTCONFIG_SWRT_UU"
+	default n
+
 config RTCONFIG_SWRT_FULLCONE
 	bool "RTCONFIG_SWRT_FULLCONE"
+	default n
+
+config RTCONFIG_SWRT_I2CLED
+	bool "RTCONFIG_SWRT_I2CLED"
+	default n
+
+config RTCONFIG_SWRT_KVR
+	bool "mtk kvr support"
+	depends on RTCONFIG_RALINK
 	default n
 
 config RTCONFIG_ENTWARE

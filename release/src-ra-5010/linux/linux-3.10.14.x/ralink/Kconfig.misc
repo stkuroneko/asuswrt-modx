@@ -79,4 +79,12 @@ config  MODEL_RTMSG1500
 	bool "RT-MSG1500"
 	default n
 
+config  MODEL_RTJDC1
+	bool "RT-JDC1"
+	default n
+
+config  MODEL_RTMT1300
+	bool "RT-MT1300"
+	default n
+
 endmenu
