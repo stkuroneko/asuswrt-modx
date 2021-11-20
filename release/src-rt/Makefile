@@ -174,6 +174,10 @@ endif
 export MODEL
 export CFLAGS += -D$(MODEL)
 export $(MODEL):=y
+ifneq ($(SWRT_NAME),)
+export CFLAGS += -DSWRT_VER_MAJOR_$(SWRT_VER_MAJOR)
+export SWRT_VER_MAJOR_$(SWRT_VER_MAJOR):=y
+endif
 endif
 
 EXTRA_KERNEL_YES_CONFIGS_1 := $(filter %=y %=Y,$(EXTRA_KERNEL_CONFIGS))
@@ -2668,6 +2672,10 @@ define RouterOptions
 	echo "RTCONFIG_SWRT_I2CLED=y" >>$(1); \
 	else \
 	echo "# RTCONFIG_SWRT_I2CLED is not set" >>$(1); \
+	fi; \
+	if [ "$(SWRT_FASTPATH)" = "y" ]; then \
+	sed -i "/RTCONFIG_SWRT_FASTPATH/d" $(1); \
+	echo "RTCONFIG_SWRT_FASTPATH=y" >>$(1); \
 	fi; \
 	if [ "$(SWRT_KVR)" = "y" ]; then \
 	sed -i "/RTCONFIG_SWRT_KVR/d" $(1); \

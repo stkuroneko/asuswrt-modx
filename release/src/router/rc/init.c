@@ -4050,8 +4050,8 @@ int init_nvram(void)
 		add_rc_support("2.4G 5G noupdate usbX2");
 		
 		nvram_set_int("led_all_gpio", 13|GPIO_ACTIVE_LOW);
-        nvram_set_int("led_pwr_gpio",  14|GPIO_ACTIVE_LOW);
-		nvram_set_int("led_wan_gpio",  16|GPIO_ACTIVE_LOW);
+        nvram_set_int("led_pwr_gpio",  16|GPIO_ACTIVE_LOW);
+		nvram_set_int("led_wan_gpio",  14);
         nvram_set_int("btn_rst_gpio", 15|GPIO_ACTIVE_LOW);
         nvram_set_int("btn_wps_gpio", 18|GPIO_ACTIVE_LOW);
 
@@ -9761,6 +9761,9 @@ int init_nvram(void)
 #if defined(RTCONFIG_SOFTCENTER)
 	add_rc_support("softcenter");
 #endif
+#if defined(RTCONFIG_SMARTDNS)
+	add_rc_support("smartdns");
+#endif
 	return 0;
 }
 
@@ -10619,6 +10622,19 @@ static void sysinit(void)
 #if !defined(RTCONFIG_SOC_IPQ40XX)
 #if defined(RTCONFIG_BLINK_LED)
 	modprobe("bled");
+#endif
+#if defined(RTCONFIG_SWRT_I2CLED)
+#if defined(R6800)
+	modprobe("sx150x-leds");
+#else
+	modprobe("i2cleds");
+#endif
+#endif
+#if defined(RTCONFIG_LANTIQ) || defined(RTCONFIG_QCA) || defined(RTCONFIG_RALINK) || defined(RTCONFIG_HND_ROUTER)
+#if defined(RTCONFIG_SOC_IPQ40XX)
+	modprobe("qcrypto");
+#endif
+	modprobe("cryptodev");
 #endif
 #endif
 #ifdef LINUX26
