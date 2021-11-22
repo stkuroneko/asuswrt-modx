@@ -141,6 +141,7 @@ INT rt28xx_ap_ioctl(struct net_device *net_dev, struct ifreq *rq, int cmd)
 
 	wrq->u.data.pointer = wrqin->u.data.pointer;
 	wrq->u.data.length = wrqin->u.data.length;
+	wrq->u.data.flags = wrqin->u.data.flags;
 	org_len = wrq->u.data.length;
 
 	pIoctlConfig->Status = 0;
@@ -254,7 +255,7 @@ skip_check:
 				RTMP_DRIVER_BITRATE_GET(pAd, pIoctlRate);
 
 
-			wrqin->u.bitrate.value = pIoctlRate->BitRate;
+			wrqin->u.bitrate.value = (pIoctlRate->BitRate/1000);
 			wrqin->u.bitrate.disabled = 0;
             }
 			break;

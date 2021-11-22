@@ -2,17 +2,17 @@ config WIFI_DRIVER
 	bool
 	default y
 
+config MT_WIFI_PATH
+	string
+	depends on MT_WIFI
+	default "mt_wifi"
+
 config CHIP_MT7615E
 	bool
 	default y
 config MT_WIFI
 	tristate "MT WIFI Driver"
 	select WIFI_BASIC_FUNC if MT_WIFI
-
-config MT_WIFI_PATH
-		string
-		depends on MT_WIFI
-		default "mt_wifi"
 
 if MT_WIFI
 menu "WiFi Generic Feature Options"
@@ -60,7 +60,7 @@ config RT_THIRD_CARD_EEPROM
 	default "prom" if RT_THIRD_IF_EEPROM_PROM
 	default "efuse" if RT_THIRD_IF_EEPROM_EFUSE
 	default "flash" if RT_THIRD_IF_EEPROM_FLASH
-	
+
 config MULTI_INF_SUPPORT
 		bool
 		default y if !FIRST_IF_NONE && !SECOND_IF_NONE
@@ -195,11 +195,11 @@ config WHNAT_SUPPORT
 	depends on FAST_NAT_SUPPORT
 	default n
 
-#config LLTD_SUPPORT
-#	bool "LLTD (Link Layer Topology Discovery Protocol)"
-#	depends on WIFI_DRIVER
-#	depends on MT_AP_SUPPORT
-#	default n
+config LLTD_SUPPORT
+	bool "LLTD (Link Layer Topology Discovery Protocol)"
+	depends on WIFI_DRIVER
+	depends on MT_AP_SUPPORT
+	default n
 
 #config QOS_DLS_SUPPORT
 #	bool "802.11e DLS ((Direct-Link Setup) Support"
@@ -221,7 +221,7 @@ config FTM_SUPPORT
 config MBO_SUPPORT
 	bool "MBO Support"
 	depends on WIFI_DRIVER
-	select INTERWORKING
+	select MT_INTERWORKING
 	select WNM_SUPPORT
 	select DOT11K_RRM_SUPPORT
 	select DOT11R_FT_SUPPORT
@@ -381,7 +381,7 @@ config FDB_SUPPORT
 choice
         prompt "PA LNA Type of 1st Card"
 		depends on ! FIRST_IF_NONE
-		
+
 		config FIRST_IF_EPAELNA
 		bool "ePAeLNA"
 		config FIRST_IF_IPAILNA
@@ -394,7 +394,7 @@ endchoice
 choice
         prompt "PA LNA Type of 2nd Card"
 		depends on ! SECOND_IF_NONE
-		
+
 		config SECOND_IF_EPAELNA
 		bool "ePAeLNA"
 		config SECOND_IF_IPAILNA
@@ -406,7 +406,6 @@ choice
 endchoice
 
 #### PA_LNA_Type choice END 
-
 #
 # Section for chip architectures
 #
@@ -466,14 +465,9 @@ menu "WiFi Operation Modes"
 				select MT_AP_SUPPORT
 				select MT_STA_SUPPORT
     endchoice
-
     if WIFI_MODE_AP || WIFI_MODE_BOTH
 		source "drivers/net/wireless/ralink/mt7615_ap/Kconfig"
     endif
-
-#    if WIFI_MODE_STA || WIFI_MODE_BOTH
-#		source "drivers/net/wireless/mt_wifi_sta/Kconfig"
-#    endif
 endmenu	
 
 endif
