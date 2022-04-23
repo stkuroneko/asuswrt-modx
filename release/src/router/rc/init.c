@@ -3997,14 +3997,10 @@ int init_nvram(void)
 		nvram_set("ohci_ports", "2-1 2-2");
 		add_rc_support("2.4G 5G noupdate usbX2");
 
-		nvram_set_int("led_wan_gpio", 4);
-        nvram_set_int("led_pwr_gpio", 15|GPIO_ACTIVE_LOW);
-        nvram_set_int("btn_rst_gpio",  3|GPIO_ACTIVE_LOW);
-		nvram_set_int("btn_wps_gpio",  7|GPIO_ACTIVE_LOW);
-		nvram_set_int("led_5g_gpio", 16|GPIO_ACTIVE_LOW);
-		nvram_set_int("led_2g_gpio", 14|GPIO_ACTIVE_LOW);
-		nvram_set_int("led_wps_gpio",  6|GPIO_ACTIVE_LOW);
-		nvram_set_int("led_lan_gpio", 13|GPIO_ACTIVE_LOW);
+		nvram_set_int("led_wan_gpio", 6);
+        nvram_set_int("led_pwr_gpio", 12|GPIO_ACTIVE_LOW);
+        nvram_set_int("btn_rst_gpio", 18|GPIO_ACTIVE_LOW);
+		nvram_set_int("led_wps_gpio",  8|GPIO_ACTIVE_LOW);
 
 		eval("rtkswitch", "11");
 		nvram_set("ct_max", "300000"); // force
