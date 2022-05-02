@@ -4191,6 +4191,8 @@ int init_nvram(void)
 		nvram_set_int("btn_wifi_gpio",10|GPIO_ACTIVE_LOW);
 		nvram_set_int("led_pwr_gpio",  3|GPIO_ACTIVE_LOW);
 		nvram_set_int("led_lan_gpio",  16|GPIO_ACTIVE_LOW);
+		nvram_set_int("pcie_2g_gpio",  19|GPIO_ACTIVE_LOW);
+		nvram_set_int("pcie_5g_gpio",  4|GPIO_ACTIVE_LOW);
 
 		eval("rtkswitch", "11");
 
