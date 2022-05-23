@@ -90,7 +90,7 @@ endif
 ifneq ($(SKU_5G_EAC),)
 	install DUMMY_SKU $(SKUDIR)/SingleSKU_5G_EAC.dat
 endif
-ifeq ($(or $(RTHIWIFI4),$(RTE8820S),$(RTMIR3G),$(RTNEWIFI2),$(RTNEWIFI3)),y)
+ifeq ($(or $(RTHIWIFI4),$(RTE8820S),$(RTMIR3G),$(RTNEWIFI2),$(RTRS1200P),$(RTNEWIFI3)),y)
 	@install $(BUILD_NAME)/l1profile.dat $(SKUDIR)/l1profile.dat
 	@install $(BUILD_NAME)/SingleSKU_2.4G.dat $(SKUDIR)/SingleSKU_2.4G.dat
 	@install $(BUILD_NAME)/SingleSKU_5.8G.dat $(SKUDIR)/SingleSKU_5.8G.dat

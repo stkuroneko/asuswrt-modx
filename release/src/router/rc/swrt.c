@@ -79,7 +79,7 @@ void swrt_init()
 }
 void swrt_init_done()
 {
-	#if defined(RTNEWIFI2) || defined(RTJDC1) || defined(RTMT1300)
+	#if defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTJDC1) || defined(RTMT1300)
 		doSystem("/usr/sbin/mount_mmc.sh &");
      #endif
 	_dprintf("############################ SWRT init done #################################\n");

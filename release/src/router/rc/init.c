@@ -4077,6 +4077,56 @@ int init_nvram(void)
 #endif /* Newifi*/
 
 
+#if defined(RTRS1200P) 
+	case MODEL_RTRS1200P:
+		swrt_init();
+		nvram_set("boardflags", "0x100"); // although it is not used in ralink driver, set for vlan
+		nvram_set("vlan1hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
+		nvram_set("vlan2hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
+		nvram_set("lan_ifname", "br0");
+
+		wl_ifaces[WL_2G_BAND] = "ra0";
+		wl_ifaces[WL_5G_BAND] = "rai0";
+
+		set_basic_ifname_vars("eth3", "vlan1", wl_ifaces, "usb", "vlan1", NULL, "vlan3", NULL, 0);
+		nvram_set_int("pwr_usb_gpio", 11);
+		nvram_set_int("pwr_usb2_gpio", 9);
+		nvram_set("ehci_ports", "1-1 1-2");
+		nvram_set("ohci_ports", "2-1 2-2");
+		add_rc_support("2.4G 5G noupdate usbX2");
+		
+		nvram_set_int("led_all_gpio", 13|GPIO_ACTIVE_LOW);
+        nvram_set_int("led_pwr_gpio",  16|GPIO_ACTIVE_LOW);
+		nvram_set_int("led_wan_gpio",  14);
+        nvram_set_int("btn_rst_gpio", 15|GPIO_ACTIVE_LOW);
+        nvram_set_int("btn_wps_gpio", 18|GPIO_ACTIVE_LOW);
+
+		eval("rtkswitch", "11");
+		nvram_set("ct_max", "300000"); // force
+
+		add_rc_support("mssid");
+		add_rc_support("rawifi");
+		add_rc_support("11AC");
+		add_rc_support("manual_stb");
+		add_rc_support("user_low_rssi");
+		add_rc_support("loclist");
+		add_rc_support("mfp");
+		add_rc_support("pwrctrl");
+		add_rc_support("app");
+		add_rc_support("gameMode");
+		add_rc_support("switchctrl");
+		add_rc_support("uu_accel");
+
+		nvram_set("wl0_HT_TxStream", "2");
+		nvram_set("wl0_HT_RxStream", "2");
+
+		nvram_set("wl1_HT_TxStream", "2");
+		nvram_set("wl1_HT_RxStream", "2");
+
+		break;
+#endif /*RS1200P*/
+
+
 #if defined(RTMT1300) 
 	case MODEL_RTMT1300:
 		swrt_init();
