@@ -1122,6 +1122,7 @@ SendAssocResponse:
 			              SupRateLen, pAd->CommonCfg.SupRate,
 			              END_OF_ARGS);
 			MiniportMMRequest(pAd, 0, pOutBuffer, FrameLen);
+			MlmeFreeMemory(pAd, (PVOID) pOutBuffer);
 		}
 
 		RTMPSendWirelessEvent(pAd, IW_MAC_FILTER_LIST_EVENT_FLAG, ie_list->Addr2, pEntry->apidx, 0);
@@ -1138,8 +1139,7 @@ SendAssocResponse:
 			if (pEntry)
 				MacTableDeleteEntry(pAd, pEntry->wcid, pEntry->Addr);
 		}
-        
-        MlmeFreeMemory(pAd, (PVOID) pOutBuffer);
+
 		goto LabelOK;
 	}
 
@@ -1573,6 +1573,10 @@ SendAssocResponse:
 
 		if (bNeedAppendExtIE == TRUE)
 		{
+#ifdef RT_BIG_ENDIAN
+		*((UINT32*)(pInfo)) = SWAP32(*((UINT32*)(pInfo)));
+		*((UINT32*)(pInfo+4)) = SWAP32(*((UINT32*)(pInfo+4)))
+#endif		
 			MakeOutgoingFrame(pOutBuffer+FrameLen, &TmpLen,
 							1,			&ExtCapIe,
 							1,			&extInfoLen,
@@ -2027,10 +2031,10 @@ VOID APPeerDisassocReqAction(RTMP_ADAPTER *pAd, MLME_QUEUE_ELEM *Elem)
 #ifdef MAC_REPEATER_SUPPORT
 		if (pAd->ApCfg.bMACRepeaterEn == TRUE)
 		{
-			UCHAR apCliIdx, CliIdx, isLinkValid;
+			UCHAR apCliIdx, CliIdx;
 			REPEATER_CLIENT_ENTRY *pReptEntry = NULL;
 
-			pReptEntry = RTMPLookupRepeaterCliEntry(pAd, TRUE, Addr2, TRUE, &isLinkValid);
+			pReptEntry = RTMPLookupRepeaterCliEntry(pAd, TRUE, Addr2);
 			if (pReptEntry && (pReptEntry->CliConnectState != 0))
 			{
 				apCliIdx = pReptEntry->MatchApCliIdx;
@@ -2144,6 +2148,7 @@ VOID APMlmeKickOutAllSta(RTMP_ADAPTER *pAd, UCHAR apidx, USHORT Reason)
     NDIS_STATUS     NStatus;
     UCHAR           BROADCAST_ADDR[MAC_ADDR_LEN] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
     PPMF_CFG        pPmfCfg = NULL;
+    INT             i;
 
     pPmfCfg = &pAd->ApCfg.MBSSID[apidx].PmfCfg;
     if ((apidx < pAd->ApCfg.BssidNum) && (pPmfCfg))

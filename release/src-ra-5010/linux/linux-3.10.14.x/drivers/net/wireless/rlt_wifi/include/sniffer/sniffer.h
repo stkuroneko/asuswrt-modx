@@ -18,7 +18,6 @@
 #define __SNIFFER_H__
 
 #include "radiotap.h"
-#include "ppi.h"
 
 struct sniffer_control {
 	UINT8 sniffer_type;

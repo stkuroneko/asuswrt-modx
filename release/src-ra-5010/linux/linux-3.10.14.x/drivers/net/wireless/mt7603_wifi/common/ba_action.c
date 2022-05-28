@@ -14,7 +14,7 @@
 #define MULTI_CLIENT_REORDERING_PACKET_TIMEOUT		((200 * OS_HZ)/1000)	/* system ticks -- 200 ms*/
 #define MAX_REORDERING_PACKET_TIMEOUT	((3000 * OS_HZ)/1000)	/* system ticks -- 100 ms*/
 
-#if defined(MAX_CONTINUOUS_TX_CNT)
+#if defined(MAX_CONTINUOUS_TX_CNT) || defined(NEW_IXIA_METHOD)
 #undef MULTI_CLIENT_REORDERING_PACKET_TIMEOUT
 #define MULTI_CLIENT_REORDERING_PACKET_TIMEOUT		((500 * OS_HZ)/1000)	/* system ticks -- 200 ms*/
 #endif
@@ -1704,10 +1704,9 @@ static VOID ba_enqueue_reordering_packet(
 			/* had been already within reordering list don't indicate */
 			RELEASE_NDIS_PACKET(pAd, pRxBlk->pRxPacket, NDIS_STATUS_SUCCESS);                     
 			ba_mpdu_blk_free(pAd, mpdu_blk);
-#ifdef MAX_CONTINUOUS_TX_CNT
+	#ifdef NEW_IXIA_METHOD
 			pAd->tr_ststic.rx[ALREADY_IN_ORDER]++;
-#endif
-
+	#endif
 		}
 
 		ASSERT((0<= pBAEntry->list.qlen)  && (pBAEntry->list.qlen <= pBAEntry->BAWinSize));
@@ -1821,11 +1820,8 @@ void ba_timeout_monitor(PRTMP_ADAPTER pAd)
 	BOOLEAN need_check = FALSE;
 	static int NeedFallBack=0;
 
-	if ((pAd->MacTab.Size >= 20)
-#ifdef MAX_CONTINUOUS_TX_CNT
-		|| (pAd->ixiaCtrl.iMode == VERIWAVE_MODE)
-#endif
-			) {
+	if ( pAd->MacTab.Size >= 20 )
+	{
 		pAd->BATable.ba_reordering_packet_timeout = MULTI_CLIENT_REORDERING_PACKET_TIMEOUT;
 		NeedFallBack = 0;
 	}
@@ -1974,7 +1970,7 @@ VOID Indicate_AMPDU_Packet(RTMP_ADAPTER *pAd, RX_BLK *pRxBlk, UCHAR wdev_idx)
 	/* II. Drop Duplicated Packet*/
 	else if (Sequence == pBAEntry->LastIndSeq)
 	{
-#ifdef MAX_CONTINUOUS_TX_CNT
+#ifdef NEW_IXIA_METHOD
 		pAd->tr_ststic.rx[DUP_SEQ_PKT]++;
 #endif
 		pBAEntry->nDropPacket++;
@@ -1986,7 +1982,7 @@ VOID Indicate_AMPDU_Packet(RTMP_ADAPTER *pAd, RX_BLK *pRxBlk, UCHAR wdev_idx)
 	/* III. Drop Old Received Packet*/
 	else if (SEQ_SMALLER(Sequence, pBAEntry->LastIndSeq, MAXSEQ))
 	{
-#ifdef MAX_CONTINUOUS_TX_CNT
+#ifdef NEW_IXIA_METHOD
 		pAd->tr_ststic.rx[DUP_SEQ_PKT]++;
 #endif
 		pBAEntry->nDropPacket++;

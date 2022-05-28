@@ -457,9 +457,6 @@ skip_check:
 			break;
 #endif /* RTMP_RF_RW_SUPPORT */
 #endif /* DBG */
-		case RTPRIV_IOCTL_ASUSCMD:
-			Status = RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_ASUSCMD, wrqin->u.data.flags, NULL, 0);
-			break;
 
 #ifdef WIFI_DIAG
 		case RTPRIV_IOCTL_GET_PROCESS_INFO:

@@ -96,14 +96,13 @@ typedef union {
 } usockaddr;
 
 #include "queue.h"
-#define MAX_CONN_ACCEPT 128
-#define MAX_CONN_TIMEOUT 5
+#define MAX_CONN_ACCEPT 64
+#define MAX_CONN_TIMEOUT 60
 
 typedef struct conn_item {
 	TAILQ_ENTRY(conn_item) entry;
 	int fd;
 	usockaddr usa;
-	time_t deadline;
 } conn_item_t;
 
 typedef struct conn_list {
@@ -280,13 +279,8 @@ time_t request_timestamp = 0;
 time_t turn_off_auth_timestamp = 0;
 int temp_turn_off_auth = 0;	// for QISxxx.htm pages
 
-struct timeval alarm_tv;
-time_t alarm_timestamp = 0;
-int check_alive_flag = 0;
-
 /* Const vars */
 const int int_1 = 1;
-const struct linger linger = { 1, 0 };
 
 void http_login(unsigned int ip, char *url);
 void http_login_timeout(unsigned int ip, char *cookies, int fromapp_flag);
@@ -408,7 +402,7 @@ initialize_listen_socket(usockaddr* usa, const char *ifname)
 		perror("bind");
 		goto error;
 	}
-	if (listen(fd, MAX_CONN_ACCEPT) < 0) {
+	if (listen(fd, 1024) < 0) {
 		perror( "listen" );
 		goto error;
 	}
@@ -740,7 +734,7 @@ int check_user_agent(char* user_agent){
 void add_ifttt_flag(void){
 
 	memset(user_agent, 0, sizeof(user_agent));
-	snprintf(user_agent, sizeof(user_agent), "%s",IFTTTUSERAGENT);
+	sprintf(user_agent, "%s",IFTTTUSERAGENT);
 	return;
 }
 #endif
@@ -1021,11 +1015,11 @@ handle_request(void)
 			sethost(cp);
 			cur = cp + strlen(cp) + 1;
 #ifdef RTCONFIG_FINDASUS
-			snprintf(prouduct_id, sizeof(prouduct_id), "%s",get_productid());
+			sprintf(prouduct_id, "%s",get_productid());
 			for(i = 0 ; i < strlen(prouduct_id) ; i++ ){
 				prouduct_id[i] = tolower(prouduct_id[i]) ;
 			}
-			snprintf(id_local, sizeof(id_local), "%s.local",prouduct_id);
+			sprintf(id_local, "%s.local",prouduct_id);
 			if(!strncmp(cp, "findasus", 8) || !strncmp(cp, id_local,strlen(id_local)))
 				isDeviceDiscovery = 1;
 			else
@@ -1036,10 +1030,6 @@ handle_request(void)
 			cp = &cur[15];
 			cp += strspn( cp, " \t" );
 			cl = strtoul( cp, NULL, 0 );
-			if(cl < 0){
-				send_error( 400, "Bad Request", (char*) 0, "Illegal HTTP Format." );
-				return;
-			}
 		}
 		else if ((cp = strstr( cur, "boundary=" ))) {
 			boundary = &cp[9];
@@ -1115,7 +1105,7 @@ handle_request(void)
 	if(useragent != NULL)
 		strncpy(user_agent, useragent, sizeof(user_agent)-1);
 	else
-		strlcpy(user_agent, "", sizeof(user_agent));
+		strcpy(user_agent, "");
 
 	fromapp = check_user_agent(useragent);
 
@@ -1149,9 +1139,6 @@ handle_request(void)
 				last_login_timestamp = 0;
 				lock_flag &= ~(LOCK_LOGIN_LAN);
 				login_error_status = 0;
-#ifdef RTCONFIG_CAPTCHA
-				login_fail_num = 0;
-#endif
 			}else{
 				if((strncmp(file, "Main_Login.asp", 14)==0 && login_error_status == LOGINLOCK)|| strstr(url, ".png")){
 				}else{
@@ -1168,9 +1155,6 @@ handle_request(void)
 				last_login_timestamp_wan= 0;
 				lock_flag &= ~(LOCK_LOGIN_WAN);
 				login_error_status = 0;
-#ifdef RTCONFIG_CAPTCHA
-				login_fail_num = 0;
-#endif
 			}else{
 				if((strncmp(file, "Main_Login.asp", 14)==0 && login_error_status == LOGINLOCK)|| strstr(url, ".png")){
 				}else{
@@ -1423,11 +1407,11 @@ void http_login(unsigned int ip, char *url) {
 	login_timestamp = uptime();
 
 	memset(login_ipstr, 0, 32);
-	snprintf(login_ipstr, sizeof(login_ipstr), "%u", login_ip);
+	sprintf(login_ipstr, "%u", login_ip);
 	nvram_set("login_ip", login_ipstr);
 
 	memset(login_timestampstr, 0, 32);
-	snprintf(login_timestampstr, sizeof(login_timestampstr), "%lu", login_timestamp);
+	sprintf(login_timestampstr, "%lu", login_timestamp);
 	nvram_set("login_timestamp", login_timestampstr);
 }
 
@@ -1533,11 +1517,7 @@ char *config_model_name(char *source, char *find,  char *rep){
    int gap=0;
 
    char *result = (char*)malloc(sizeof(char) * length);
-
-   if(result == NULL)
-	return NULL;
-   else
-	strlcpy(result, source, length);
+   strcpy(result, source);
 
    char *former=source;
    char *location= strstr(former, find);
@@ -1652,12 +1632,10 @@ load_dictionary (char *lang, pkw_t pkw)
 
 	free(dyn_dict_buf);
 
-	if(dyn_dict_buf_new){
-		dict_size = sizeof(char) * strlen(dyn_dict_buf_new);
-		pkw->buf = (unsigned char *) (q = malloc (dict_size));
-		strlcpy(pkw->buf, dyn_dict_buf_new, dict_size);
-		free(dyn_dict_buf_new);
-	}
+	dict_size = sizeof(char) * strlen(dyn_dict_buf_new);
+	pkw->buf = (unsigned char *) (q = malloc (dict_size));
+	strcpy(pkw->buf, dyn_dict_buf_new);
+	free(dyn_dict_buf_new);
 #else
 	pkw->buf = (unsigned char *) (q = malloc (dict_size));
 
@@ -1946,26 +1924,6 @@ void reapchild()	// 0527 add
 	wait(NULL);
 }
 
-void check_alive()
-{
-	check_alive_flag = 1;
-	static int check_alive_count = 0;
-
-	if(alarm_timestamp != alarm_tv.tv_sec){
-		alarm_timestamp = alarm_tv.tv_sec;
-		check_alive_count = 0;
-	}
-	else if(check_alive_count > 20){
-		logmessage("HTTPD", "waitting 10 minitues and restart\n");
-		notify_rc("restart_httpd");
-	}
-	else{
-		check_alive_count++;
-	}
-
-	alarm(30);
-}
-
 int main(int argc, char **argv)
 {
 	usockaddr usa;
@@ -2051,9 +2009,6 @@ int main(int argc, char **argv)
 	signal(SIGPIPE, SIG_IGN);
 	signal(SIGCHLD, reapchild);	// 0527 add
 	signal(SIGUSR1, update_wlan_log);
-	signal(SIGALRM, check_alive);
-
-	alarm(30);
 
 #ifdef RTCONFIG_HTTPS
 	//if (do_ssl)
@@ -2081,9 +2036,9 @@ int main(int argc, char **argv)
 
 	FILE *pid_fp;
 	if (http_port == SERVER_PORT)
-		strlcpy(pidfile, "/var/run/httpd.pid", sizeof(pidfile));
+		strcpy(pidfile, "/var/run/httpd.pid");
 	else
-		snprintf(pidfile, sizeof(pidfile), "/var/run/httpd-%d.pid", http_port);
+		sprintf(pidfile, "/var/run/httpd-%d.pid", http_port);
 	if (!(pid_fp = fopen(pidfile, "w"))) {
 		perror(pidfile);
 		return errno;
@@ -2103,12 +2058,6 @@ int main(int argc, char **argv)
 		fd_set rfds;
 		conn_item_t *item, *next;
 		int max_fd, count;
-
-		/* record alive flag */
-		if(check_alive_flag == 1){
-			alarm_tv.tv_sec = uptime();
-			check_alive_flag = 0;
-		}
 
 		memcpy(&rfds, &active_rfds, sizeof(rfds));
 		max_fd = -1;
@@ -2133,15 +2082,11 @@ int main(int argc, char **argv)
 			return errno;
 		}
 
-		/* Reuse timestamp */
-		tv.tv_sec = uptime();
-
 		/* Check and accept new connection */
+		item = NULL;
 		for (i = 0; count && i < ARRAY_SIZE(listen_fd); i++) {
 			if (listen_fd[i] < 0 || !FD_ISSET(listen_fd[i], &rfds))
 				continue;
-
-			count--;
 
 			item = malloc(sizeof(*item));
 			if (item == NULL) {
@@ -2165,7 +2110,6 @@ int main(int argc, char **argv)
 
 			/* Set the KEEPALIVE option to cull dead connections */
 			setsockopt(item->fd, SOL_SOCKET, SO_KEEPALIVE, &int_1, sizeof(int_1));
-			item->deadline = tv.tv_sec + MAX_CONN_TIMEOUT;
 
 			/* Add to active connections */
 			FD_SET(item->fd, &active_rfds);
@@ -2173,12 +2117,12 @@ int main(int argc, char **argv)
 			pool.count++;
 		}
 		/* Continue waiting over again */
-		if (count == 0)
+		if (count && item)
 			continue;
 
 		/* Check and process pending or expired requests */
 		TAILQ_FOREACH_SAFE(item, &pool.head, entry, next) {
-			if (item->deadline > tv.tv_sec && !FD_ISSET(item->fd, &rfds))
+			if (count && !FD_ISSET(item->fd, &rfds))
 				continue;
 
 			/* Delete from active connections */
@@ -2187,21 +2131,21 @@ int main(int argc, char **argv)
 			pool.count--;
 
 			/* Process request if any */
-			if (FD_ISSET(item->fd, &rfds)) {
+			if (count) {
 #ifdef RTCONFIG_HTTPS
 				if (do_ssl) {
 					ssl_stream_fd = item->fd;
 					if (!(conn_fp = ssl_server_fopen(item->fd))) {
 						HTTPD_DBG("fdopen(ssl): skip\n");
 						perror("fdopen(ssl)");
-						goto reset;
+						goto skip;
 					}
 				} else
 #endif
 				if (!(conn_fp = fdopen(item->fd, "r+"))) {
 					HTTPD_DBG("fdopen: skip\n");
 					perror("fdopen");
-					goto reset;
+					goto skip;
 				}
 
 				http_login_cache(&item->usa);
@@ -2211,20 +2155,19 @@ int main(int argc, char **argv)
 #ifdef RTCONFIG_HTTPS
 				if (!do_ssl)
 #endif
-				{
-					shutdown(item->fd, SHUT_RDWR);
-					item->fd = -1;
-				}
+				shutdown(item->fd, 2), item->fd = -1;
 				fclose(conn_fp);
-			} else {
-			/* Reset connection */
-			reset:
-				setsockopt(item->fd, SOL_SOCKET, SO_LINGER, &linger, sizeof(linger));
+
+			skip:
+				/* Skip the rest of */
+				if (--count == 0)
+					next = NULL;
+
 			}
 
 			/* Close timed out and/or still alive */
 			if (item->fd >= 0) {
-				shutdown(item->fd, SHUT_RDWR);
+				shutdown(item->fd, 2);
 				close(item->fd);
 			}
 
@@ -2308,7 +2251,7 @@ void start_ssl(int http_port)
 				// browsers seems to like this when the ip address moves...	-- zzz
 				f_read("/dev/urandom", &sn, sizeof(sn));
 
-				snprintf(t, sizeof(t), "%llu", sn & 0x7FFFFFFFFFFFFFFFULL);
+				sprintf(t, "%llu", sn & 0x7FFFFFFFFFFFFFFFULL);
 				eval("gencert.sh", t);
 			}
 		}
@@ -2372,3 +2315,9 @@ int check_current_ip_is_lan_or_wan()
 	return _check_ip_is_lan_or_wan(target_ip, nvram_safe_get("lan_ipaddr"), nvram_safe_get("lan_netmask"));
 }
 
+#ifndef RTCONFIG_BWDPI
+int dump_dpi_support(int index)
+{
+	return 0;
+}
+#endif

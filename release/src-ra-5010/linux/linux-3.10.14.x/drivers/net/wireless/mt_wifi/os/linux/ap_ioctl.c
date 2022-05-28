@@ -123,10 +123,8 @@ struct iw_priv_args ap_privtab[] = {
 #ifdef CONFIG_APSTA_MIXED_SUPPORT
 const struct iw_handler_def rt28xx_ap_iw_handler_def = {
 #define	N(a)	(sizeof(a) / sizeof(a[0]))
-#ifdef CONFIG_WEXT_PRIV
 	.private_args	= (struct iw_priv_args *) ap_privtab,
 	.num_private_args	= N(ap_privtab),
-#endif /* CONFIG_WEXT_PRIV */
 #if IW_HANDLER_VERSION >= 7
 	.get_wireless_stats = rt28xx_get_wireless_stats,
 #endif
@@ -502,10 +500,6 @@ INT rt28xx_ap_ioctl(struct net_device *net_dev, struct ifreq *rq, int cmd)
 		RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_GET_PROCESS_INFO, 0, NULL, 0);
 		break;
 #endif
-
-	case RTPRIV_IOCTL_ASUSCMD:
-		Status = RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_ASUSCMD, wrqin->u.data.flags, NULL, 0);
-		break;
 
 	default:
 		/*			MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("IOCTL::unknown IOCTL's cmd = 0x%08x\n", cmd)); */

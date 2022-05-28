@@ -72,7 +72,7 @@ INT wdev_tx_pkts(NDIS_HANDLE dev_hnd, PPNDIS_PACKET pkt_list, UINT pkt_cnt, stru
 		{
 			/* Drop send request since hardware is in reset state */
 			RELEASE_NDIS_PACKET(pAd, pPacket, NDIS_STATUS_FAILURE);
-#ifdef MAX_CONTINUOUS_TX_CNT
+#ifdef NEW_IXIA_METHOD
 			if (IS_EXPECTED_LENGTH(RTPKT_TO_OSPKT(pPacket)->len))
 				pAd->tr_ststic.tx[DROP_HW_RESET]++;
 #endif
@@ -189,11 +189,10 @@ INT wdev_tx_pkts(NDIS_HANDLE dev_hnd, PPNDIS_PACKET pkt_list, UINT pkt_cnt, stru
 			}
 		} else {
 			RELEASE_NDIS_PACKET(pAd, pPacket, NDIS_STATUS_FAILURE);
-#ifdef MAX_CONTINUOUS_TX_CNT
+#ifdef NEW_IXIA_METHOD
 			if (IS_EXPECTED_LENGTH(RTPKT_TO_OSPKT(pPacket)->len))
 				pAd->tr_ststic.tx[INVALID_PKT_LEN]++;
 #endif
-
 		}
 	}
 

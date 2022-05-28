@@ -168,46 +168,10 @@ VOID RTMPFreeTxRxRingMemory(RTMP_ADAPTER *pAd)
 
 	/* Free Rx/Mgmt Desc buffer*/
 	for (num = 0; num < NUM_OF_RX_RING; num++)
-	{
-#ifdef RT_SECURE_DMA
-		if (pAd->RxSecureDMA[num].AllocVa)
-		{
-
-			NdisZeroMemory(pAd->RxSecureDMA[num].AllocVa, pAd->RxSecureDMA[num].AllocSize);
-			RTMP_FreeFirstTxBuffer(pci_dev,
-								   pAd->RxSecureDMA[num].AllocSize,
-								   FALSE, pAd->RxSecureDMA[num].AllocVa,
-								   pAd->RxSecureDMA[num].AllocPa);
-		}
-#endif
 		desc_ring_free(pAd, &pAd->RxDescRing[num]);
-	}
 
-
-#ifdef RT_SECURE_DMA
-	if (pAd->MgmtSecureDMA.AllocVa)
-	{
-
-		NdisZeroMemory(pAd->MgmtSecureDMA.AllocVa, pAd->MgmtSecureDMA.AllocSize);
-		RTMP_FreeFirstTxBuffer(pci_dev,
-							   pAd->MgmtSecureDMA.AllocSize,
-							   FALSE, pAd->MgmtSecureDMA.AllocVa,
-							   pAd->MgmtSecureDMA.AllocPa);
-	}
-#endif
 	desc_ring_free(pAd, &pAd->MgmtDescRing);
 #ifdef CONFIG_ANDES_SUPPORT
-#ifdef RT_SECURE_DMA
-	if (pAd->CtrlSecureDMA.AllocVa)
-	{
-
-		NdisZeroMemory(pAd->CtrlSecureDMA.AllocVa, pAd->CtrlSecureDMA.AllocSize);
-		RTMP_FreeFirstTxBuffer(pci_dev,
-							   pAd->CtrlSecureDMA.AllocSize,
-							   FALSE, pAd->CtrlSecureDMA.AllocVa,
-							   pAd->CtrlSecureDMA.AllocPa);
-	}
-#endif
 	desc_ring_free(pAd, &pAd->CtrlDescRing);
 #endif /* CONFIG_ANDES_SUPPORT */
 
@@ -223,17 +187,6 @@ VOID RTMPFreeTxRxRingMemory(RTMP_ADAPTER *pAd)
 		}
 		NdisZeroMemory(&pAd->TxBufSpace[num], sizeof(RTMP_DMABUF));
 
-#ifdef RT_SECURE_DMA
-		if (pAd->TxSecureDMA[num].AllocVa)
-		{
-
-			NdisZeroMemory(pAd->TxSecureDMA[num].AllocVa, pAd->TxSecureDMA[num].AllocSize);
-			RTMP_FreeFirstTxBuffer(pci_dev,
-									pAd->TxSecureDMA[num].AllocSize,
-									FALSE, pAd->TxSecureDMA[num].AllocVa,
-									pAd->TxSecureDMA[num].AllocPa);
-		}
-#endif
 		desc_ring_free(pAd, &pAd->TxDescRing[num]);
 	}
 
@@ -285,9 +238,6 @@ NDIS_STATUS RTMPInitTxRxRingMemory(RTMP_ADAPTER *pAd)
 		BufBasePaLow = RTMP_GetPhysicalAddressLow (pAd->TxBufSpace[num].AllocPa);
 		BufBaseVa = pAd->TxBufSpace[num].AllocVa;
 
-		if (BufBasePaHigh == 0)
-		{/* empty address high */}
-
 		/* linking Tx Ring Descriptor and associated buffer memory */
 		pTxRing = &pAd->TxRing[num];
 		for (index = 0; index < TX_RING_SIZE; index++)
@@ -336,10 +286,6 @@ NDIS_STATUS RTMPInitTxRxRingMemory(RTMP_ADAPTER *pAd)
 	RingBasePaLow = RTMP_GetPhysicalAddressLow (pDescRing->AllocPa);
 	RingBaseVa = pDescRing->AllocVa;
 	NdisZeroMemory(pDescRing->AllocVa, pDescRing->AllocSize);
-
-	if (RingBasePaHigh == 0)
-	{/* empty address high */}
-
 	for (index = 0; index < MGMT_RING_SIZE; index++)
 	{
 		dma_cb = &pAd->MgmtRing.Cell[index];
@@ -452,7 +398,7 @@ NDIS_STATUS RTMPInitTxRxRingMemory(RTMP_ADAPTER *pAd)
 			if (pDmaBuf->AllocVa == NULL)
 			{
 				ErrorValue = ERRLOG_OUT_OF_SHARED_MEMORY;
-				DBGPRINT_ERR(("Failed to allocate RxRing's 1st buffer, ErrorValue = %lu\n", ErrorValue));
+				DBGPRINT_ERR(("Failed to allocate RxRing's 1st buffer\n"));
 				Status = NDIS_STATUS_RESOURCES;
 				break;
 			}
@@ -462,11 +408,7 @@ NDIS_STATUS RTMPInitTxRxRingMemory(RTMP_ADAPTER *pAd)
 
 			/* Write RxD buffer address & allocated buffer length */
 			pRxD = (PRXD_STRUC)dma_cb->AllocVa;
-#ifndef RT_SECURE_DMA
 			pRxD->SDP0 = RTMP_GetPhysicalAddressLow(pDmaBuf->AllocPa);
-#else
-			pRxD->SDP0 = pAd->RxSecureDMA[num].AllocPa + (index * 4096);
-#endif
 			pRxD->DDONE = 0;
 			pRxD->SDL0 = pDmaBuf->AllocSize;
 
@@ -510,9 +452,10 @@ NDIS_STATUS RTMPInitTxRxRingMemory(RTMP_ADAPTER *pAd)
 #endif /* CONFIG_ANDES_SUPPORT */
 
 	pAd->PrivateInfo.TxRingFullCnt = 0;
+
 	/* Init timer to flush completed packets from TX queues */
 	RTMPInitTimer(pAd, &pAd->TxDoneCleanupTimer, GET_TIMER_FUNCTION(TxDoneCleanupExec), pAd, FALSE);
-
+	
 	return Status;
 
 }
@@ -578,28 +521,10 @@ NDIS_STATUS	RTMPAllocTxRxRingMemory(RTMP_ADAPTER *pAd)
 			if (pAd->TxBufSpace[num].AllocVa == NULL)
 			{
 				ErrorValue = ERRLOG_OUT_OF_SHARED_MEMORY;
-				DBGPRINT_ERR(("Failed to allocate a big buffer, ErrorValue = %lu\n", ErrorValue));
+				DBGPRINT_ERR(("Failed to allocate a big buffer\n"));
 				Status = NDIS_STATUS_RESOURCES;
 				break;
 			}
-#ifdef RT_SECURE_DMA
-			/* Get DMA buffers, to be put into desriptors later */
-			pAd->TxSecureDMA[num].AllocSize = TX_RING_SIZE * 4096;
-			RTMP_AllocateFirstTxBuffer(
-				pci_dev,
-				num,
-				pAd->TxSecureDMA[num].AllocSize,
-				FALSE,
-				&pAd->TxSecureDMA[num].AllocVa,
-				&pAd->TxSecureDMA[num].AllocPa);
-			if (pAd->TxSecureDMA[num].AllocVa == NULL)
-			{
-				ErrorValue = ERRLOG_OUT_OF_SHARED_MEMORY;
-				DBGPRINT_ERR(("Failed to allocate a big buffer, ErrorValue = %lu\n", ErrorValue));
-				Status = NDIS_STATUS_RESOURCES;
-				break;
-			}
-#endif
 		}
 		if (Status == NDIS_STATUS_RESOURCES)
 			break;
@@ -615,24 +540,6 @@ NDIS_STATUS	RTMPAllocTxRxRingMemory(RTMP_ADAPTER *pAd)
 		DBGPRINT(RT_DEBUG_TRACE, ("MGMT Ring: total %d bytes allocated\n",
 					(INT)pAd->MgmtDescRing.AllocSize));
 
-#ifdef RT_SECURE_DMA
-			/* Get DMA buffers, to be put into desriptors later */
-			pAd->MgmtSecureDMA.AllocSize = MGMT_RING_SIZE * 4096;
-			RTMP_AllocateFirstTxBuffer(
-				pci_dev,
-				num,
-				pAd->MgmtSecureDMA.AllocSize,
-				FALSE,
-				&pAd->MgmtSecureDMA.AllocVa,
-				&pAd->MgmtSecureDMA.AllocPa);
-			if (pAd->MgmtSecureDMA.AllocVa == NULL)
-			{
-				ErrorValue = ERRLOG_OUT_OF_SHARED_MEMORY;
-				DBGPRINT_ERR(("Failed to allocate a big buffer, ErrorValue = %lu\n", ErrorValue));
-				Status = NDIS_STATUS_RESOURCES;
-				break;
-			}
-#endif
 #ifdef CONFIG_ANDES_SUPPORT
 		/* Alloc CTRL ring desc buffer except Tx ring allocated eariler */
 		desc_ring_alloc(pAd, &pAd->CtrlDescRing,
@@ -643,24 +550,6 @@ NDIS_STATUS	RTMPAllocTxRxRingMemory(RTMP_ADAPTER *pAd)
 		}
 		DBGPRINT(RT_DEBUG_TRACE, ("CTRL Ring: total %d bytes allocated\n",
 					(INT)pAd->CtrlDescRing.AllocSize));
-#ifdef RT_SECURE_DMA
-		/* Get DMA buffers, to be put into desriptors later */
-		pAd->CtrlSecureDMA.AllocSize = MGMT_RING_SIZE * 4096;
-		RTMP_AllocateFirstTxBuffer(
-			pci_dev,
-			num,
-			pAd->CtrlSecureDMA.AllocSize,
-			FALSE,
-			&pAd->CtrlSecureDMA.AllocVa,
-			&pAd->CtrlSecureDMA.AllocPa);
-		if (pAd->CtrlSecureDMA.AllocVa == NULL)
-		{
-			ErrorValue = ERRLOG_OUT_OF_SHARED_MEMORY;
-			DBGPRINT_ERR(("Failed to allocate a big buffer, ErrorValue = %lu\n", ErrorValue));
-			Status = NDIS_STATUS_RESOURCES;
-			break;
-		}
-#endif
 #endif /* CONFIG_ANDES_SUPPORT */
 
 		/* Alloc RX ring desc memory except Tx ring allocated eariler */
@@ -673,24 +562,6 @@ NDIS_STATUS	RTMPAllocTxRxRingMemory(RTMP_ADAPTER *pAd)
 			}
 			DBGPRINT(RT_DEBUG_TRACE, ("Rx[%d] Ring: total %d bytes allocated\n",
 						num, (INT)pAd->RxDescRing[num].AllocSize));
-#ifdef RT_SECURE_DMA
-			/* Get DMA buffers, to be put into desriptors later */
-			pAd->RxSecureDMA[num].AllocSize = RX_RING_SIZE * 4096;
-			RTMP_AllocateFirstTxBuffer(
-				pci_dev,
-				num,
-				pAd->RxSecureDMA[num].AllocSize,
-				FALSE,
-				&pAd->RxSecureDMA[num].AllocVa,
-				&pAd->RxSecureDMA[num].AllocPa);
-			if (pAd->RxSecureDMA[num].AllocVa == NULL)
-			{
-				ErrorValue = ERRLOG_OUT_OF_SHARED_MEMORY;
-				DBGPRINT_ERR(("Failed to allocate a big buffer, ErrorValue = %lu\n", ErrorValue));
-				Status = NDIS_STATUS_RESOURCES;
-				break;
-			}
-#endif
 		}
 	}	while (FALSE);
 
@@ -799,7 +670,7 @@ NDIS_STATUS	RTMPAllocTxRxRingMemory(RTMP_ADAPTER *pAd)
 			if (pAd->TxBufSpace[num].AllocVa == NULL)
 			{
 				ErrorValue = ERRLOG_OUT_OF_SHARED_MEMORY;
-				DBGPRINT_ERR(("Failed to allocate a big buffer, ErrorValue = %lu\n", ErrorValue));
+				DBGPRINT_ERR(("Failed to allocate a big buffer\n"));
 				Status = NDIS_STATUS_RESOURCES;
 				break;
 			}
@@ -1934,9 +1805,6 @@ BOOLEAN RT28xxPciAsicRadioOff(
 	IN UCHAR Level, 
 	IN USHORT TbttNumToNextWakeUp) 
 {
-#if (defined(CONFIG_STA_SUPPORT) && defined(PCIE_PS_SUPPORT)) || defined(RT2860)
-	BOOLEAN		brc = FALSE;
-#endif /*(defined(CONFIG_STA_SUPPORT) && defined(PCIE_PS_SUPPORT)) || defined(RT2860) */
 
 
     UINT32 RxDmaIdx, RxCpuIdx;
@@ -2183,6 +2051,7 @@ VOID RT28xxPciMlmeRadioOFF(RTMP_ADAPTER *pAd)
 #ifdef RTMP_RBUS_SUPPORT
 	if (pAd->infType == RTMP_DEV_INF_RBUS)
 	{
+		int	i;
 		WPDMA_GLO_CFG_STRUC GloCfg;
 
 		/* Disable Tx/Rx DMA*/
@@ -2283,10 +2152,7 @@ INT rtmp_irq_init(RTMP_ADAPTER *pAd)
 
 #ifdef RLT_MAC
 	if (pAd->chipCap.hif_type == HIF_RLT)
-		if(IS_MT76x2(pAd))
-			reg_mask = (RLT_DELAYINTMASK) |(RLT_RxINT|RLT_76x2TxDataInt|RLT_TxMgmtInt);
-		else
-			reg_mask = (RLT_DELAYINTMASK) |(RLT_RxINT|RLT_TxDataInt|RLT_TxMgmtInt);
+		reg_mask = (RLT_DELAYINTMASK) |(RLT_RxINT|RLT_TxDataInt|RLT_TxMgmtInt);
 #endif /* RLT_MAC */
 
 #ifdef RTMP_MAC

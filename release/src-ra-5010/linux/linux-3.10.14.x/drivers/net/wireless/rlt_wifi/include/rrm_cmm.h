@@ -53,7 +53,6 @@ typedef struct _RRM_QUIET_CB
 
 typedef struct _RRM_CONFIG
 {
-	BOOLEAN bDot11kRRMEnableSet;
 	BOOLEAN bDot11kRRMEnable;
 	BOOLEAN bDot11kRRMNeighborRepTSFEnable;
 	RRM_QUIET_CB QuietCB;

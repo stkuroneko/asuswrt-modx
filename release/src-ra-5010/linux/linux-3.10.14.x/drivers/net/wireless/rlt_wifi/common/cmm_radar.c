@@ -34,8 +34,7 @@
 VOID RadarDetectPeriodic(
 	IN PRTMP_ADAPTER	pAd)
 {
-	INT i, ChIdx = 0;
-
+	INT i, ChIdx = 0, bAnyUnavailableChannel = FALSE;
 
 	/* 
 		1. APStart(), CalBufTime = 0;
@@ -44,6 +43,10 @@ VOID RadarDetectPeriodic(
 	*/
 	for (i=0; i<pAd->ChannelListNum; i++)
 	{
+		if (pAd->ChannelList[i].RemainingTimeForUse != 0)
+		{
+			bAnyUnavailableChannel = TRUE;
+		}
 
 		if (pAd->CommonCfg.Channel == pAd->ChannelList[i].Channel)
 		{
@@ -60,19 +63,12 @@ VOID RadarDetectPeriodic(
 	{
 			DBGPRINT(RT_DEBUG_TRACE,
 					("Not found radar signal, start send beacon and radar detection in service monitor\n\n"));
-		    pAd->Dot11_H.RDMode = RD_NORMAL_MODE;
-		    AsicEnableBssSync(pAd);
+		pAd->Dot11_H.RDMode = RD_NORMAL_MODE;
+		AsicEnableBssSync(pAd);
 #ifdef MT76x2
-	        if (IS_MT76x2(pAd)) {
-			    
-			    mt76x2_tssi_calibration(pAd, pAd->hw_cfg.cent_ch);
-#ifdef TXBF_SUPPORT		
-#ifdef RALINK_ATE	    
-			    if (pAd->hw_cfg.cent_ch > 14) 
-			        rtmp_ate_txbf_fix_tank_code(pAd, pAd->hw_cfg.cent_ch, 0);  // load tank code from efuse, iBF only for A band
-#endif /* RALINK_ATE */
-#endif /* TXBF_SUPPORT */
+			if (IS_MT76x2(pAd)) {
 				mt76x2_calibration(pAd, pAd->hw_cfg.cent_ch);
+				mt76x2_tssi_calibration(pAd, pAd->hw_cfg.cent_ch);
 			}
 #endif /* MT76x2 */
 			pAd->Dot11_H.RDCount = 0;
@@ -391,7 +387,7 @@ INT	Set_RadarShow_Proc(
 	printk("pAd->Dot11_H.ChMovingTime = %d\n", pAd->Dot11_H.ChMovingTime);
 	printk("pAd->Dot11_H.RDMode = %s\n", RDMode[pAd->Dot11_H.RDMode]);
 	printk("pAd->Dot11_H.RDCount = %d\n", pAd->Dot11_H.RDCount);
-	printk("pAd->Dot11_H.CalBufTime = %lu\n", pAd->Dot11_H.CalBufTime);
+	printk("pAd->Dot11_H.CalBufTime = %d\n", pAd->Dot11_H.CalBufTime);
 #endif /* DFS_SUPPORT */
 
 #ifdef CARRIER_DETECTION_SUPPORT

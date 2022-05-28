@@ -306,12 +306,12 @@ int ej_get_DSL_WAN_list(int eid, webs_t wp, int argc, char_t **argv){
 				else {
 					websWrite(wp, ", ");
 				}
-				strlcpy(buf,nvram_safe_get(strcat_r(prefix, &display_items[j][4], tmp)), sizeof(buf));
+				strcpy(buf,nvram_safe_get(strcat_r(prefix, &display_items[j][4], tmp)));
 				if (strcmp(buf,"")==0) {
-					strlcpy(buf2,"\"0\"", sizeof(buf2));
+					strcpy(buf2,"\"0\"");
 				}
 				else {
-					snprintf(buf2, sizeof(buf2),"\"%s\"",buf);
+					sprintf(buf2,"\"%s\"",buf);
 				}
 				websWrite(wp, "%s", buf2);
 			}
@@ -341,12 +341,12 @@ int ej_get_DSL_WAN_list(int eid, webs_t wp, int argc, char_t **argv){
 				else {
 					websWrite(wp, ", ");
 				}
-				strlcpy(buf,nvram_safe_get(strcat_r(prefix, &display_items[j][4], tmp)), sizeof(buf));
+				strcpy(buf,nvram_safe_get(strcat_r(prefix, &display_items[j][4], tmp)));
 				if (strcmp(buf,"")==0) {
-					strlcpy(buf2,"\"0\"", sizeof(buf2));
+					strcpy(buf2,"\"0\"");
 				}
 				else {
-					snprintf(buf2, sizeof(buf2),"\"%s\"",buf);
+					sprintf(buf2,"\"%s\"",buf);
 				}
 				websWrite(wp, "%s", buf2);
 			}

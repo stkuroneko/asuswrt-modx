@@ -1197,10 +1197,3 @@ handleWLAuthModeItem = function(){
 			$("#manual_pap_setup-nmode_hint").show();
 	}
 };
-
-var clearIntervalStatus = function(){
-	if(systemVariable.interval_status != false){
-		clearInterval(systemVariable.interval_status);
-		systemVariable.interval_status = false;
-	}
-};

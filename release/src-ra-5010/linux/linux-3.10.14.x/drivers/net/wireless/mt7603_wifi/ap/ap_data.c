@@ -38,44 +38,23 @@ INT ApAllowToSendPacket(
 	UCHAR *pSrcBufVA;
 	UINT SrcBufLen;
 	MAC_TABLE_ENTRY *pEntry = NULL;
-#ifdef MAX_CONTINUOUS_TX_CNT
+#ifdef NEW_IXIA_METHOD
 	MAC_TABLE_ENTRY *pIXIAEntry = NULL;
 	UINT16 TypeLen;
 #endif
-
 	STA_TR_ENTRY *tr_entry = NULL;
 
 	RTMP_QueryPacketInfo(pPacket, &PacketInfo, &pSrcBufVA, &SrcBufLen);
-#ifdef MAX_CONTINUOUS_TX_CNT
-	if (pAd->ixiaCtrl.iForceMTO == IXIA_FORCE_MTO) {
-		UCHAR *pSrcBuf;
-		BOOLEAN is_dhcp = FALSE;
-		BOOLEAN is_icmp = FALSE;
+#ifdef NEW_IXIA_METHOD
+	if (pAd->ContinousTxCnt != 1) {
 		pIXIAEntry = &pAd->MacTab.Content[1];
 		TypeLen = (pSrcBufVA[12] << 8) | pSrcBufVA[13];
-		pSrcBuf = pSrcBufVA;
-		pSrcBuf += LENGTH_802_3;
-		if (*(pSrcBuf + 9) == 0x11) {
-			UINT16 srcPort, dstPort;
-
-			pSrcBuf += 20;
-			srcPort = OS_NTOHS(get_unaligned((PUINT16)(pSrcBuf)));
-			dstPort = OS_NTOHS(get_unaligned((PUINT16)(pSrcBuf+2)));
-			if (((srcPort == 0x44) && (dstPort == 0x43))
-				|| ((srcPort == 0x43) && (dstPort == 0x44)))
-				is_dhcp = TRUE;
-		} else if (*(pSrcBuf + 9) == 0x01) {
-			pSrcBuf += 20;
-			if ((*pSrcBuf == 0x08) || (*pSrcBuf == 0x00))
-				is_icmp = TRUE;
-		}
 		if (pIXIAEntry && IS_ENTRY_CLIENT(pIXIAEntry)
 			&& (TypeLen == 0x0800)) {
 			COPY_MAC_ADDR(pSrcBufVA, pIXIAEntry->Addr);
 		}
 	}
 #endif
-
 	/* 0 is main BSS, FIRST_MBSSID = 1 */
 	ASSERT(wdev->func_idx < pAd->ApCfg.BssidNum);
 	ASSERT (wdev->wdev_type == WDEV_TYPE_AP);
@@ -168,7 +147,7 @@ INT ApAllowToSendPacket(
 	return FALSE;
 }
 
-#ifndef MAX_CONTINUOUS_TX_CNT
+#ifndef NEW_IXIA_METHOD
 enum pkt_tx_status{
 	PKT_SUCCESS = 0,
 	INVALID_PKT_LEN = 1, 
@@ -236,12 +215,11 @@ INT APSendPacket(RTMP_ADAPTER *pAd, PNDIS_PACKET pPacket)
 	STA_TR_ENTRY *tr_entry = NULL;
 	struct wifi_dev *wdev;
 #ifdef DBG
-#ifndef MAX_CONTINUOUS_TX_CNT
+#ifndef NEW_IXIA_METHOD
 	enum pkt_tx_status drop_reason = PKT_SUCCESS;
 #else
 	T_DROP_RESON drop_reason = 0;
 #endif
-
 #endif /* DBG */
 	INT ret=0;
 	
@@ -502,7 +480,7 @@ INT APSendPacket(RTMP_ADAPTER *pAd, PNDIS_PACKET pPacket)
 				if (tr_entry->tx_queue[QID_AC_BE].Number > MAX_PACKETS_IN_MCAST_PS_QUEUE) {
 					DBGPRINT(RT_DEBUG_INFO, ("%s(%d): BSS tx_queue full\n", __FUNCTION__, __LINE__));
 #ifdef DBG
-		#ifdef MAX_CONTINUOUS_TX_CNT
+		#ifdef NEW_IXIA_METHOD
 					drop_reason = DROP_TXQ_ENQ_PS;
 		#else
 					drop_reason = DROP_TXQ_ENQ_FAIL;
@@ -514,7 +492,7 @@ INT APSendPacket(RTMP_ADAPTER *pAd, PNDIS_PACKET pPacket)
 				if (tr_entry->tx_queue[QID_AC_BE].Number+tr_entry->tx_queue[QID_AC_BK].Number+tr_entry->tx_queue[QID_AC_VI].Number+tr_entry->tx_queue[QID_AC_VO].Number > MAX_PACKETS_IN_PS_QUEUE) {
 					DBGPRINT(RT_DEBUG_INFO, ("%s(%d): STA tx_queue full\n", __FUNCTION__, __LINE__));
 #ifdef DBG
-		#ifdef MAX_CONTINUOUS_TX_CNT
+		#ifdef NEW_IXIA_METHOD
 					drop_reason = DROP_TXQ_ENQ_PS;
 		#else
 					drop_reason = DROP_TXQ_ENQ_FAIL;
@@ -597,9 +575,9 @@ INT APSendPacket(RTMP_ADAPTER *pAd, PNDIS_PACKET pPacket)
 
 drop_pkt:	
 	RELEASE_NDIS_PACKET(pAd, pPacket, NDIS_STATUS_FAILURE);
-#ifdef MAX_CONTINUOUS_TX_CNT
-		if (IS_EXPECTED_LENGTH(RTPKT_TO_OSPKT(pPacket)->len))
-			pAd->tr_ststic.tx[drop_reason]++;
+#ifdef NEW_IXIA_METHOD
+	if (IS_EXPECTED_LENGTH(RTPKT_TO_OSPKT(pPacket)->len))
+		pAd->tr_ststic.tx[drop_reason]++;
 #endif
 nofree_drop_pkt:
 	/*add hook point when drop*/
@@ -1279,10 +1257,9 @@ VOID AP_AMPDU_Frame_Tx(RTMP_ADAPTER *pAd, TX_BLK *pTxBlk)
 	PQUEUE_ENTRY pQEntry;
 	BOOLEAN bHTCPlus = FALSE;
 	UINT hdr_offset, cache_sz;
-#ifdef MAX_CONTINUOUS_TX_CNT
+#ifdef NEW_IXIA_METHOD
 	struct sk_buff *kickout_pkt = (struct sk_buff *)(pTxBlk->pPacket);
 #endif
-
 	ASSERT(pTxBlk);
 
 	pQEntry = RemoveHeadQueue(&pTxBlk->TxPacketList);
@@ -1296,7 +1273,7 @@ VOID AP_AMPDU_Frame_Tx(RTMP_ADAPTER *pAd, TX_BLK *pTxBlk)
 			pMbss->TxDropCount++;
 		}
 #endif /* STATS_COUNT_SUPPORT */
-#ifdef MAX_CONTINUOUS_TX_CNT
+#ifdef NEW_IXIA_METHOD
 		if (IS_EXPECTED_LENGTH(kickout_pkt->len))
 			pAd->tr_ststic.tx[DROP_BLK_INFO_ERROR]++;
 #endif
@@ -1630,9 +1607,9 @@ VOID AP_AMPDU_Frame_Tx(RTMP_ADAPTER *pAd, TX_BLK *pTxBlk)
 		Kick out Tx
 	*/
 	HAL_KickOutTx(pAd, pTxBlk, pTxBlk->QueIdx);
-#ifdef MAX_CONTINUOUS_TX_CNT
+#ifdef NEW_IXIA_METHOD
 	if (IS_EXPECTED_LENGTH(kickout_pkt->len))
-		pAd->tr_ststic.tx_pkt_to_hw++;
+		tx_pkt_to_hw++;
 #endif
 	pAd->RalinkCounters.KickTxCount++;
 	pAd->RalinkCounters.OneSecTxDoneCount++;
@@ -3229,11 +3206,10 @@ NDIS_STATUS APHardTransmit(RTMP_ADAPTER *pAd, TX_BLK *pTxBlk)
 			pPacket = QUEUE_ENTRY_TO_PACKET(pQEntry);
 			if (pPacket)
 				RELEASE_NDIS_PACKET(pAd, pPacket, NDIS_STATUS_FAILURE);
-#ifdef MAX_CONTINUOUS_TX_CNT
-				if (IS_EXPECTED_LENGTH(RTPKT_TO_OSPKT(pPacket)->len))
-					pAd->tr_ststic.tx[DROP_80211H_MODE]++;
+#ifdef NEW_IXIA_METHOD
+			if (IS_EXPECTED_LENGTH(RTPKT_TO_OSPKT(pPacket)->len))
+				pAd->tr_ststic.tx[DROP_80211H_MODE]++;
 #endif
-
         }
         DBGPRINT(RT_DEBUG_INFO, ("<--%s(%d)\n", __FUNCTION__, __LINE__));
 		return NDIS_STATUS_FAILURE;
@@ -3528,31 +3504,6 @@ VOID APRxErrorHandle(RTMP_ADAPTER *pAd, RX_BLK *pRxBlk)
 		if (pRxBlk->wcid < MAX_LEN_OF_MAC_TABLE)
 		{
 #ifdef APCLI_SUPPORT
-			//UCHAR bss_idx = BSS0;
-			UCHAR Wcid;
-			PHEADER_802_11 pHeader = pRxBlk->pHeader;
-
-			Wcid = pRxBlk->wcid;
-			if (VALID_WCID(Wcid))
-				pEntry = ApCliTableLookUpByWcid(pAd, Wcid, pHeader->Addr2);
-			else
-				pEntry = MacTableLookup(pAd, pHeader->Addr2);
-
-			if (pEntry && IS_ENTRY_APCLI(pEntry))
-			{
-				if (pRxInfo->CipherErr == 2)
-				{	
-
-#ifdef APCLI_CERT_SUPPORT
-					{
-						ApCliRTMPReportMicError(pAd, 1, pEntry->func_tb_idx);
-						DBGPRINT(RT_DEBUG_ERROR, ("Rx MIC Value error, Unicast!\n"));
-					}
-#endif /* APCLI_CERT_SUPPORT */
-					DBGPRINT_RAW(RT_DEBUG_ERROR,("Rx MIC Value error\n"));
-				}
-			}
-			else
 #endif /* APCLI_SUPPORT */
 			{
 				pEntry = &pAd->MacTab.Content[pRxBlk->wcid];
@@ -3599,25 +3550,6 @@ VOID APRxErrorHandle(RTMP_ADAPTER *pAd, RX_BLK *pRxBlk)
 					pRxBlk->MPDUtotalByteCnt, pRxBlk->wcid, pRxInfo->CipherErr));
 
 	}
-#ifdef APCLI_SUPPORT
-#ifdef APCLI_CERT_SUPPORT
-	else if (pRxInfo->Mcast || pRxInfo->Bcast) {
-		PHEADER_802_11 pHeader = pRxBlk->pHeader;
-
-		pEntry = MacTableLookup(pAd, pHeader->Addr2);
-
-		if (pEntry && (IS_ENTRY_APCLI(pEntry))) {
-			if (pRxInfo->CipherErr == 2) {
-				ApCliRTMPReportMicError(pAd, 0, pEntry->func_tb_idx);
-				DBGPRINT(RT_DEBUG_ERROR, ("Rx MIC Value error, Bcast!\n"));
-			}
-		}
-
-		DBGPRINT(RT_DEBUG_TRACE, ("Rx bc/mc Cipher Err(MPDUsize=%d, WCID=%d, CipherErr=%d)\n",
-				pRxBlk->MPDUtotalByteCnt, pRxBlk->wcid, pRxInfo->CipherErr));
-	}
-#endif /* APCLI_CERT_SUPPORT */
-#endif /* APCLI_SUPPORT */
 }
 
 #ifdef RLT_MAC_DBG
@@ -3780,9 +3712,6 @@ INT ap_rx_pkt_allow(RTMP_ADAPTER *pAd, RX_BLK *pRxBlk)
             }
 			a4_proxy_update(pAd, pEntry->func_tb_idx, pEntry->wcid, pHeader->Octet, ARPSenderIP);
 		} else {
-#if defined(MAP_SUPPORT)
-			if (!IS_MAP_ENABLE(pAd) || (pEntry->DevPeerRole & BIT(MAP_ROLE_BACKHAUL_STA)) == 0)
-#endif
 				pEntry = NULL;
 		}
 #endif /* A4_CONN */
@@ -3867,17 +3796,6 @@ INT ap_rx_pkt_allow(RTMP_ADAPTER *pAd, RX_BLK *pRxBlk)
 		if (pEntry && GET_ENTRY_A4(pEntry) == A4_TYPE_MWDS) {
 			return FALSE;
 		}
-#endif
-#if defined(MAP_SUPPORT)
-			/* do not receive 3-address broadcast/multicast packet, */
-			/* because the broadcast/multicast packet woulld be send using 4-address, */
-			/* 1905 message is an exception, need to receive 3-address 1905 multicast, */
-			/* because some vendor send only one 3-address 1905 multicast packet */
-			/* 1905 daemon would filter and drop duplicate packet */
-			if (GET_ENTRY_A4(pEntry) == A4_TYPE_MAP &&
-				(pRxInfo->Mcast || pRxInfo->Bcast) &&
-				(memcmp(pHeader->Addr1, multicast_mac_1905, MAC_ADDR_LEN) != 0))
-				return FALSE;
 #endif
 		}
 	}
@@ -4051,13 +3969,6 @@ INT ap_rx_foward_handle(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, PNDIS_PACKET p
 			/* forward the M/Bcast packet back to air if connected STA > 1 */
 			to_air = TRUE;
 		}
-#ifdef MAP_SUPPORT
-		/* when rx 1905 mc in star topology, directly to upper layer for 1905 to handle */
-		if (IS_MAP_ENABLE(pAd)
-			&& (wdev->MAPCfg.DevOwnRole & (BIT(MAP_ROLE_BACKHAUL_BSS)))
-			&& (memcmp(pHeader802_3, multicast_mac_1905, MAC_ADDR_LEN) == 0))
-			return TRUE;
-#endif
 	}
 	else
 	{

@@ -80,6 +80,43 @@ static VOID UAPSD_InsertTailQueueAc(
 }
 #endif /* VENDOR_FEATURE3_SUPPORT */
 
+#ifdef LINUX
+#define UAPSD_SEM_LOCK(__UAPSDEOSPLock, __flags2) \
+{ \
+        if (irqs_disabled()) \
+        { \
+                RTMP_INT_LOCK((__UAPSDEOSPLock), __flags2); \
+        } \
+        else \
+        { \
+                RTMP_SEM_LOCK((__UAPSDEOSPLock)); \
+        } \
+}
+
+#define UAPSD_SEM_UNLOCK(__UAPSDEOSPLock, __flags2) \
+{ \
+        if (irqs_disabled()) \
+        { \
+                RTMP_INT_UNLOCK((__UAPSDEOSPLock), __flags2); \
+        } \
+        else \
+        { \
+                RTMP_SEM_UNLOCK((__UAPSDEOSPLock)); \
+        } \
+}
+#else
+#define UAPSD_SEM_LOCK(__UAPSDEOSPLock, __flags2) \
+{ \
+        __flags2 = 0; \
+        RTMP_SEM_LOCK((__UAPSDEOSPLock)); \
+}
+
+#define UAPSD_SEM_UNLOCK(__UAPSDEOSPLock, __flags2) \
+{ \
+        __flags2 = 0; \
+        RTMP_SEM_UNLOCK((__UAPSDEOSPLock)); \
+}
+#endif
 
 /*
 ========================================================================
@@ -183,9 +220,10 @@ Note:
 */
 VOID UAPSD_SP_Close(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry)
 {
+	ULONG flags = 0;
 	if ((pEntry != NULL) && (pEntry->PsMode == PWR_SAVE))
 	{
-		RTMP_SEM_LOCK(&pAd->UAPSDEOSPLock);
+		UAPSD_SEM_LOCK(&pAd->UAPSDEOSPLock, flags);
 
 		if (pEntry->bAPSDFlagSPStart != 0)
 		{
@@ -221,7 +259,7 @@ VOID UAPSD_SP_Close(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry)
 
 		}
 
-		RTMP_SEM_UNLOCK(&pAd->UAPSDEOSPLock);
+		UAPSD_SEM_UNLOCK(&pAd->UAPSDEOSPLock, flags);
 	}
 }
 
@@ -244,8 +282,9 @@ Note:
 BOOLEAN UAPSD_SP_IsClosed(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry)
 {
 	BOOLEAN FlgIsSpClosed = TRUE;
+	ULONG flags = 0;
 
-	RTMP_SEM_LOCK(&pAd->UAPSDEOSPLock);
+	UAPSD_SEM_LOCK(&pAd->UAPSDEOSPLock, flags);
 
 	if ((pEntry) &&
 		(pEntry->PsMode == PWR_SAVE) &&
@@ -253,7 +292,7 @@ BOOLEAN UAPSD_SP_IsClosed(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry)
 	)
 		FlgIsSpClosed = FALSE;
 	
-	RTMP_SEM_UNLOCK(&pAd->UAPSDEOSPLock);
+	UAPSD_SEM_UNLOCK(&pAd->UAPSDEOSPLock, flags);
 
 	return FlgIsSpClosed;
 }
@@ -281,9 +320,10 @@ VOID UAPSD_AllPacketDeliver(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry)
 	UCHAR QueIdList[WMM_NUM_OF_AC] = { QID_AC_BE, QID_AC_BK,
 	                 QID_AC_VI, QID_AC_VO };
 	INT32 IdAc, QueId; /* must be signed, can not be unsigned */
+	ULONG flags = 0;
 
 
-	RTMP_SEM_LOCK(&pAd->UAPSDEOSPLock);
+	UAPSD_SEM_LOCK(&pAd->UAPSDEOSPLock, flags);
 
 	/* check if the EOSP frame is yet transmitted out */
 	if (pEntry->pUAPSDEOSPFrame != NULL)
@@ -318,7 +358,7 @@ VOID UAPSD_AllPacketDeliver(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry)
 		}
 	}
 
-	RTMP_SEM_UNLOCK(&pAd->UAPSDEOSPLock);
+	UAPSD_SEM_UNLOCK(&pAd->UAPSDEOSPLock, flags);
 }
 
 
@@ -462,7 +502,7 @@ VOID UAPSD_PacketEnqueue(
 
 	/* [0] ~ [3], QueIdx base is QID_AC_BE */
 	QUEUE_HEADER *pQueUapsd;
-
+	ULONG flags;
 
 	/* check if current queued UAPSD packet number is too much */
 	if (pEntry == NULL)
@@ -478,7 +518,7 @@ VOID UAPSD_PacketEnqueue(
     	{
 	        /* too much queued pkts, free (discard) the tx packet */
 	        DBGPRINT(RT_DEBUG_TRACE,
-                 ("uapsd> many(%u) WCID(%d) AC(%d)\n",
+                 ("uapsd> many(%ld) WCID(%d) AC(%d)\n",
 				pQueUapsd->Number,
 				RTMP_GET_PACKET_WCID(pPacket),
 				IdAc));
@@ -488,9 +528,9 @@ VOID UAPSD_PacketEnqueue(
 	else
 	{
         	/* queue the tx packet to the U-APSD queue of the AC */
-		RTMP_SEM_LOCK(&pAd->UAPSDEOSPLock);
+		UAPSD_SEM_LOCK(&pAd->UAPSDEOSPLock, flags);
 		InsertTailQueue(pQueUapsd, PACKET_TO_QUEUE_ENTRY(pPacket));
-		RTMP_SEM_UNLOCK(&pAd->UAPSDEOSPLock);
+		UAPSD_SEM_UNLOCK(&pAd->UAPSDEOSPLock, flags);
 
 #ifdef UAPSD_DEBUG
 		if (RTMP_GET_PACKET_MGMT_PKT(pPacket) == 1)
@@ -538,6 +578,9 @@ VOID UAPSD_SP_PacketCheck(
 	UINT16 QueId;
 	UCHAR FlgEosp;
 	UINT8 TXWISize = pAd->chipCap.TXWISize;
+#ifdef LINUX
+	unsigned long flags2 = 0;
+#endif /* LINUX */
 
 #ifdef RALINK_ATE
 	/* Nothing to do in ATE mode */
@@ -595,7 +638,7 @@ VOID UAPSD_SP_PacketCheck(
 
 	FlgEosp = FALSE;
 
-	RTMP_SEM_LOCK(&pAd->UAPSDEOSPLock);
+	UAPSD_SEM_LOCK(&pAd->UAPSDEOSPLock, flags2);
 
 	if ((pEntry != NULL) && (pEntry->bAPSDFlagSpRoughUse != 0))
 	{
@@ -712,7 +755,7 @@ VOID UAPSD_SP_PacketCheck(
 		}
 	}
 
-	RTMP_SEM_UNLOCK(&pAd->UAPSDEOSPLock);
+	UAPSD_SEM_UNLOCK(&pAd->UAPSDEOSPLock, flags2);
 
 
 	/* maybe transmit the EOSP frame */
@@ -771,7 +814,7 @@ VOID UAPSD_QoSNullTxMgmtTxDoneHandle(
 	HEADER_802_11  *pHeader;
 	MAC_TABLE_ENTRY  *pEntry;
 	UINT32 IntSrcReg, INT_RX = 0;
-
+	ULONG flags = 0;
 
 	if (pPacket == NULL)
 		return;
@@ -805,7 +848,7 @@ VOID UAPSD_QoSNullTxMgmtTxDoneHandle(
 			Currently, QoS Null type is only used in UAPSD mechanism
 			and no any UAPSD data packet exists
 		*/
-		RTMP_SEM_LOCK(&pAd->UAPSDEOSPLock);
+		UAPSD_SEM_LOCK(&pAd->UAPSDEOSPLock, flags);
 
 		if ((pEntry != NULL) &&
 			(pEntry->bAPSDFlagSpRoughUse != 0) &&
@@ -850,7 +893,7 @@ VOID UAPSD_QoSNullTxMgmtTxDoneHandle(
 #endif /* UAPSD_DEBUG */
 		}
 
-		RTMP_SEM_UNLOCK(&pAd->UAPSDEOSPLock);
+		UAPSD_SEM_UNLOCK(&pAd->UAPSDEOSPLock, flags);
 	}
 	else if ((pHeader->FC.Type == FC_TYPE_MGMT) &&
 			(pHeader->FC.SubType == SUBTYPE_ACTION))
@@ -858,7 +901,7 @@ VOID UAPSD_QoSNullTxMgmtTxDoneHandle(
 		UINT16 QueId;
 
 
-		RTMP_SEM_LOCK(&pAd->UAPSDEOSPLock);
+		UAPSD_SEM_LOCK(&pAd->UAPSDEOSPLock, flags);
 
 		if ((pEntry != NULL) &&
 			(pEntry->bAPSDFlagSpRoughUse != 0) &&
@@ -982,7 +1025,7 @@ VOID UAPSD_QoSNullTxMgmtTxDoneHandle(
 				}
 			}
 
-			RTMP_SEM_UNLOCK(&pAd->UAPSDEOSPLock);
+			UAPSD_SEM_UNLOCK(&pAd->UAPSDEOSPLock, flags);
 
 			/* maybe transmit the EOSP frame */
 			if (FlgEosp == TRUE)
@@ -1012,7 +1055,7 @@ VOID UAPSD_QoSNullTxMgmtTxDoneHandle(
 			}
 		}
 		else
-			RTMP_SEM_UNLOCK(&pAd->UAPSDEOSPLock);
+			UAPSD_SEM_UNLOCK(&pAd->UAPSDEOSPLock, flags);
     }
 }
 #endif /* RTMP_MAC_PCI */
@@ -1039,7 +1082,7 @@ VOID UAPSD_QueueMaintenance(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry)
 	QUEUE_HEADER *pQue;
 	UINT32 IdAc;
 	BOOLEAN FlgUapsdPkt, FlgEospPkt;
-
+	ULONG flags = 0;
 
 	if (gUAPSD_FlgNotQueueMaintain)
 		return;
@@ -1048,7 +1091,7 @@ VOID UAPSD_QueueMaintenance(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry)
 		return; /* UAPSD packet only for power-save STA, not active STA */
 
 	/* init */
-	RTMP_SEM_LOCK(&pAd->UAPSDEOSPLock);
+	UAPSD_SEM_LOCK(&pAd->UAPSDEOSPLock, flags);
 
 	pQue = pEntry->UAPSDQueue;
 	FlgUapsdPkt = 0;
@@ -1133,7 +1176,7 @@ VOID UAPSD_QueueMaintenance(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry)
 		pEntry->UAPSDQIdleCount = 0;
 	}
 
-	RTMP_SEM_UNLOCK(&pAd->UAPSDEOSPLock);
+	UAPSD_SEM_UNLOCK(&pAd->UAPSDEOSPLock, flags);
 
 	/* virtual timeout handle */
 	RTMP_PS_VIRTUAL_TIMEOUT_HANDLE(pEntry);
@@ -1189,12 +1232,13 @@ VOID UAPSD_SP_AUE_Handle(
 	if (pEntry->PsMode == PWR_SAVE)
 	{
 		BOOLEAN FlgEosp;
+		ULONG flags = 0;
 
-		RTMP_SEM_LOCK(&pAd->UAPSDEOSPLock);
+		UAPSD_SEM_LOCK(&pAd->UAPSDEOSPLock, flags);
 
 		if (pEntry->bAPSDFlagSpRoughUse != 0)
 		{
-			RTMP_SEM_UNLOCK(&pAd->UAPSDEOSPLock);
+			UAPSD_SEM_UNLOCK(&pAd->UAPSDEOSPLock, flags);
 			return; /* use DMA mechanism, not statistics count mechanism */
 		}
 
@@ -1264,7 +1308,7 @@ VOID UAPSD_SP_AUE_Handle(
 			/* a UAPSD frame is transmitted so decrease the counter */
 			pEntry->UAPSDTxNum --;
 
-			RTMP_SEM_UNLOCK(&pAd->UAPSDEOSPLock);
+			UAPSD_SEM_UNLOCK(&pAd->UAPSDEOSPLock, flags);
 
 			/* maybe transmit the EOSP frame */
 			if (FlgEosp == TRUE)
@@ -1322,7 +1366,7 @@ VOID UAPSD_SP_AUE_Handle(
 			}
 		} 
 
-		RTMP_SEM_UNLOCK(&pAd->UAPSDEOSPLock);
+		UAPSD_SEM_UNLOCK(&pAd->UAPSDEOSPLock, flags);
 	}
 #endif /* UAPSD_SP_ACCURATE */
 }
@@ -1365,8 +1409,9 @@ VOID UAPSD_SP_CloseInRVDone(RTMP_ADAPTER *pAd)
 	for(IdEntry = FirstWcid; IdEntry < MAX_LEN_OF_MAC_TABLE; IdEntry++)
 	{
 		MAC_TABLE_ENTRY *pEntry = &pAd->MacTab.Content[IdEntry];
+		ULONG flags = 0;
 
-		RTMP_SEM_LOCK(&pAd->UAPSDEOSPLock);
+		UAPSD_SEM_LOCK(&pAd->UAPSDEOSPLock, flags);
 
 		/* check if SP is started and EOSP is transmitted ok */
 		if ((pEntry->bAPSDFlagSPStart != 0) &&
@@ -1392,7 +1437,7 @@ VOID UAPSD_SP_CloseInRVDone(RTMP_ADAPTER *pAd)
 			UAPSD_SP_END(pAd, pEntry);
 		}
 
-		RTMP_SEM_UNLOCK(&pAd->UAPSDEOSPLock);
+		UAPSD_SEM_UNLOCK(&pAd->UAPSDEOSPLock, flags);
 	}
 }
 
@@ -1594,7 +1639,7 @@ BOOLEAN UAPSD_PsPollHandle(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry)
 	BOOLEAN	FlgQueEmpty;
 	INT32	IdAc; /* must be signed, can not use unsigned */
 	UINT32	Aid, QueId;
-
+	ULONG flags = 0;
 
 	if (pEntry == NULL)
 		return FALSE;
@@ -1603,17 +1648,17 @@ BOOLEAN UAPSD_PsPollHandle(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry)
 	pAcSwQue = NULL;
 	pQuedPkt = NULL;
 
-	RTMP_SEM_LOCK(&pAd->UAPSDEOSPLock);
+	UAPSD_SEM_LOCK(&pAd->UAPSDEOSPLock, flags);
 
 	if (pEntry->bAPSDAllAC == 0)
 	{
-		RTMP_SEM_UNLOCK(&pAd->UAPSDEOSPLock);
+		UAPSD_SEM_UNLOCK(&pAd->UAPSDEOSPLock, flags);
 		return FALSE; /* not all AC are delivery-enabled */
 	}
 
 	if (pEntry->bAPSDFlagSPStart != 0)
 	{
-		RTMP_SEM_UNLOCK(&pAd->UAPSDEOSPLock);
+		UAPSD_SEM_UNLOCK(&pAd->UAPSDEOSPLock, flags);
 		return FALSE; /* its service period is not yet ended */
 	}
 
@@ -1702,7 +1747,7 @@ BOOLEAN UAPSD_PsPollHandle(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry)
 	/* reset idle timeout here whenever a trigger frame is received */
 	pEntry->UAPSDQIdleCount = 0;
 
-	RTMP_SEM_UNLOCK(&pAd->UAPSDEOSPLock);
+	UAPSD_SEM_UNLOCK(&pAd->UAPSDEOSPLock, flags);
 
 	/* Dequeue outgoing frames from TxSwQueue0..3 queue and process it */
 	RTMPDeQueuePacket(pAd, FALSE, NUM_OF_TX_RING, MAX_TX_PROCESS);
@@ -1737,6 +1782,7 @@ VOID UAPSD_QueueStatusGet(
 	OUT BOOLEAN				*pFlgIsAnyPktForVI,
 	OUT BOOLEAN				*pFlgIsAnyPktForVO)
 {
+	ULONG flags = 0;
 	*pFlgIsAnyPktForBK = FALSE;
 	*pFlgIsAnyPktForBE = FALSE;
 	*pFlgIsAnyPktForVI = FALSE;
@@ -1746,7 +1792,7 @@ VOID UAPSD_QueueStatusGet(
 		return;
 
 	/* get queue status */
-	RTMP_SEM_LOCK(&pAd->UAPSDEOSPLock);
+	UAPSD_SEM_LOCK(&pAd->UAPSDEOSPLock, flags);
 	if (pEntry->UAPSDQueue[QID_AC_BK].Head != NULL)
 		*pFlgIsAnyPktForBK = TRUE;
 	if (pEntry->UAPSDQueue[QID_AC_BE].Head != NULL)
@@ -1755,7 +1801,7 @@ VOID UAPSD_QueueStatusGet(
 		*pFlgIsAnyPktForVI = TRUE;
 	if (pEntry->UAPSDQueue[QID_AC_VO].Head != NULL)
 		*pFlgIsAnyPktForVO = TRUE;
-	RTMP_SEM_UNLOCK(&pAd->UAPSDEOSPLock);
+	UAPSD_SEM_UNLOCK(&pAd->UAPSDEOSPLock, flags);
 }
 
 
@@ -1800,6 +1846,7 @@ VOID UAPSD_TriggerFrameHandle(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry, UCHAR 
 	UINT32	Aid, QueId;
 	INT32	IdAc; /* must be signed, can not use unsigned */
 /*	ULONG    FlgIrq; */
+	ULONG flags = 0;
 
 #ifdef UAPSD_SP_ACCURATE
 	ULONG	TimeNow;
@@ -1807,7 +1854,7 @@ VOID UAPSD_TriggerFrameHandle(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry, UCHAR 
 
 
 	/* sanity check for Service Period of the STATION */
-	RTMP_SEM_LOCK(&pAd->UAPSDEOSPLock);
+	UAPSD_SEM_LOCK(&pAd->UAPSDEOSPLock, flags);
 
 #ifdef UAPSD_DEBUG
 	DBGPRINT(RT_DEBUG_TRACE, ("\nuapsd> bAPSDFlagLegacySent = %d!\n",
@@ -1860,15 +1907,15 @@ VOID UAPSD_TriggerFrameHandle(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry, UCHAR 
 			gUAPSD_SP_CloseAbnormalNum ++;
 #endif /* UAPSD_DEBUG */
 
-			RTMP_SEM_UNLOCK(&pAd->UAPSDEOSPLock);
+			UAPSD_SEM_UNLOCK(&pAd->UAPSDEOSPLock, flags);
 			UAPSD_SP_Close(pAd, pEntry);
-			RTMP_SEM_LOCK(&pAd->UAPSDEOSPLock);
+			UAPSD_SEM_LOCK(&pAd->UAPSDEOSPLock, flags);
 		}
 		else
 		{
 #endif /* UAPSD_SP_ACCURATE */
 
-			RTMP_SEM_UNLOCK(&pAd->UAPSDEOSPLock);
+			UAPSD_SEM_UNLOCK(&pAd->UAPSDEOSPLock, flags);
             return;
 
 #ifdef UAPSD_SP_ACCURATE
@@ -1884,7 +1931,7 @@ VOID UAPSD_TriggerFrameHandle(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry, UCHAR 
 	if (pEntry->pUAPSDEOSPFrame != NULL)
 	{
 		DBGPRINT(RT_DEBUG_TRACE, ("uapsd> EOSP is not NULL!\n"));
-		RTMP_SEM_UNLOCK(&pAd->UAPSDEOSPLock);
+		UAPSD_SEM_UNLOCK(&pAd->UAPSDEOSPLock, flags);
 		return;
 	}
 #endif /* UAPSD_DEBUG */
@@ -1961,7 +2008,7 @@ VOID UAPSD_TriggerFrameHandle(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry, UCHAR 
 			ERROR! the AC does not belong to a trigger-enabled AC or
 			the ACM of the AC is set.
 		*/
-		RTMP_SEM_UNLOCK(&pAd->UAPSDEOSPLock);
+		UAPSD_SEM_UNLOCK(&pAd->UAPSDEOSPLock, flags);
 		return;
 	}
 
@@ -2245,7 +2292,7 @@ VOID UAPSD_TriggerFrameHandle(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry, UCHAR 
 	/* reset idle timeout here whenever a trigger frame is received */
 	pEntry->UAPSDQIdleCount = 0;
 
-	RTMP_SEM_UNLOCK(&pAd->UAPSDEOSPLock);
+	UAPSD_SEM_UNLOCK(&pAd->UAPSDEOSPLock, flags);
 
 
 	/* check if NULL Frame is needed to be transmitted */
