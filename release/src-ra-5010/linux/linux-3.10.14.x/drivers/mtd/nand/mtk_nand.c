@@ -109,7 +109,7 @@ unsigned int CFG_BLOCKSIZE;
 #ifdef CONFIG_RT2880_ROOTFS_IN_FLASH
 #define NAND_MTD_ROOTFS_PARTITION_NO            5
 #endif
-static int shift_on_bbt = 0;
+#define shift_on_bbt 0
 static int is_skip_bad_block(struct mtd_info *mtd, int page);
 extern void nand_bbt_set(struct mtd_info *mtd, int page, int flag);
 extern int nand_bbt_get(struct mtd_info *mtd, int page);
