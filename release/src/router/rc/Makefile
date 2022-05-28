@@ -1298,4 +1298,3 @@ pswatch: pswatch.c
 	@$(CC) -o $@ $^
 	$(STRIP) $@
 	$(CPTMP)
-

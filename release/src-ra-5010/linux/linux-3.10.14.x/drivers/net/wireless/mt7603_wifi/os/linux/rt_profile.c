@@ -1825,6 +1825,13 @@ int RTMPSendPackets(
 
 	if (!pPacket)
 		return 0;
+#ifdef MAX_CONTINUOUS_TX_CNT
+	if (IS_OSEXPECTED_LENGTH(pkt_total_len)) {
+		pAd->tr_ststic.tx_pkt_from_os++;
+		pAd->tr_ststic.txpktdetect2s++;
+		pAd->tr_ststic.tx_pkt_len = pkt_total_len;
+	}
+#endif
 
 #ifdef WSC_NFC_SUPPORT
         {

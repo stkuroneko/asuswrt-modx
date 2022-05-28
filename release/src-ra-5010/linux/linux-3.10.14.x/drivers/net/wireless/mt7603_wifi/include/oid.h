@@ -1290,7 +1290,7 @@ typedef enum _RT_802_11_PHY_MODE {
 	PHY_11G = 4,
 #ifdef DOT11_N_SUPPORT
 	PHY_11ABGN_MIXED = 5,	/* both band   5 */
-	PHY_11N = 6,		/* 11n-only with 2.4G band      6 */
+	PHY_11N_2_4G = 6,		/* 11n-only with 2.4G band      6 */
 	PHY_11GN_MIXED = 7,		/* 2.4G band      7 */
 	PHY_11AN_MIXED = 8,		/* 5G  band       8 */
 	PHY_11BGN_MIXED = 9,	/* if check 802.11b.      9 */
@@ -1379,6 +1379,14 @@ typedef struct _RT_802_11_MAC_ENTRY {
 	UINT32 ConnectedTime;
 	MACHTTRANSMIT_SETTING TxRate;
 	UINT32 LastRxRate;
+
+//sync with WEB UI's structure for ioctl usage.
+//#ifdef RTMP_RBUS_SUPPORT
+	SHORT StreamSnr[3];				/* BF SNR from RXWI. Units=0.25 dB. 22 dB offset removed */
+	SHORT SoundingRespSnr[3];			/* SNR from Sounding Response. Units=0.25 dB. 22 dB offset removed */
+/*	SHORT TxPER;	*/					/* TX PER over the last second. Percent */
+/*	SHORT reserved;*/
+//#endif /* RTMP_RBUS_SUPPORT */
 
 } RT_802_11_MAC_ENTRY, *PRT_802_11_MAC_ENTRY;
 
@@ -1545,7 +1553,12 @@ typedef struct _WSC_CREDENTIAL {
 	UCHAR MacAddr[MAC_ADDR_LEN];	/* mandatory, AP MAC address */
 	UCHAR KeyIndex;		/* optional, default is 1 */
 	UCHAR bFromUPnP;	/* TRUE: This credential is from external UPnP registrar */
+#ifndef MAP_SUPPORT
 	UCHAR Rsvd[2];		/* Make alignment */
+#else
+	UCHAR bss_role;		/*0-Fronthaul, 1-Backhaul*/
+	UCHAR DevPeerRole;	/* Device role for the peer device sending M8 */
+#endif /* MAP_SUPPORT */
 } WSC_CREDENTIAL, *PWSC_CREDENTIAL;
 
 /* WSC configured profiles */
@@ -1824,6 +1837,13 @@ typedef struct GNU_PACKED _mntr_entry_info {
 #ifdef MBO_SUPPORT
 #define OID_802_11_MBO_MSG						0x0953
 #define OID_NEIGHBOR_REPORT						0x0954
+#endif
+
+#ifdef OFFCHANNEL_SCAN_FEATURE
+#define OID_OFFCHANNEL_INFO				0x0955
+#define OID_802_11_CURRENT_CHANNEL_INFO 0x0956
+#define OID_OPERATING_INFO				0x0957
+#define OID_802_11_CHANNELINFO			0x0999
 #endif
 
 #define MAX_CANDIDATE_NUM 5
@@ -2192,21 +2212,79 @@ struct GNU_PACKED owe_trans_channel_change_info {
 
 #endif
 
-enum ASUS_IOCTL_SUBCMD {
-	ASUS_SUBCMD_UNKNOWN = 0,
-	ASUS_SUBCMD_GSTAINFO,
-	ASUS_SUBCMD_GSTAT,
-	ASUS_SUBCMD_GRSSI,
-	ASUS_SUBCMD_RADIO_STATUS,
-	ASUS_SUBCMD_CHLIST,
-	ASUS_SUBCMD_GROAM,
-	ASUS_SUBCMD_CONN_STATUS,
-	ASUS_SUBCMD_GETSKUTABLE,
-	ASUS_SUBCMD_GETSKUTABLE_TXBF,
-	ASUS_SUBCMD_CLIQ,
-	ASUS_SUBCMD_DRIVERVER,
-	ASUS_SUBCMD_RADIO_TEMPERATURE,
-	ASUS_SUBCMD_MAX
+#ifdef OFFCHANNEL_SCAN_FEATURE
+#define MAX_AWAY_CHANNEL 5
+#define MAX_NUM_OF_CHANNELS_OFFCHAN_SCAN	59
+
+enum channel_monitor_return_code {
+	CHANNEL_MONITOR_STRG_FAILURE = 0,
+	CHANNEL_MONITOR_STRG_SUCCESS,
+	CHANNEL_MONITOR_STRG_INVALID_ARG,
 };
+
+enum ASYNC_OFFCHANNEL_COMMAND_RSP {
+	GET_OFFCHANNEL_INFO = 34,
+	OFFCHANNEL_INFO_RSP,
+	TRIGGER_DRIVER_CHANNEL_SWITCH,
+	UPDATE_DRIVER_SORTED_CHANNEL_LIST,
+	DFS_DRIVER_CHANNEL_SWITCH,
+	DFS_RADAR_HIT,
+	DFS_CHANNEL_NOP_CMPLT,
+	DRIVER_CHANNEL_SWITCH_SUCCESSFUL
+};
+
+typedef struct operating_info {
+	UINT8 channel;
+	UCHAR cfg_ht_bw;
+	UCHAR cfg_vht_bw;
+	UCHAR RDDurRegion;
+	UCHAR region;
+	UCHAR is4x4Mode;
+	UCHAR vht_cent_ch2;
+} OPERATING_INFO, *POPERATING_INFO;
+
+typedef struct _channel_info {
+	UINT8	channel;
+	UINT8	channel_idx;
+	INT32	NF;
+	UINT32  rx_time;
+	UINT32	tx_time;
+	UINT32	obss_time;
+	UINT32	channel_busy_time;
+	UINT8	dfs_req;
+	UCHAR 	actual_measured_time;
+} CHANNEL_INFO, *PCHANNEL_INFO;
+
+
+struct msg_channel_list {
+	CHANNEL_INFO CHANNELLIST[60];
+};
+typedef struct offchannel_param {
+	UCHAR channel[MAX_AWAY_CHANNEL];
+	UCHAR scan_type[MAX_AWAY_CHANNEL];
+	UCHAR scan_time[MAX_AWAY_CHANNEL];
+	UINT32 Num_of_Away_Channel;
+} OFFCHANNEL_SCAN_PARAM, *POFFCHANNEL_SCAN_PARAM;
+
+typedef struct sorted_list_info {
+	UINT8 size;
+	UINT8 SortedMaxChannelBusyTimeList[MAX_NUM_OF_CHANNELS_OFFCHAN_SCAN+1];
+	UINT8 SortedMinChannelBusyTimeList[MAX_NUM_OF_CHANNELS_OFFCHAN_SCAN+1];
+
+} SORTED_CHANNEL_LIST, *PSORTED_CHANNEL_LIST;
+
+
+typedef struct _OFFCHANNEL_SCAN_MSG {
+UINT8   Action;
+UCHAR ifrn_name[32];
+union {
+				CHANNEL_INFO channel_data;
+				OFFCHANNEL_SCAN_PARAM offchannel_param;
+				OPERATING_INFO operating_ch_info;
+				SORTED_CHANNEL_LIST sorted_channel_list;
+} data;
+} OFFCHANNEL_SCAN_MSG, *POFFCHANNEL_SCAN_MSG;
+#endif
+
 #endif /* _OID_H_ */
 

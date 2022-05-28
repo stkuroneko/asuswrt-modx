@@ -125,7 +125,27 @@ void SendBTMQueryEvent(PNET_DEV net_dev, const char *peer_mac_addr,
 								  btm_query_len);
 	}
 }
+#ifdef MAP_R2
+void SendWNMNotifyEvent(PNET_DEV net_dev, const char *peer_mac_addr,
+							  const char *wnm_req, UINT16 wnm_req_len)
+{
+	struct wnm_notify_req_data *req_data;
+	UINT16 buflen = 0;
+	char *buf;
 
+	buflen = sizeof(*req_data) + wnm_req_len;
+	os_alloc_mem(NULL, (UCHAR **)&buf, buflen);
+	NdisZeroMemory(buf, buflen);
+	req_data = (struct wnm_notify_req_data *)buf;
+	req_data->ifindex = RtmpOsGetNetIfIndex(net_dev);
+	memcpy(req_data->peer_mac_addr, peer_mac_addr, 6);
+	req_data->wnm_req_len	= wnm_req_len;
+	memcpy(req_data->wnm_req, wnm_req, wnm_req_len);
+	RtmpOSWrielessEventSend(net_dev, RT_WLAN_EVENT_CUSTOM,
+							OID_802_11_WNM_NOTIFY_REQ, NULL, (PUCHAR)buf, buflen);
+	os_free_mem(buf);
+}
+#endif
 #ifndef WAPP_SUPPORT/* #ifdef WNM_NEW_API */
 void wext_send_btm_cfm_event_newapi(PNET_DEV net_dev, const char *peer_mac_addr,
 							 const char *btm_rsp, UINT16 btm_rsp_len)
@@ -1569,12 +1589,19 @@ static VOID ReceiveBTMRsp(IN PRTMP_ADAPTER pAd,
 	/* Send BTM confirm to daemon */
 	VarLen = Elem->MsgLen -
 		(sizeof(HEADER_802_11) + 1 + sizeof(WNMFrame->u.BTM_RSP)) + 1;
-
+#ifdef WAPP_SUPPORT
+	SendBTMConfirmEvent(NetDev,
+						WNMFrame->Hdr.Addr2,
+						(PUCHAR)&(WNMFrame->u.BTM_RSP.Variable),
+						VarLen,
+						RA_WEXT);
+#else
 	SendBTMConfirmEvent(NetDev,
 						WNMFrame->Hdr.Addr2,
 						(PUCHAR)&(WNMFrame->u.BTM_RSP.DialogToken),
 						VarLen,
 						RA_WEXT);
+#endif
 #else
 		VarLen = Elem->MsgLen - (sizeof(HEADER_802_11) + 1 + sizeof(WNMFrame->u.BTM_RSP));
 
@@ -3151,7 +3178,7 @@ int compose_btm_req_ie(
 			(p_info->ap_reachability == 0)?3:p_info->ap_reachability;
 		BssidInfo.field.Security = p_info->security;
 		BssidInfo.field.KeyScope = p_info->key_scope;
-		BssidInfo.field.SepctrumMng = (p_info->capinfo & (1 << 8)) ? 1:0;
+		BssidInfo.field.SpectrumMng = (p_info->capinfo & (1 << 8)) ? 1:0;
 		BssidInfo.field.Qos = (p_info->capinfo & (1 << 9)) ? 1:0;
 		BssidInfo.field.APSD = (p_info->capinfo & (1 << 11)) ? 1:0;
 		BssidInfo.field.RRM = (p_info->capinfo & RRM_CAP_BIT) ? 1:0;
@@ -3314,6 +3341,12 @@ VOID ReceiveWNMNotifyReq(IN PRTMP_ADAPTER pAd,
 	UINT	pos = 0;
 	UINT	OptionalElementLen = (UINT)Elem->MsgLen - sizeof(HEADER_802_11) - 4; /* skip  category, action, DialogToken, type */
 	UINT	ElementID = 0, ElementLen = 0;
+#ifdef MAP_R2
+	PNET_DEV NetDev = NULL;
+	ULONG VarLen = 0;
+	PWNM_CTRL pWNMCtrl = NULL;
+	UCHAR APIndex;
+#endif
 #ifdef MBO_SUPPORT
 	struct wifi_dev *pWdev = wdev_search_by_address(pAd, WNMFrame->Hdr.Addr1);
 
@@ -3334,6 +3367,30 @@ VOID ReceiveWNMNotifyReq(IN PRTMP_ADAPTER pAd,
 
 	MTWF_LOG(DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("%s MsgLen %ld MBSS %02x:%02x:%02x:%02x:%02x:%02x\n",
 		__func__, Elem->MsgLen, PRINT_MAC(WNMFrame->Hdr.Addr1)));
+#ifdef MAP_R2
+
+	for (APIndex = 0; APIndex < MAX_MBSSID_NUM(pAd); APIndex++) {
+		if (MAC_ADDR_EQUAL(WNMFrame->Hdr.Addr3, pAd->ApCfg.MBSSID[APIndex].wdev.bssid)) {
+			pWNMCtrl = &pAd->ApCfg.MBSSID[APIndex].WNMCtrl;
+			break;
+		}
+	}
+
+	if (!pWNMCtrl) {
+		MTWF_LOG(DBG_CAT_PROTO, CATPROTO_WNM, DBG_LVL_ERROR, ("%s Can not find Peer Control\n", __func__));
+		return;
+	}
+
+	NetDev = pAd->ApCfg.MBSSID[APIndex].wdev.if_dev;
+
+	VarLen = Elem->MsgLen -
+		(sizeof(HEADER_802_11));
+
+	SendWNMNotifyEvent(NetDev,
+							 WNMFrame->Hdr.Addr2,
+							 (PUCHAR)&(WNMFrame->Category),
+							 VarLen);
+#endif
 
 	while ((pos+1) <= OptionalElementLen) {
 		ElementID = WNMFrame->u.WNM_NOTIFY_REQ.Variable[pos];
