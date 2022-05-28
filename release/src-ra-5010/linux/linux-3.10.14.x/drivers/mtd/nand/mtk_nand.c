@@ -5066,11 +5066,9 @@ int mtk_nand_probe()
 	    trx_firmware_size = TRX_FIRMWARE_SIZE * i;
 
         offs = LARGE_MTD_BOOT_PART_SIZE + LARGE_MTD_CONFIG_PART_SIZE + (LARGE_MTD_FACTORY_PART_SIZE*2) + trx_firmware_size;
-// HIWIFI4
-#if defined(CONFIG_MODEL_RTHIWIFI4) || defined(CONFIG_MODEL_RTE8820S)
-        offs = 0x140000;
-#endif 
-// HIWIFI4
+// Xiaomi
+        offs = 0x600000;
+// Xiaomi
 
         len =  ranand_read((u_char *)(&hdr), offs, sizeof(hdr));
    
@@ -5128,11 +5126,14 @@ int mtk_nand_probe()
 #if defined(CONFIG_MODEL_RTHIWIFI4) || defined(CONFIG_MODEL_RTE8820S)
 	g_pasStatic_Partition[1].offset = 0x80000;
 	g_pasStatic_Partition[2].offset = 0x100000;
-	g_pasStatic_Partition[3].offset = 0xc0000;
-	g_pasStatic_Partition[6].offset = g_pasStatic_Partition[4].offset + g_pasStatic_Partition[4].size ;
-	g_pasStatic_Partition[6].size = MTDPART_SIZ_FULL;
-#endif 
-// HIWIFI4
+	g_pasStatic_Partition[3].offset = 0x120000;
+	g_pasStatic_Partition[6].offset = 0x3800000;
+	g_pasStatic_Partition[6].size = 0x2800000;
+#if defined CONFIG_MODEL_RTMIR3P
+	g_pasStatic_Partition[2].offset = 0xc0000;
+	g_pasStatic_Partition[6].size = 0xa000000;
+#endif
+// Xiaomi
 	err = add_mtd_partitions(mtd, g_pasStatic_Partition, part_num);
 	//err = mtd_device_register(mtd, g_pasStatic_Partition, part_num);
 #endif
