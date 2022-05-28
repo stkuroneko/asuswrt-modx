@@ -307,7 +307,7 @@ INT rt28xx_ap_ioctl(struct net_device *net_dev, struct ifreq *rq, int cmd)
 
 		pIoctlRate->priv_flags = RT_DEV_PRIV_FLAGS_GET(net_dev);
 		RTMP_DRIVER_BITRATE_GET(pAd, pIoctlRate);
-		wrqin->u.bitrate.value = pIoctlRate->BitRate;
+		wrqin->u.bitrate.value = (pIoctlRate->BitRate/1000);
 		wrqin->u.bitrate.disabled = 0;
 	}
 	break;
@@ -502,6 +502,10 @@ INT rt28xx_ap_ioctl(struct net_device *net_dev, struct ifreq *rq, int cmd)
 		RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_GET_PROCESS_INFO, 0, NULL, 0);
 		break;
 #endif
+	case RTPRIV_IOCTL_ASUSCMD:
+		subcmd = wrqin->u.data.flags;
+		RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_ASUSCMD,subcmd, wrqin->u.data.pointer, 0);
+		break;
 
 	case RTPRIV_IOCTL_ASUSCMD:
 		Status = RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_ASUSCMD, wrqin->u.data.flags, NULL, 0);

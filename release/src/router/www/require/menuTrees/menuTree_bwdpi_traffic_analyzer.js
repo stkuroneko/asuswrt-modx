@@ -53,6 +53,23 @@ define(function(){
 					{url: "NULL", tabName: "__INHERIT__"}
 				]
 			},
+			{
+				menuName: "<#AiProtection_title#>",
+				index: "menu_AiProtection", 
+				tab: [
+					{url: "AiProtection_HomeSecurity.asp", tabName: "__HIDE__"},
+					{url: "AiProtection_HomeProtection.asp", tabName: "<#AiProtection_Home#>"},
+					{url: "AiProtection_MaliciousSitesBlocking.asp", tabName: "<#AiProtection_sites_blocking#>"},
+					{url: "AiProtection_IntrusionPreventionSystem.asp", tabName: "<#AiProtection_two-way_IPS#>"},
+					{url: "AiProtection_InfectedDevicePreventBlock.asp", tabName: "<#AiProtection_detection_blocking#>"},
+					{url: "AiProtection_WebProtector.asp", tabName: "<#Parental_Control#>"},
+					{url: "ParentalControl.asp", tabName: "__INHERIT__"},
+					{url: "AiProtection_AdBlock.asp", tabName: "Ad Blocking"},
+					{url: "AiProtection_Key_Guard.asp", tabName: "Key Guard"},
+					{url: "YandexDNS.asp", tabName: "<#YandexDNS#>"},
+					{url: "NULL", tabName: "__INHERIT__"}
+				] 
+			},
 			{		//for without bwdpi model, RT-N66U_C1
 				menuName: "<#Menu_TrafficManager#>",
 				index: "menu_QoS", 
@@ -155,6 +172,15 @@ define(function(){
 					{url: "NULL", tabName: "__INHERIT__"}
 				] 
 			},
+			{
+				menuName: "<#Softcenter_tool#>",
+				index: "menu_Tools",
+				tab: [
+					{url: "Tools_Sysinfo.asp", tabName: "Sysinfo"},
+					{url: "Softcenter.asp", tabName: "<#Softcenter_tool#>"},
+					{url: "NULL", tabName: "__INHERIT__"}
+				] 
+			},
 			/* ============================================================================================================ */
 			{
 				menuName: "<#menu5#>",
@@ -186,6 +212,7 @@ define(function(){
 					{url: "Advanced_GWStaticRoute_Content.asp", tabName: "<#menu5_2_3#>"},
 					{url: "Advanced_IPTV_Content.asp", tabName: "IPTV"},
 					{url: "Advanced_SwitchCtrl_Content.asp", tabName: "<#Switch_itemname#>"},
+					{url: "Advanced_SmartDNS_Content.asp", tabName: "SmartDNS"},
 					{url: "NULL", tabName: "__INHERIT__"}
 				] 
 			},
@@ -290,6 +317,39 @@ define(function(){
 					{url: "Main_Netstat_Content.asp", tabName: "Netstat"},
 					{url: "Main_WOL_Content.asp", tabName: "<#NetworkTools_WOL#>"},
 					{url: "Advanced_Smart_Connect.asp", tabName: "<#smart_connect_rule#>"},
+					{url: "NULL", tabName: "__INHERIT__"}
+				]
+			},
+			{
+				menuName: "Entware",
+				index: "menu_Split",
+				tab: [
+					{url: "NULL", tabName: "__HIDE__"}
+				]
+			},
+			{
+				menuName: "Entware",
+				index: "menu_Entware",
+				tab: [
+					{url: "Entware_start.asp", tabName: "<#Entware_home#>"},
+					{url: "Entware_installed.asp", tabName: "<#Entware_installed#>"},
+					{url: "Entware_list.asp", tabName: "<#Entware_list#>"},
+					{url: "NULL", tabName: "__INHERIT__"}
+				] 
+			},
+			{
+				menuName: "<#Softcenter#>",
+				index: "menu_Split",
+				tab: [
+					{url: "NULL", tabName: "__HIDE__"}
+				]
+			},
+			{
+				menuName: "<#Softcenter#>",
+				index: "menu_Softcenter",
+				tab: [
+					{url: "Main_Soft_center.asp", tabName: "<#Softcenter#>"},
+					{url: "Main_Soft_setting.asp", tabName: "Offline Mode"},
 					{url: "NULL", tabName: "__INHERIT__"}
 				]
 			}
@@ -419,8 +479,18 @@ define(function(){
 					retArray.push("menu_OpenNAT");
 				}
 
+				else if (<% nvram_get("sc_installed"); %> == "0"){
+					retArray.push("menu_Softcenter");
+				}
 				if(lyra_hide_support){
 					retArray.push("menu_Wireless");
+				}
+				if (!entware_support){
+					retArray.push("menu_Entware");
+					for(i=0; i<menuTree.list.length; i++){
+						if(menuTree.list[i].menuName == 'Entware')
+							menuTree.list.splice(i,1);
+					}
 				}
 
 				return retArray;
@@ -710,6 +780,13 @@ define(function(){
 				return retArray;
 			}
 		}
+	}
+
+	if(odmpid == "RT-N66U_C1"){
+		menuTree.list.splice(7,2);
+	}
+	else{
+		menuTree.list.splice(5,2);
 	}
 
 	return menuTree;

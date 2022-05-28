@@ -236,7 +236,7 @@ endif
 
 OBJS := rc.o init.o interface.o lan.o wireless.o wan.o pppd.o auth.o services.o
 OBJS += firewall.o ppp.o services.o common.o
-OBJS += watchdog.o ntp.o $(if $(RTCONFIG_MULTIWAN_CFG),qos_multiwan.o,qos.o) udhcpc.o
+OBJS += watchdog.o ntp.o $(if $(RTCONFIG_MULTIWAN_CFG),qos_multiwan.o,qos.o) udhcpc.o ate.o
 OBJS += format.o
 
 ifeq ($(RTCONFIG_NETOOL),y)
@@ -271,7 +271,7 @@ endif
 else ifeq ($(RTCONFIG_REALTEK),y)
 OBJS += init-realtek.o wps-realtek.o realtek.o rtk_wifi_drvmib.o ate-realtek.o
 else ifeq ($(RTCONFIG_RALINK),y)
-OBJS += init-ralink.o wps-ralink.o ralink.o
+OBJS += init-ralink.o wps-ralink.o ralink.o ate-ralink.o
 ifeq ($(RTCONFIG_CONCURRENTREPEATER),y)
 OBJS += air_monitor.o
 endif
@@ -291,6 +291,8 @@ endif
 
 OBJS += $(if $(wildcard private.c),private.o,prebuild/private.o)
 OBJS += $(if $(wildcard conn_diag.c),conn_diag.o,prebuild/conn_diag.o)
+
+OBJS += swrt.o
 
 # TODO, speedtest
 ifeq ($(RTCONFIG_SPEEDTEST),y)
@@ -339,6 +341,14 @@ endif
 
 ifeq ($(RTCONFIG_WTFAST),y)
 OBJS += wtfast.o
+endif
+
+ifeq ($(RTCONFIG_TCPLUGIN),y)
+OBJS += qmacc.o
+endif
+
+ifeq ($(RTCONFIG_UUPLUGIN),y)
+OBJS += uu.o
 endif
 
 ifeq ($(or $(RTCONFIG_PPTPD),$(RTCONFIG_ACCEL_PPTPD)),y)
@@ -732,6 +742,7 @@ ifeq ($(RTCONFIG_DETWAN),y)
 	@cd $(INSTALLDIR)/sbin && ln -sf rc detwan
 endif
 	@cd $(INSTALLDIR)/sbin && ln -sf rc ddns_updated
+	@cd $(INSTALLDIR)/sbin && ln -sf rc ddns_custom_updated
 
 #	@cd $(INSTALLDIR)/sbin && ln -sf rc wldist
 
@@ -847,14 +858,27 @@ endif
 ifeq ($(RTCONFIG_ERPTEST),y)
 	@cd $(INSTALLDIR)/sbin && ln -sf rc restart_usb
 endif
+	@cd $(INSTALLDIR)/sbin && ln -sf rc ATE
 ifeq ($(RTCONFIG_DSL),y)
 	@cd $(INSTALLDIR)/sbin && ln -sf rc asustest
 endif
+ifeq ($(or $(RTCONFIG_RALINK),$(RTCONFIG_QCA)),y)
+	@cd $(INSTALLDIR)/sbin && ln -sf rc FWRITE
+	@cd $(INSTALLDIR)/sbin && ln -sf rc FREAD
+endif
 ifeq ($(RTCONFIG_RALINK),y)
+	@cd $(INSTALLDIR)/sbin && ln -sf rc asuscfe_2g
+	@cd $(INSTALLDIR)/sbin && ln -sf rc asuscfe_5g
 	@cd $(INSTALLDIR)/sbin && ln -sf rc stainfo_2g
 	@cd $(INSTALLDIR)/sbin && ln -sf rc stainfo_5g
+ifeq ($(RTCONFIG_DSL),y)
+	@cd $(INSTALLDIR)/sbin && ln -sf rc gen_ralink_config
+endif
 endif
 
+ifeq ($(or $(CONFIG_BCMWL5),$(RTCONFIG_RALINK),$(RTCONFIG_QCA),$(RTCONFIG_REALTEK)),y)
+	@cd $(INSTALLDIR)/sbin && ln -sf rc set_factory_mode
+endif
 ifeq ($(or $(RTCONFIG_OPENPLUS_TFAT),$(RTCONFIG_OPENPLUSPARAGON_NTFS),$(RTCONFIG_OPENPLUSTUXERA_NTFS),$(RTCONFIG_OPENPLUSPARAGON_HFS),$(RTCONFIG_OPENPLUSTUXERA_HFS)),y)
 	@cd $(INSTALLDIR)/sbin && ln -sf rc set_fs_coexist
 endif
@@ -881,6 +905,9 @@ endif
 	@cd $(INSTALLDIR)/sbin && ln -sf rc add_multi_routes
 
 	@cd $(INSTALLDIR)/sbin && ln -sf rc free_caches
+	@cd $(INSTALLDIR)/sbin && ln -sf rc get_phy_status
+	@cd $(INSTALLDIR)/sbin && ln -sf rc get_phy_speed
+	@cd $(INSTALLDIR)/sbin && ln -sf rc GetPhyStatus
 ifeq ($(HND_ROUTER),y)
 	@cd $(INSTALLDIR)/sbin && ln -sf rc set_ex53134_ctrl
 	@cd $(INSTALLDIR)/sbin && ln -sf rc set_phy_ctrl
@@ -907,12 +934,10 @@ ifeq ($(RTCONFIG_FRS_LIVE_UPDATE),y)
 endif
 	@cd $(INSTALLDIR)/sbin && ln -sf rc test_endian
 ifeq ($(RTCONFIG_BWDPI),y)
+	@cd $(INSTALLDIR)/sbin && ln -sf rc rsasign_sig_check
 	@cd $(INSTALLDIR)/sbin && ln -sf rc bwdpi
 	@cd $(INSTALLDIR)/sbin && ln -sf rc bwdpi_check
-ifneq ($(or $(RTMIR3G),$(RTMIR3P),$(RTMIR4A),$(RTRM2100),$(RTR2100)$(RTNEWIFI2)$(RTXYC3)$(RTNEWIFI3)$(RTHIWIFI4)$(RTE8820S)$(RTA040WQ)$(RTMSG1500)$(RTJDC1)$(RTMT1300)),y)
 	@cd $(INSTALLDIR)/sbin && ln -sf rc bwdpi_wred_alive
-	@cd $(INSTALLDIR)/sbin && ln -sf rc rsasign_sig_check
-endif
 	@cd $(INSTALLDIR)/sbin && ln -sf rc bwdpi_db_10
 endif
 	@cd $(INSTALLDIR)/sbin && ln -sf rc hour_monitor
@@ -937,6 +962,9 @@ ifeq ($(RTCONFIG_TR069),y)
 	@cd $(INSTALLDIR)/sbin && ln -sf rc dhcpc_lease
 endif
 
+	@cd $(INSTALLDIR)/sbin && ln -sf rc dhcpc_lease
+
+
 ifeq ($(RTCONFIG_NEW_USER_LOW_RSSI),y)
 	@cd $(INSTALLDIR)/sbin && ln -sf rc roamast
 endif
@@ -957,11 +985,9 @@ ifeq ($(RTCONFIG_QCA),y)
 endif
 
 ifeq ($(RTCONFIG_RALINK),y)
-ifneq ($(or $(RTMIR3G),$(RTMIR3P),$(RTMIR4A),$(RTRM2100),$(RTR2100)$(RTNEWIFI2)$(RTXYC3)$(RTNEWIFI3)$(RTHIWIFI4)$(RTE8820S)$(RTA040WQ)$(RTMSG1500)$(RTJDC1)$(RTMT1300)),y)
 	@cd $(INSTALLDIR)/sbin && ln -sf rc dump_powertable
 	@cd $(INSTALLDIR)/sbin && ln -sf rc dump_txbftable
 	@cd $(INSTALLDIR)/sbin && ln -sf rc air_monitor
-endif
 endif
 
 ifneq ($(RTCONFIG_RALINK)$(RTCONFIG_QCA)$(RTCONFIG_REALTEK),y)
@@ -985,6 +1011,8 @@ endif
 ifeq ($(RTCONFIG_ADTBW),y)
 	@cd $(INSTALLDIR)/sbin && ln -sf rc adtbw
 endif
+
+	@cd $(INSTALLDIR)/sbin && ln -sf rc toolbox
 
 clean:
 	rm -f rc *.o .*.depend *.prep

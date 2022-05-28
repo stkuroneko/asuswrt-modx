@@ -40,7 +40,7 @@
 
 
 #ifdef CONFIG_FAST_NAT_SUPPORT
-#include <net/ra_nat.h>
+#include <../../../../../net/nat/hw_nat/ra_nat.h>
 #endif /*CONFIG_FAST_NAT_SUPPORT*/
 
 #define BSSID_WCID_TO_REMOVE 1
@@ -1109,10 +1109,12 @@ void announce_802_3_packet(
 		if (ra_sw_nat_hook_rx != NULL) {
 
 			RtmpOsPktProtocolAssign(pRxPkt);
-			RtmpOsPktNatMagicTag(pRxPkt);
+			FOE_MAGIC_TAG(RTPKT_TO_OSPKT(pRxPkt)) = FOE_MAGIC_WLAN;
 
-			if (ra_sw_nat_hook_rx(pRxPkt))
-				RtmpOsPktRcvHandle(pRxPkt);
+			if (ra_sw_nat_hook_rx(pRxPkt)) {
+				FOE_MAGIC_TAG(RTPKT_TO_OSPKT(pRxPkt)) = 0;
+ 				RtmpOsPktRcvHandle(pRxPkt);
+			}
 
 			return;
 		}

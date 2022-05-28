@@ -27,7 +27,7 @@
 
 typedef uint32_t __u32;
 
-#if defined(RTN14U) || defined(RTAC52U) || defined(RTAC51U) || defined(RTN11P) || defined(RTN300) || defined(RTN54U) || defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTN56UB2) ||defined(RTAC54U) || defined(RTAC51UP)|| defined(RTAC53) || defined(RTAC1200GA1) || defined(RTAC1200GU) || defined(RTAC1200) || defined(RTN11P_B1) || defined(RPAC87) || defined(RTAC85U) || defined(RTAC85P) || defined(RTAC65U) || defined(RTN800HP) || defined(RTACRH26) || defined(TUFAC1750) || defined(RMAC2100) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTXYC3) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300)
+#if defined(RTN14U) || defined(RTAC52U) || defined(RTAC51U) || defined(RTN11P) || defined(RTN300) || defined(RTN54U) || defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTN56UB2) ||defined(RTAC54U) || defined(RTAC51UP)|| defined(RTAC53) || defined(RTAC1200GA1) || defined(RTAC1200GU) || defined(RTAC1200) || defined(RTN11P_B1) || defined(RPAC87) || defined(RTAC85U) || defined(RTAC85P) || defined(RTAC65U) || defined(RTN800HP) || defined(RTACRH26) || defined(TUFAC1750) || defined(RMAC2100) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTXYC3) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300)
 const char WIF_5G[]	= "rai0";
 const char WIF_2G[]	= "ra0";
 const char WDSIF_5G[]	= "wdsi";
@@ -40,6 +40,12 @@ const char WDSIF_5G[]	= "wds";
 const char APCLI_5G[]	= "apcli0";
 const char APCLI_2G[]	= "apclii0";
 #endif
+
+typedef struct channel_info {
+	unsigned char channel;
+	unsigned char bandwidth;
+	unsigned char extrach;
+};
 
 #if defined(RA_ESW)
 /* Read TX/RX byte count information from switch's register. */
@@ -137,17 +143,16 @@ int wl_ioctl(const char *ifname, int cmd, struct iwreq *pwrq)
 
 unsigned int get_radio_status(char *ifname)
 {
-	struct ifreq ifr;
-	int sfd, ret;
+	struct iwreq wrq;
+	unsigned int data = 0;
 
-	if ((sfd = socket(AF_INET, SOCK_RAW, IPPROTO_RAW)) >= 0) {
-		strcpy(ifr.ifr_name, ifname);
-		ret = ioctl(sfd, SIOCGIFFLAGS, &ifr);
-		close(sfd);
-		if (ret == 0)
-			return !!(ifr.ifr_flags & IFF_UP);
-	}
-	return 0;
+	wrq.u.data.length = sizeof(data);
+	wrq.u.data.pointer = (caddr_t) &data;
+	wrq.u.data.flags = ASUS_SUBCMD_RADIO_STATUS;
+	if (wl_ioctl(ifname, RTPRIV_IOCTL_ASUSCMD, &wrq) < 0)
+		printf("ioctl error\n");
+
+	return data;
 }
 
 int get_radio(int unit, int subunit)
@@ -182,7 +187,7 @@ void set_radio(int on, int unit, int subunit)
 		doSystem("iwpriv %s set RadioOn=%d", WIF_2G, on);
 	else doSystem("iwpriv %s set RadioOn=%d", WIF_5G, on);
 
-#if defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTN56UB2) || defined(RTAC1200GA1) || defined(RTAC1200GU) || defined(RTAC85U) || defined(RTAC85P) || defined(RTAC65U)  || defined(RTN800HP)  || defined(RTACRH26) //5G:7612E 2G:7603E
+#if defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTN56UB2) || defined(RTAC1200GA1) || defined(RTAC1200GU) || defined(RTAC85U) || defined(RTAC85P) || defined(RTAC65U)  || defined(RTN800HP)  || defined(RTACRH26) || defined(TUFAC1750) || defined(RMAC2100) || defined(RTA040WQ) //5G:7612E 2G:7603E
 	led_onoff(unit);
 #endif	
 }
@@ -231,7 +236,14 @@ int get_channel_list_via_driver(int unit, char *buffer, int len)
 	memset(&wrq, 0, sizeof(wrq));
 	wrq.u.data.pointer = buffer;
 	wrq.u.data.length  = len;
+#if defined(RTA040WQ) || defined(RTMSG1500) || defined(RTMT1300)
+if(unit)
+	wrq.u.data.flags   = ASUS_SUBCMD_CHLIST2;
+	else
 	wrq.u.data.flags   = ASUS_SUBCMD_CHLIST;
+#else
+	wrq.u.data.flags   = ASUS_SUBCMD_CHLIST;
+#endif
 	if (wl_ioctl(ifname, RTPRIV_IOCTL_ASUSCMD, &wrq) < 0)
 		return -1;
 
@@ -260,7 +272,7 @@ int get_mtk_wifi_driver_version(char *buffer, int len)
 }
 
 /* get channel list via value of countryCode */
-unsigned char A_BAND_REGION_0_CHANNEL_LIST[]={36, 40, 44, 48, 149, 153, 157, 161, 165};
+unsigned char A_BAND_REGION_0_CHANNEL_LIST[]={36, 40, 44, 48, 52, 56, 60, 64, 149, 153, 157, 161, 165};
 unsigned char A_BAND_REGION_1_CHANNEL_LIST[]={36, 40, 44, 48};
 #ifdef RTCONFIG_LOCALE2012
 unsigned char A_BAND_REGION_2_CHANNEL_LIST[]={36, 40, 44, 48, 52, 56, 60, 64, 149, 153, 157, 161, 165};
@@ -348,6 +360,7 @@ COUNTRY_CODE_TO_COUNTRY_REGION allCountry[] = {
 	{"DB", A_BAND_REGION_7, G_BAND_REGION_5},
 	{"AL", A_BAND_REGION_0, G_BAND_REGION_1},
 	{"DZ", A_BAND_REGION_0, G_BAND_REGION_1},
+	{"AA", A_BAND_REGION_0, G_BAND_REGION_1},//fix ac85p AA
 #ifdef RTCONFIG_LOCALE2012
 	{"AR", A_BAND_REGION_0, G_BAND_REGION_1},
 	{"AM", A_BAND_REGION_1, G_BAND_REGION_1},
@@ -376,7 +389,7 @@ COUNTRY_CODE_TO_COUNTRY_REGION allCountry[] = {
 	{"BG", A_BAND_REGION_1, G_BAND_REGION_1},
 	{"CA", A_BAND_REGION_0, G_BAND_REGION_0},
 	{"CL", A_BAND_REGION_0, G_BAND_REGION_1},
-	{"CN", A_BAND_REGION_4, G_BAND_REGION_1},
+	{"CN", A_BAND_REGION_0, G_BAND_REGION_1},
 	{"CO", A_BAND_REGION_0, G_BAND_REGION_0},
 	{"CR", A_BAND_REGION_0, G_BAND_REGION_1},
 #ifdef RTCONFIG_LOCALE2012
@@ -481,11 +494,11 @@ COUNTRY_CODE_TO_COUNTRY_REGION allCountry[] = {
 	{"RU", A_BAND_REGION_6, G_BAND_REGION_1},
 #else
 	{"RO", A_BAND_REGION_0, G_BAND_REGION_1},
-#if defined(RTAC85P)
+#if defined(RTAC85P) || defined(RMAC2100)
 	{"RU", A_BAND_REGION_24, G_BAND_REGION_1},
 	{"IL", A_BAND_REGION_25, G_BAND_REGION_1},
 #else
-	{"RU", A_BAND_REGION_24,G_BAND_REGION_1},
+	{"RU", A_BAND_REGION_0, G_BAND_REGION_1},
 #endif
 #endif
 	{"SA", A_BAND_REGION_0, G_BAND_REGION_1},
@@ -512,7 +525,7 @@ COUNTRY_CODE_TO_COUNTRY_REGION allCountry[] = {
 #endif
 	{"AE", A_BAND_REGION_0, G_BAND_REGION_1},
 	{"GB", A_BAND_REGION_1, G_BAND_REGION_1},
-	{"US", A_BAND_REGION_22,G_BAND_REGION_0},
+	{"US", A_BAND_REGION_0, G_BAND_REGION_0},
 #ifdef RTCONFIG_LOCALE2012
 	{"UY", A_BAND_REGION_0, G_BAND_REGION_1},
 #else
@@ -527,7 +540,6 @@ COUNTRY_CODE_TO_COUNTRY_REGION allCountry[] = {
 	{"VN", A_BAND_REGION_0, G_BAND_REGION_1},
 	{"YE", A_BAND_REGION_0, G_BAND_REGION_1},
 	{"ZW", A_BAND_REGION_0, G_BAND_REGION_1},
-	{"EU", A_BAND_REGION_12,G_BAND_REGION_1},
 	{"",	0,	0}
 };
 
@@ -704,7 +716,7 @@ int get_channel_list_via_country(int unit, const char *country_code, char *buffe
 }
 
 
-#if defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTN56UB2) || defined(RTAC1200GA1) || defined(RTAC1200GU) || defined(RTAC85U) || defined(RTAC85P) || defined(RTAC65U) || defined(RTN800HP) || defined(RTACRH26)
+#if defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTN56UB2) || defined(RTAC1200GA1) || defined(RTAC1200GU) || defined(RTAC85U) || defined(RTAC85P) || defined(RTAC65U) || defined(RTN800HP) || defined(RTACRH26) || defined(TUFAC1750) || defined(RMAC2100) || defined(RTA040WQ)
 void led_onoff(int unit)
 {   
 #if defined(RTAC1200HP)
@@ -716,6 +728,22 @@ void led_onoff(int unit)
 			led_control(get_wl_led_id(unit), LED_OFF);
 }
 #endif
+
+/* Return wan_base_if for start_vlan().
+ * @return:	pointer to base interface name for start_vlan().
+ */
+char *get_wan_base_if(void)
+{
+	static char wan_base_if[IFNAMSIZ] = "";
+
+#if defined(RTCONFIG_RALINK_MT7620) /* RT-N14U, RT-AC52U, RT-AC51U, RT-N11P, RT-N54U, RT-AC1200HP, RT-AC54U */
+	strlcpy(wan_base_if, "eth2", sizeof(wan_base_if));
+#elif defined(RTCONFIG_RALINK_MT7621) /* RT-N56UB1, RT-N56UB2 */
+	strlcpy(wan_base_if, "eth3", sizeof(wan_base_if));
+#endif
+
+	return wan_base_if;
+}
 
 /* Return nvram variable name, e.g. et0macaddr, which is used to repented as LAN MAC.
  * @return:
@@ -795,6 +823,14 @@ char *get_wlifname(int unit, int subunit, int subunit_x, char *buf)
 	}	
 	else
 #endif /* RTCONFIG_WIRELESSREPEATER */
+#if defined(RTCONFIG_AMAS)
+	if (sw_mode() == SW_MODE_AP && nvram_match("re_mode", "1")) {
+		if (subunit <= 1) {
+			strcpy(buf, "");
+			return buf;
+		}
+        }
+#endif  /* RTCONFIG_AMAS */
 	{
 		memset(wifbuf, 0, sizeof(wifbuf));
 
@@ -853,6 +889,302 @@ char *get_wlxy_ifname(int x, int y, char *buf)
 	return buf;
 }
 
+#if 0
+int get_channel_list(int unit, int ch_list[], int size)
+{
+	struct iwreq wrq;
+	char buffer[256], *data, *p = NULL, *tmplist = NULL, tmp[128], prefix[] = "wlXXXXXXXXXX_", *ifname;
+	int ch_cnt = 0;
+
+	memset(buffer, 0, sizeof(buffer));
+	snprintf(prefix, sizeof(prefix), "wl%d_", unit);
+	ifname = nvram_safe_get(strcat_r(prefix, "ifname", tmp));
+
+	memset(&wrq, 0, sizeof(wrq));
+	wrq.u.data.pointer = buffer;
+	wrq.u.data.length  = sizeof(buffer);
+	wrq.u.data.flags   = ASUS_SUBCMD_CHLIST;
+	if (wl_ioctl(ifname, RTPRIV_IOCTL_ASUSCMD, &wrq) < 0) {
+		dbg("wl_ioctl failed on %s (%d)\n", __FUNCTION__, __LINE__);
+		return -1;
+	}
+
+	if (strlen(buffer) > 0) {
+		p = tmplist = strdup(buffer);
+		if (p) {
+			while((data = strsep(&tmplist, ",")) != NULL) {
+				if (ch_cnt >= size) {
+					dbg("ch_cnt >= size\n");
+					ch_cnt = -1;
+					break;
+				}
+
+				ch_list[ch_cnt] = atoi(data);
+				ch_cnt++;
+			}
+			free(p);
+		}
+	}
+
+	return ch_cnt;
+}
+
+int get_radar_channel_list(int unit, int radar_list[], int size)
+{
+	struct iwreq wrq;
+	char buffer[256], *data, *p = NULL, *tmplist = NULL, tmp[128], prefix[] = "wlXXXXXXXXXX_", *ifname;
+	int radar_cnt = 0;
+
+	memset(buffer, 0, sizeof(buffer));
+	snprintf(prefix, sizeof(prefix), "wl%d_", unit);
+	ifname = nvram_safe_get(strcat_r(prefix, "ifname", tmp));
+
+	memset(&wrq, 0, sizeof(wrq));
+	wrq.u.data.pointer = buffer;
+	wrq.u.data.length  = sizeof(buffer);
+	wrq.u.data.flags   = ASUS_SUBCMD_GDFSNOPCHANNEL;
+	if (wl_ioctl(ifname, RTPRIV_IOCTL_ASUSCMD, &wrq) < 0) {
+		dbg("wl_ioctl failed on %s (%d)\n", __FUNCTION__, __LINE__);
+		return -1;
+	}
+
+	if (strlen(buffer) > 0) {
+		p = tmplist = strdup(buffer);
+		if (p) {
+			while((data = strsep(&tmplist, ",")) != NULL) {
+				if (radar_cnt >= size) {
+					dbg("radar_cnt >= size\n");
+					radar_cnt = -1;
+					break;
+				}
+
+				radar_list[radar_cnt] = atoi(data);
+				radar_cnt++;
+			}
+			free(p);
+		}
+	}
+
+	return radar_cnt;
+}
+
+int set_acl_entry(const char *ifname, char *addr)
+{
+	struct iwreq wrq;
+	char data[256];
+
+	snprintf(data, sizeof(data), "ACLAddEntry=%s", addr);
+
+	wrq.u.data.length = strlen(data) + 1;
+	wrq.u.data.pointer = data;
+	wrq.u.data.flags = 0;
+
+	if (wl_ioctl(ifname, RTPRIV_IOCTL_SET, &wrq) < 0) {
+		dbg("wl_ioctl failed on %s (%d)\n", __FUNCTION__, __LINE__);
+		return -1;
+	}
+
+	return 1;
+}
+
+int set_channel(const char* ifname, int channel)
+{
+	struct iwreq wrq;
+	char data[32];
+
+	snprintf(data, sizeof(data), "Channel=%d", channel);
+
+	wrq.u.data.length = strlen(data) + 1;
+	wrq.u.data.pointer = data;
+	wrq.u.data.flags = 0;
+
+	if (wl_ioctl(ifname, RTPRIV_IOCTL_SET, &wrq) < 0) {
+		dbg("wl_ioctl failed on %s (%d)\n", __FUNCTION__, __LINE__);
+		return -1;
+	}
+
+	return 0;
+}
+
+int set_bandwidth(const char* ifname, int ht_bw, int vht_bw)
+{
+	struct iwreq wrq;
+	char data[32];
+
+	if (ht_bw >= 0) {
+		snprintf(data, sizeof(data), "HtBw=%d", ht_bw);
+
+		wrq.u.data.length = strlen(data) + 1;
+		wrq.u.data.pointer = data;
+		wrq.u.data.flags = 0;
+
+		if (wl_ioctl(ifname, RTPRIV_IOCTL_SET, &wrq) < 0) {
+			dbg("wl_ioctl failed on %s (%d)\n", __FUNCTION__, __LINE__);
+			return -1;
+		}
+	}
+
+	if (vht_bw >= 0) {
+		snprintf(data, sizeof(data), "VhtBw=%d", vht_bw);
+
+		wrq.u.data.length = strlen(data) + 1;
+		wrq.u.data.pointer = data;
+		wrq.u.data.flags = 0;
+
+		if (wl_ioctl(ifname, RTPRIV_IOCTL_SET, &wrq) < 0) {
+			dbg("wl_ioctl failed on %s (%d)\n", __FUNCTION__, __LINE__);
+			return -1;
+		}
+	}
+
+        return 0;
+}
+
+int set_extra_channel(const char* ifname, int val)
+{
+        struct iwreq wrq;
+        char data[32];
+
+	snprintf(data, sizeof(data), "HtExtcha=%d", (val == 0 ? 1: 0));
+
+        wrq.u.data.length = strlen(data) + 1;
+        wrq.u.data.pointer = data;
+        wrq.u.data.flags = 0;
+
+        if (wl_ioctl(ifname, RTPRIV_IOCTL_SET, &wrq) < 0) {
+                dbg("wl_ioctl failed on %s (%d)\n", __FUNCTION__, __LINE__);
+                return -1;
+        }
+
+        return 0;
+}
+
+int set_bw_nctrlsb(const char* ifname, int bw, int nctrlsb)
+{
+	int ht_bw = -1, vht_bw = -1;
+	int unit = -1;
+
+	/* set bandwidth */
+	//HtBw (0: 20M, 1: 20/40M)
+	//vhtBw (0: disable, 1: 80M, 2: 160M, 3:80M+80M)
+	if (bw == 20)
+		ht_bw = 0;
+	else if (bw == 40)
+		ht_bw = 1;
+	else if (bw == 80)
+		vht_bw = 1;
+	else if (bw == 160)
+		vht_bw = 2;
+	else
+	{
+		dbg("bw (%d) is invalid\n", bw);
+		return -1;
+	}
+
+	/* get unit */
+	if ((unit = get_wifi_unit((char *)ifname)) < 0) {
+		dbg("unit (%d) is invalid\n", unit);
+	}
+
+	/* re-assing ht_bw/vht_bw */
+	if (bw == 20 || bw == 40) {
+		if (unit > 0)
+			vht_bw = 0;
+	}
+        else if (bw == 80 || bw == 160) {
+		if (unit > 0)
+			ht_bw = 1;
+	}
+
+	/* set bandwidth */
+	if (set_bandwidth(ifname, ht_bw, vht_bw)) {
+		dbg("set_bandwidth(%s, %d, %d) failed\n", ifname, ht_bw, vht_bw);
+		return -1;
+	}
+
+	/* set extra channel if bw is 40Mhz */
+	if (bw == 40 && nctrlsb >= 0) {
+		if (set_extra_channel(ifname, nctrlsb) < 0) {
+			dbg("set_extra_channel() failed\n");
+			return -1;
+		}
+	}
+
+	return 0;
+}
+
+int get_channel_info(const char *ifname, int *channel, int *bw, int *nctrlsb)
+{
+	struct iwreq wrq;
+	struct channel_info info;
+
+	memset(&info, 0, sizeof(struct channel_info));
+	wrq.u.data.length = sizeof(struct channel_info);
+	wrq.u.data.pointer = (caddr_t) &info;
+	wrq.u.data.flags = ASUS_SUBCMD_GCHANNELINFO;
+
+	if (wl_ioctl(ifname, RTPRIV_IOCTL_ASUSCMD, &wrq) < 0) {
+		dbg("wl_ioctl failed on %s (%d)\n", __FUNCTION__, __LINE__);
+		return -1;
+	}
+
+	*channel = (int)info.channel;
+
+	switch (info.bandwidth) {
+		case 0:
+			*bw = 20;
+			break;
+		case 1:
+			*bw = 40;
+			break;
+		case 2:
+			*bw = 80;
+			break;
+		case 3:
+			*bw = 160;
+			break;
+		default:
+			*bw = 0;
+			break;
+	}
+
+	if (info.bandwidth == 1) {
+		switch (info.extrach) {
+			case 1:
+				*nctrlsb = 0;
+				break;
+			case 3:
+				*nctrlsb = 1;
+				break;
+			default:
+				*nctrlsb = -1;
+				break;
+		}
+	}
+
+        return 0;
+}
+
+char *get_wififname(int band)
+{
+	const char *wif[] = { WIF_2G, WIF_5G };
+	if (band < 0 || band >= ARRAY_SIZE(wif)) {
+		printf("%s: Invalid wl%d band!\n", __func__, band);
+		band = 0;
+	}
+	return (char*) wif[band];
+}
+
+char *get_staifname(int band)
+{
+	const char *sta[] = { APCLI_2G, APCLI_5G };
+	if (band < 0 || band >= ARRAY_SIZE(sta)) {
+		printf("%s: Invalid wl%d band!\n", __func__, band);
+		band = 0;
+	}
+	return (char*) sta[band];
+}
+#endif
 #ifdef RTCONFIG_AMAS
 void add_beacon_vsie(char *hexdata)
 {
@@ -870,3 +1202,4 @@ void del_obd_probe_req_vsie(char *hexdata)
 {
 }
 #endif /* RTCONFIG_AMAS */
+

@@ -32,6 +32,7 @@
 #include <dmalloc.h>
 #endif
 #include <rtconfig.h>
+#include "swrt.h"
 
 /* Basic authorization userid and passwd limit */
 #define AUTH_MAX 64
@@ -447,3 +448,4 @@ extern int is_captcha_match(char *catpch);
 extern int get_external_ip(void);
 extern int get_rtinfo(void);
 #endif /* _httpd_h_ */
+

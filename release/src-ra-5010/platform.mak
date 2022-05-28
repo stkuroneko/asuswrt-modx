@@ -209,6 +209,8 @@ define platformKernelConfig
 			echo "CONFIG_PCIE_PORT0=y" >>$(1); \
 			sed -i "/CONFIG_PCIE_PORT1/d" $(1); \
 			echo "CONFIG_PCIE_PORT1=y" >>$(1); \
+			sed -i "/CONFIG_RALINK_SPDIF/d" $(1); \
+			echo "CONFIG_RALINK_SPDIF=m" >>$(1); \
 			sed -i "/CONFIG_RCU_CPU_STALL_DETECTOR/d" $(1); \
 			echo "CONFIG_RCU_CPU_STALL_DETECTOR=y" >>$(1); \
 			sed -i "/CONFIG_CRYPTO_PCRYPT/d" $(1); \
@@ -409,6 +411,8 @@ define platformKernelConfig
 		echo "CONFIG_MT7603E_BLOCK_NET_IF=y" >>$(1); \
 		sed -i "/CONFIG_MT7603E_QOS_DLS_SUPPORT/d" $(1); \
 		echo "CONFIG_MT7603E_QOS_DLS_SUPPORT=y" >>$(1); \
+		sed -i "/CONFIG_MT7603E_LED_CONTROL_SUPPORT/d" $(1); \
+		echo "CONFIG_MT7603E_LED_CONTROL_SUPPORT=y" >>$(1); \
 		sed -i "/CONFIG_MT7603E_ATE_SUPPORT/d" $(1); \
 		echo "# CONFIG_MT7603E_ATE_SUPPORT is not set" >>$(1); \
 		sed -i "/CONFIG_MT7603E_MULTI_INF_SUPPORT/d" $(1); \
@@ -476,7 +480,7 @@ define platformKernelConfig
 		sed -i "/CONFIG_RT_SECOND_CARD_EEPROM/d" $(1); \
 		echo "CONFIG_RT_SECOND_CARD_EEPROM=\"flash\"" >>$(1); \
 		sed -i "/CONFIG_MULTI_INF_SUPPORT/d" $(1); \
-		echo "# CONFIG_MULTI_INF_SUPPORT is not set" >>$(1); \
+		echo "CONFIG_MULTI_INF_SUPPORT=y" >>$(1); \
 		sed -i "/CONFIG_WIFI_BASIC_FUNC/d" $(1); \
 		echo "CONFIG_WIFI_BASIC_FUNC=y" >>$(1); \
 		sed -i "/CONFIG_WSC_INCLUDED/d" $(1); \
@@ -527,9 +531,11 @@ define platformKernelConfig
 		sed -i "/CONFIG_RTMP_FLASH_SUPPORT/d" $(1); \
 		echo "CONFIG_RTMP_FLASH_SUPPORT=y" >>$(1); \
 		sed -i "/CONFIG_LED_CONTROL_SUPPORT/d" $(1); \
-		echo "# CONFIG_LED_CONTROL_SUPPORT is not set" >>$(1); \
+		echo "CONFIG_LED_CONTROL_SUPPORT=y" >>$(1); \
+		sed -i "/CONFIG_SINGLE_SKU_V2/d" $(1); \
+		echo "CONFIG_SINGLE_SKU_V2=y" >>$(1); \
 		sed -i "/CONFIG_ATE_SUPPORT/d" $(1); \
-		echo "# CONFIG_ATE_SUPPORT is not set" >>$(1); \
+		echo "CONFIG_ATE_SUPPORT=y" >>$(1); \
 		sed -i "/CONFIG_RT2860V2_AP_32B_DESC/d" $(1); \
 		echo "# CONFIG_RT2860V2_AP_32B_DESC is not set " >>$(1); \
 		sed -i "/CONFIG_HOTSPOT/d" $(1); \
@@ -569,7 +575,7 @@ define platformKernelConfig
 			sed -i "/CONFIG_RLT_MAC/d" $(1); \
 			echo "#CONFIG_RLT_MAC is not set" >>$(1); \
 		fi; \
-		if [ "$(RTN56UB1)" = "y" ] ||  [ "$(RTN56UB2)" = "y" ] || [ "$(RTMIR3G)" = "y" ] || [ "$(RTMIR3P)" = "y" ] || [ "$(RTMIR4A)" = "y" ] || [ "$(RTRM2100)" = "y" ] || [ "$(RTR2100)" = "y" ] || [ "$(RTNEWIFI2)" = "y" ] || [ "$(RTXYC3)" = "y" ] || [ "$(RTNEWIFI3)" = "y" ] || [ "$(RTHIWIFI4)" = "y" ] || [ "$(RTE8820S)" = "y" ] || [ "$(RTA040WQ)" = "y" ] || [ "$(RTMSG1500)" = "y" ] || [ "$(RTJDC1)" = "y" ] || [ "$(RTMT1300)" = "y" ]; then \
+		if [ "$(RTN56UB1)" = "y" ] ||  [ "$(RTN56UB2)" = "y" ] || [ "$(RTMIR3G)" = "y" ] || [ "$(RTMIR3P)" = "y" ] || [ "$(RTMIR4A)" = "y" ] || [ "$(RTRM2100)" = "y" ] || [ "$(RTR2100)" = "y" ] || [ "$(RTNEWIFI2)" = "y" ] || [ "$(RTRS1200P)" = "y" ] || [ "$(RTXYC3)" = "y" ] || [ "$(RTNEWIFI3)" = "y" ] || [ "$(RTHIWIFI4)" = "y" ] || [ "$(RTE8820S)" = "y" ] || [ "$(RTA040WQ)" = "y" ] || [ "$(RTMSG1500)" = "y" ] || [ "$(RTJDC1)" = "y" ] || [ "$(RTMT1300)" = "y" ]; then \
 			sed -i "/CONFIG_RA_HW_NAT_IPV6/d" $(1); \
 			echo "CONFIG_RA_HW_NAT_IPV6=y" >>$(1); \
 			sed -i "/CONFIG_RAETH_8023AZ_EEE/d" $(1); \
@@ -611,7 +617,7 @@ define platformKernelConfig
 		sed -i "/CONFIG_NINTENDO_AP/d" $(1); \
 		echo "# CONFIG_NINTENDO_AP is not set" >>$(1); \
 		sed -i "/CONFIG_COC_SUPPORT/d" $(1); \
-		echo "#CONFIG_COC_SUPPORT is not set" >>$(1); \
+		echo "CONFIG_COC_SUPPORT=y " >>$(1); \
 		sed -i "/CONFIG_DELAYED_TCP_ACK_SUPPORT/d" $(1); \
 		echo "# CONFIG_DELAYED_TCP_ACK_SUPPORT is not set" >>$(1); \
 		sed -i "/CONFIG_RALINK_RT28XX/d" $(1); \
@@ -739,7 +745,7 @@ define platformKernelConfig
 			sed -i "/CONFIG_RT2860V2_AP_CARRIER/d" $(1); \
 			echo "CONFIG_RT2860V2_AP_CARRIER=y" >>$(1); \
 	fi; \
-	if [ "$(RTAC85P)" = "y" ] ; then \
+	if [ "$(RTAC85P)" = "y" ] || [ "$(RMAC2100)" = "y" ] || [ "$(RTNEWIFI2)" = "y" ] || [ "$(RTRS1200P)" = "y" ] || [ "$(RTXYC3)" = "y" ] || [ "$(RTNEWIFI3)" = "y" ] || [ "$(RTHIWIFI4)" = "y" ] || [ "$(RTE8820S)" = "y" ] || [ "$(RTMIR3G)" = "y" ] || [ "$(RTJDC1)" = "y" || [ "$(RTMT1300)" = "y" ]; then \
 			sed -i "/CONFIG_NF_CT_NETLINK/d" $(1); \
 			echo "CONFIG_NF_CT_NETLINK=m" >>$(1); \
 			sed -i "/CONFIG_NF_CT_NETLINK_TIMEOUT/d" $(1); \

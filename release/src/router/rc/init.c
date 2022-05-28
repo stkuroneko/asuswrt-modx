@@ -72,6 +72,8 @@
 #define SHELL "/bin/sh"
 #define LOGIN "/bin/login"
 
+#include "swrt.h"
+
 static int fatalsigs[] = {
 	SIGILL,
 	SIGABRT,
@@ -3823,6 +3825,7 @@ int init_nvram(void)
 #elif defined(RTR2100)
 	case MODEL_RTR2100:
 #endif
+		swrt_init();
 		nvram_set("boardflags", "0x100"); // although it is not used in ralink driver, set for vlan
 		nvram_set("vlan1hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
 		nvram_set("vlan2hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
@@ -3868,6 +3871,10 @@ int init_nvram(void)
 		add_rc_support("loclist");
 		add_rc_support("mfp");
 		add_rc_support("pwrctrl");
+		add_rc_support("app");
+		add_rc_support("gameMode");
+		add_rc_support("switchctrl");
+		add_rc_support("uu_accel");
 #if defined(RTMIR3P)
 		nvram_set("wl0_HT_TxStream", "4");
 		nvram_set("wl0_HT_RxStream", "4");
@@ -3889,6 +3896,7 @@ int init_nvram(void)
 
 #if defined(RTXYC3) 
 	case MODEL_RTXYC3:
+		swrt_init();
 		nvram_set("boardflags", "0x100"); // although it is not used in ralink driver, set for vlan
 		nvram_set("vlan1hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
 		nvram_set("vlan2hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
@@ -3911,12 +3919,17 @@ int init_nvram(void)
 		add_rc_support("manual_stb");
 		add_rc_support("loclist");
 		add_rc_support("mfp");
+		add_rc_support("switchctrl");
+		add_rc_support("app");
+		add_rc_support("gameMode");
+		add_rc_support("uu_accel");
 
 		break;
 #endif /* Newifi*/
 
 #if defined(RTNEWIFI3) 
 	case MODEL_RTNEWIFI3:
+		swrt_init();
 		nvram_set("boardflags", "0x100"); // although it is not used in ralink driver, set for vlan
 		nvram_set("vlan1hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
 		nvram_set("vlan2hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
@@ -3952,6 +3965,10 @@ int init_nvram(void)
 		add_rc_support("loclist");
 		add_rc_support("mfp");
 		add_rc_support("pwrctrl");
+		add_rc_support("app");
+		add_rc_support("gameMode");
+		add_rc_support("switchctrl");
+		add_rc_support("uu_accel");
 
 		nvram_set("wl0_HT_TxStream", "2");
 		nvram_set("wl0_HT_RxStream", "2");
@@ -3964,6 +3981,7 @@ int init_nvram(void)
 
 #if defined(RTJDC1) 
 	case MODEL_RTJDC1:
+		swrt_init();
 		nvram_set("boardflags", "0x100"); // although it is not used in ralink driver, set for vlan
 		nvram_set("vlan1hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
 		nvram_set("vlan2hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
@@ -3995,6 +4013,10 @@ int init_nvram(void)
 		add_rc_support("loclist");
 		add_rc_support("mfp");
 		add_rc_support("pwrctrl");
+		add_rc_support("app");
+		add_rc_support("gameMode");
+		add_rc_support("switchctrl");
+		add_rc_support("uu_accel");
 
 		nvram_set("wl0_HT_TxStream", "2");
 		nvram_set("wl0_HT_RxStream", "2");
@@ -4007,6 +4029,7 @@ int init_nvram(void)
 
 #if defined(RTNEWIFI2) 
 	case MODEL_RTNEWIFI2:
+		swrt_init();
 		nvram_set("boardflags", "0x100"); // although it is not used in ralink driver, set for vlan
 		nvram_set("vlan1hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
 		nvram_set("vlan2hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
@@ -4039,6 +4062,10 @@ int init_nvram(void)
 		add_rc_support("loclist");
 		add_rc_support("mfp");
 		add_rc_support("pwrctrl");
+		add_rc_support("app");
+		add_rc_support("gameMode");
+		add_rc_support("switchctrl");
+		add_rc_support("uu_accel");
 
 		nvram_set("wl0_HT_TxStream", "2");
 		nvram_set("wl0_HT_RxStream", "2");
@@ -4050,8 +4077,59 @@ int init_nvram(void)
 #endif /* Newifi*/
 
 
+#if defined(RTRS1200P) 
+	case MODEL_RTRS1200P:
+		swrt_init();
+		nvram_set("boardflags", "0x100"); // although it is not used in ralink driver, set for vlan
+		nvram_set("vlan1hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
+		nvram_set("vlan2hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
+		nvram_set("lan_ifname", "br0");
+
+		wl_ifaces[WL_2G_BAND] = "ra0";
+		wl_ifaces[WL_5G_BAND] = "rai0";
+
+		set_basic_ifname_vars("eth3", "vlan1", wl_ifaces, "usb", "vlan1", NULL, "vlan3", NULL, 0);
+		nvram_set_int("pwr_usb_gpio", 11);
+		nvram_set_int("pwr_usb2_gpio", 9);
+		nvram_set("ehci_ports", "1-1 1-2");
+		nvram_set("ohci_ports", "2-1 2-2");
+		add_rc_support("2.4G 5G noupdate usbX2");
+		
+		nvram_set_int("led_all_gpio", 13|GPIO_ACTIVE_LOW);
+        nvram_set_int("led_pwr_gpio",  16|GPIO_ACTIVE_LOW);
+		nvram_set_int("led_wan_gpio",  14);
+        nvram_set_int("btn_rst_gpio", 15|GPIO_ACTIVE_LOW);
+        nvram_set_int("btn_wps_gpio", 18|GPIO_ACTIVE_LOW);
+
+		eval("rtkswitch", "11");
+		nvram_set("ct_max", "300000"); // force
+
+		add_rc_support("mssid");
+		add_rc_support("rawifi");
+		add_rc_support("11AC");
+		add_rc_support("manual_stb");
+		add_rc_support("user_low_rssi");
+		add_rc_support("loclist");
+		add_rc_support("mfp");
+		add_rc_support("pwrctrl");
+		add_rc_support("app");
+		add_rc_support("gameMode");
+		add_rc_support("switchctrl");
+		add_rc_support("uu_accel");
+
+		nvram_set("wl0_HT_TxStream", "2");
+		nvram_set("wl0_HT_RxStream", "2");
+
+		nvram_set("wl1_HT_TxStream", "2");
+		nvram_set("wl1_HT_RxStream", "2");
+
+		break;
+#endif /*RS1200P*/
+
+
 #if defined(RTMT1300) 
 	case MODEL_RTMT1300:
+		swrt_init();
 		nvram_set("boardflags", "0x100"); // although it is not used in ralink driver, set for vlan
 		nvram_set("vlan1hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
 		nvram_set("vlan2hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
@@ -4084,6 +4162,10 @@ int init_nvram(void)
 		add_rc_support("loclist");
 		add_rc_support("mfp");
 		add_rc_support("pwrctrl");
+		add_rc_support("app");
+		add_rc_support("gameMode");
+		add_rc_support("switchctrl");
+		add_rc_support("uu_accel");
 
 		nvram_set("wl0_HT_TxStream", "2");
 		nvram_set("wl0_HT_RxStream", "2");
@@ -4096,6 +4178,7 @@ int init_nvram(void)
 
 #if defined(RTHIWIFI4)
 	case MODEL_RTHIWIFI4:
+		swrt_init();
         nvram_set("boardflags", "0x100"); // although it is not used in ralink driver, set for vlan
 		nvram_set("vlan1hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
 		nvram_set("vlan2hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
@@ -4125,6 +4208,10 @@ int init_nvram(void)
 		add_rc_support("loclist");
 		add_rc_support("mfp");
 		add_rc_support("pwrctrl");
+		add_rc_support("app");
+		add_rc_support("gameMode");
+		add_rc_support("switchctrl");
+		add_rc_support("uu_accel");
 
 		nvram_set("wl0_HT_TxStream", "2");
 		nvram_set("wl0_HT_RxStream", "2");
@@ -4137,6 +4224,7 @@ int init_nvram(void)
 
 #if defined(RTE8820S)
 	case MODEL_RTE8820S:
+		swrt_init();
         nvram_set("boardflags", "0x100"); // although it is not used in ralink driver, set for vlan
 		nvram_set("vlan1hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
 		nvram_set("vlan2hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
@@ -4153,6 +4241,8 @@ int init_nvram(void)
 		nvram_set_int("btn_wifi_gpio",10|GPIO_ACTIVE_LOW);
 		nvram_set_int("led_pwr_gpio",  3|GPIO_ACTIVE_LOW);
 		nvram_set_int("led_lan_gpio",  16|GPIO_ACTIVE_LOW);
+		nvram_set_int("pcie_2g_gpio",  19|GPIO_ACTIVE_LOW);
+		nvram_set_int("pcie_5g_gpio",  4|GPIO_ACTIVE_LOW);
 
 		eval("rtkswitch", "11");
 
@@ -4168,6 +4258,10 @@ int init_nvram(void)
 		add_rc_support("loclist");
 		add_rc_support("mfp");
 		add_rc_support("pwrctrl");
+		add_rc_support("app");
+		add_rc_support("gameMode");
+		add_rc_support("switchctrl");
+		add_rc_support("uu_accel");
 
 		nvram_set("wl0_HT_TxStream", "2");
 		nvram_set("wl0_HT_RxStream", "2");
@@ -4180,6 +4274,7 @@ int init_nvram(void)
 
 #if defined(RTA040WQ)
 	case MODEL_RTA040WQ:
+		swrt_init();
         nvram_set("boardflags", "0x100"); // although it is not used in ralink driver, set for vlan
 		nvram_set("vlan1hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
 		nvram_set("vlan2hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
@@ -4213,6 +4308,10 @@ int init_nvram(void)
 		add_rc_support("loclist");
 		add_rc_support("mfp");
 		add_rc_support("pwrctrl");
+		add_rc_support("app");
+		add_rc_support("gameMode");
+		add_rc_support("switchctrl");
+		add_rc_support("uu_accel");
 
 		nvram_set("wl0_HT_TxStream", "2");
 		nvram_set("wl0_HT_RxStream", "2");
@@ -4225,6 +4324,7 @@ int init_nvram(void)
 
 #if defined(RTMSG1500)
 	case MODEL_RTMSG1500:
+		swrt_init();
         nvram_set("boardflags", "0x100"); // although it is not used in ralink driver, set for vlan
 		nvram_set("vlan1hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
 		nvram_set("vlan2hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
@@ -4258,6 +4358,10 @@ int init_nvram(void)
 		add_rc_support("loclist");
 		add_rc_support("mfp");
 		add_rc_support("pwrctrl");
+		add_rc_support("app");
+		add_rc_support("gameMode");
+		add_rc_support("switchctrl");
+		add_rc_support("uu_accel");
 
 		nvram_set("wl0_HT_TxStream", "2");
 		nvram_set("wl0_HT_RxStream", "2");
@@ -4270,6 +4374,7 @@ int init_nvram(void)
 
 #if defined(RTAC85P) 
 	case MODEL_RTAC85P:
+		swrt_init();
 		nvram_set("boardflags", "0x100"); // although it is not used in ralink driver, set for vlan
 		nvram_set("vlan1hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
 		nvram_set("vlan2hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
@@ -9695,6 +9800,18 @@ int init_nvram(void)
 	add_rc_support("port2_device");
 #endif
 
+#if defined(RTCONFIG_SWRT_FULLCONE)
+	add_rc_support("swrt_fullcone");
+#endif
+#if defined(RTCONFIG_ENTWARE)
+	add_rc_support("entware");
+#endif
+#if defined(RTCONFIG_SOFTCENTER)
+	add_rc_support("softcenter");
+#endif
+#if defined(RTCONFIG_SMARTDNS)
+	add_rc_support("smartdns");
+#endif
 	return 0;
 }
 
@@ -10486,6 +10603,7 @@ static void sysinit(void)
 		"/tmp/etc/rc.d",
 #endif
 		"/tmp/var/tmp",
+		"/tmp/etc/dnsmasq.user",	// ssr and adbyby
 		NULL
 	};
 	umask(0);
@@ -10552,6 +10670,19 @@ static void sysinit(void)
 #if !defined(RTCONFIG_SOC_IPQ40XX)
 #if defined(RTCONFIG_BLINK_LED)
 	modprobe("bled");
+#endif
+#if defined(RTCONFIG_SWRT_I2CLED)
+#if defined(R6800)
+	modprobe("sx150x-leds");
+#else
+	modprobe("i2cleds");
+#endif
+#endif
+#if defined(RTCONFIG_LANTIQ) || defined(RTCONFIG_QCA) || defined(RTCONFIG_RALINK) || defined(RTCONFIG_HND_ROUTER)
+#if defined(RTCONFIG_SOC_IPQ40XX)
+	modprobe("qcrypto");
+#endif
+	modprobe("cryptodev");
 #endif
 #endif
 #ifdef LINUX26
@@ -11067,8 +11198,18 @@ int init_main(int argc, char *argv[])
 #ifndef RTCONFIG_NVRAM_FILE
 #if !defined(RTCONFIG_TEST_BOARDDATA_FILE)
 		start_jffs2();
+		
+#if defined(RTXYC3) || defined(RTNEWIFI3)
+		mount("/dev/mtdblock5", "/jffs", "jffs2", MS_NOATIME, "");
+#endif
+
+#if defined(RTNEWIFI2) || defined(RTJDC1) || defined(RTMT1300)
+		mount("/dev/mtdblock5", "/jffs", "jffs2", MS_NOATIME, "");	
+#endif
+
 #endif
 #endif
+
 #ifdef RTCONFIG_NVRAM_ENCRYPT
 		init_enc_nvram();
 #endif
@@ -11092,6 +11233,7 @@ int init_main(int argc, char *argv[])
 		extern void asm1042_upgrade(int);
 		asm1042_upgrade(1);	// check whether upgrade firmware of ASM1042
 #endif
+		run_custom_script("init-start", 0, NULL, NULL);
 
 		state = SIGUSR2;	/* START */
 
@@ -11105,6 +11247,9 @@ int init_main(int argc, char *argv[])
 #endif
 	}
 
+#if defined(RTA040WQ) || defined(RTMSG1500) || defined(RTMT1300)
+                restart_wireless();
+#endif
 	for (;;) {
 //		TRACE_PT("main loop signal/state=%d\n", state);
 
@@ -11633,6 +11778,8 @@ dbg("boot/continue fail= %d/%d\n", nvram_get_int("Ate_boot_fail"),nvram_get_int(
 			nvram_set("success_start_service", "1");
 			force_free_caches();
 #endif
+
+			swrt_init_done();
 
 #ifdef RTCONFIG_AMAS
 			nvram_set("start_service_ready", "1");

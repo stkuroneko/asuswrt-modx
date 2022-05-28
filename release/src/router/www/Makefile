@@ -15,7 +15,7 @@ MODELS_HAVE_USB3 = AC2900 \
 	RP-AC68U
 
 MODELS_HAVE_TRAFFIC_ANALYZER = RT-AC3200 RT-AC87U RT-AC88U RT-AX88U RT-AC86U GT-AC2900 RT-AC3100 RT-AC5300 GT-AC5300 GT-AC9600 DSL-AC68U RT-AC68U \
-	4G-AC68U RT-AC68R RT-AC68W RT-AC68RW GT-AX11000 RT-AC1900P RT-AC67U RT-AC56U RT-AC56R RT-AC85U RT-MIR3G RT-MIR3P RT-MIR4A RT-RM2100 RT-R2100 RT-AC85P RT-AC65U BRT-AC828 BLUECAVE RT-AX92U RT-NEWIFI2 RT-XYC3 RT-NEWIFI3 RT-HIWIFI4 RT-E8820S RT-A040WQ RT-MSG1500 RT-JDC1 RT-MT1300
+	4G-AC68U RT-AC68R RT-AC68W RT-AC68RW GT-AX11000 RT-AC1900P RT-AC67U RT-AC56U RT-AC56R RT-AC85U RT-MIR3G RT-MIR3P RT-MIR4A RT-RM2100 RT-R2100 RT-AC85P RT-AC65U BRT-AC828 BLUECAVE RT-AX92U RT-NEWIFI2 RT-RS1200P RT-XYC3 RT-NEWIFI3 RT-HIWIFI4 RT-E8820S RT-A040WQ RT-MSG1500 RT-JDC1 RT-MT1300
 
 MODELS_QIS_SLIDER = GT-AX11000 GT-AX6000 GT-AC5400
 
@@ -55,6 +55,19 @@ ifeq ($(and $(HND_ROUTER),$(RTCONFIG_VISUALIZATION)),y)
 endif # CONFIG_VISUALIZATION
 	# INSTALL MODEL DEPENDENT files
 	cp ../www/sysdep/$(BUILD_NAME)/www $(INSTALLDIR)/. -rfL || true
+	cp ../www/sysdep/$(SWRT_NAME)/www $(INSTALLDIR)/. -rfL || true
+ifeq ($(or $(RTCONFIG_LANTIQ),$(RTCONFIG_QCA),$(RTCONFIG_RALINK)),y)
+	cp ../www/sysinfo/lantiq/Tools_Sysinfo.asp $(INSTALLDIR)/www/. -rfL || true
+else ifeq ($(K3),y)
+	cp ../www/sysinfo/k3/Tools_Sysinfo.asp $(INSTALLDIR)/www/. -rfL || true
+else ifeq ($(R7000P),y)
+	cp ../www/sysinfo/r7000p/Tools_Sysinfo.asp $(INSTALLDIR)/www/. -rfL || true
+else ifeq ($(or $(EA6700),$(DIR868L)),y)
+	cp ../www/sysinfo/ea6700/Tools_Sysinfo.asp $(INSTALLDIR)/www/. -rfL || true
+else
+	cp ../www/sysinfo/Tools_Sysinfo.asp $(INSTALLDIR)/www/. -rfL || true
+endif
+	rm -rf $(INSTALLDIR)/www/sysinfo
 	rm -rf $(INSTALLDIR)/www/Makefile
 	rm -rf $(INSTALLDIR)/www/sysdep
 	rm -rf $(INSTALLDIR)/www/gendict.pl
@@ -360,6 +373,7 @@ endif
 ifeq ($(RTCONFIG_OPENVPN), y)
 	cd $(INSTALLDIR)/www && ln -sf ../etc/openvpn/server1/client.ovpn && cd $(TOP)/www
 else
+	rm -rf $(INSTALLDIR)/www/merlin.js
 	rm -rf $(INSTALLDIR)/www/ajax_openvpn_server.asp
 	rm -rf $(INSTALLDIR)/www/Advanced_VPN_OpenVPN.asp
 ifneq ($(RTCONFIG_ACCEL_PPTPD), y)
@@ -855,3 +869,13 @@ ifeq ($(BUILD_NAME),$(filter $(BUILD_NAME), RT-AC1200G+))
 	rm -rf $(INSTALLDIR)/www/images/New_ui/open_NAT.svg
 	rm -rf $(INSTALLDIR)/www/images/New_ui/re.jpg
 endif
+
+ifneq ($(RTCONFIG_ENTWARE), y)
+	rm -rf $(INSTALLDIR)/www/Entware_start.asp
+	rm -rf $(INSTALLDIR)/www/Entware_installed.asp
+	rm -rf $(INSTALLDIR)/www/Entware_list.asp
+endif
+ifneq ($(RTCONFIG_SMARTDNS),y)
+	rm -rf $(INSTALLDIR)/www/Advanced_SmartDNS_Content.asp
+endif
+

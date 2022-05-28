@@ -729,6 +729,7 @@ enum {
 #define MODEL_RTRM2100 MODEL_RTAC85U
 #define MODEL_RTR2100 MODEL_RTAC85U
 #define MODEL_RTNEWIFI2 MODEL_RTAC85U
+#define MODEL_RTRS1200P MODEL_RTAC85U
 #define MODEL_RTXYC3 MODEL_RTAC85U
 #define MODEL_RTNEWIFI3 MODEL_RTAC85U
 #define MODEL_RTHIWIFI4 MODEL_RTAC85U
@@ -738,6 +739,24 @@ enum {
 #define MODEL_RTJDC1 MODEL_RTAC85U
 #define MODEL_RTMT1300 MODEL_RTAC85U
 
+enum {
+	MODEL_SWRTMIN = 0,
+	MODEL_K3,
+	MODEL_XWR3100,
+	MODEL_R7000P,
+	MODEL_EA6700,
+	MODEL_SBRAC1900P,
+	MODEL_F9K1118,
+	MODEL_SBRAC3200P,
+	MODEL_R8500,
+	MODEL_R8000P,
+	MODEL_K3C,
+	MODEL_TY6201_RTK,
+	MODEL_TY6201_BCM,
+	MODEL_RAX120,
+	//MODEL_RMAC2100,move to model_list
+	MODEL_SWRTMAX
+};
 /* NOTE: Do not insert new entries in the middle of this enum,
  * always add them to the end! */
 enum {
@@ -802,6 +821,8 @@ extern int check_hw_type(void);
 //	extern int get_hardware(void) __attribute__ ((weak, alias ("check_hw_type")));
 extern int get_model(void);
 extern char *get_modelid(int model);
+extern int get_modelname(void);
+extern char *get_modelnameid(int model);
 extern int get_switch(void);
 extern int supports(unsigned long attr);
 
@@ -1663,6 +1684,8 @@ extern int discover_interface(const char *current_wan_ifname, int dhcp_det);
 extern int discover_all(int wan_unit);
 
 // strings.c
+extern int replace_char(char *str, const char from, const char to);
+extern int str_escape_quotes(const char *output, const char *input, int outsize);
 extern int char_to_ascii_safe(const char *output, const char *input, int outsize);
 extern void char_to_ascii(const char *output, const char *input);
 #if defined(RTCONFIG_UTF8_SSID)
@@ -1823,7 +1846,14 @@ extern struct vlan_rules_s *get_vlan_rules(void);
 #if defined(HND_ROUTER) && defined(RTCONFIG_BONDING)
 extern int get_bonding_status();
 #endif
+
+/* scripts.c */
+extern void run_custom_script(char *name, int timeout, char *arg1, char *arg2);
+extern void run_postconf(char *name, char *config);
+extern void use_custom_config(char *config, char *target);
+extern void append_custom_config(char *config, FILE *fp);
 extern int isValidMacAddress(const char* mac);
+extern int isValidMacAddr_and_isNotMulticast(const char* mac);
 extern int isValidEnableOption(const char* option, int range);
 extern int isValid_digit_string(const char *string);
 
@@ -2056,11 +2086,11 @@ static inline void enable_wifi_bled(char *ifname)
 #if defined(RTCONFIG_QCA)
 		v = LED_OFF;	/* WiFi not ready. Don't turn on WiFi LED here. */		
 #endif
-#if defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTN56UB2) || defined(RTAC1200GA1) || defined(RTAC1200GU) || defined(RTAC85U) || defined(RTAC85P) || defined(RTACRH26)
+#if defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTN56UB2) || defined(RTAC1200GA1) || defined(RTAC1200GU) || defined(RTAC85U) || defined(RTAC85P) || defined(RTACRH26) || defined(RTA040WQ) || defined(RTMSG1500)
 		if(!get_radio(1, 0) && unit==1) //*5G WiFi not ready. Don't turn on WiFi GPIO LED . */
 		 	v=LED_OFF;
 #endif		
-#if defined(RTN56UB1) || defined(RTN56UB2) || defined(RTAC1200GA1) || defined(RTAC1200GU) || defined(RTAC85U) || defined(RTAC85P) || defined(RTN800HP) || defined(RTACRH26)
+#if defined(RTN56UB1) || defined(RTN56UB2) || defined(RTAC1200GA1) || defined(RTAC1200GU) || defined(RTAC85U) || defined(RTAC85P) || defined(RTN800HP) || defined(RTACRH26) || defined(RTA040WQ) || defined(RTMSG1500)
 		if(!get_radio(0, 0) && unit==0) //*2G WiFi not ready. Don't turn on WiFi GPIO LED . */
 		 	v=LED_OFF;
 #endif		

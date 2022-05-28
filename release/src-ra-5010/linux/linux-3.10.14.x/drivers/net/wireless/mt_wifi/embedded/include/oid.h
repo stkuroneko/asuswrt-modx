@@ -1352,12 +1352,12 @@ typedef struct _RT_802_11_MAC_ENTRY {
 	/*
 		sync with WEB UI's structure for ioctl usage.
 	*/
-//#ifndef CUSTOMER_DCC_FEATURE
+#if 0
 	SHORT StreamSnr[3];				/* BF SNR from RXWI. Units=0.25 dB. 22 dB offset removed */
 	SHORT SoundingRespSnr[3];			/* SNR from Sounding Response. Units=0.25 dB. 22 dB offset removed */
 	/*	SHORT TxPER;	*/					/* TX PER over the last second. Percent */
 	/*	SHORT reserved;*/
-//#endif /* !CUSTOMER_DCC_FEATURE */
+#endif /* !CUSTOMER_DCC_FEATURE */
 } RT_802_11_MAC_ENTRY, *PRT_802_11_MAC_ENTRY;
 
 typedef struct _RT_802_11_MAC_TABLE {
@@ -2519,5 +2519,24 @@ struct acs_channel_score {
  UINT32 acs_alg;
 };
 #endif
+enum ASUS_IOCTL_SUBCMD {
+	ASUS_SUBCMD_UNKNOWN = 0,
+	ASUS_SUBCMD_GSTAINFO,
+	ASUS_SUBCMD_GSTAT,
+	ASUS_SUBCMD_GRSSI,
+	ASUS_SUBCMD_RADIO_STATUS,
+	ASUS_SUBCMD_CHLIST,
+#ifdef DBDC_MODE
+	ASUS_SUBCMD_CHLIST2,
+#endif
+	ASUS_SUBCMD_GROAM,
+	ASUS_SUBCMD_CONN_STATUS,
+	ASUS_SUBCMD_GETSKUTABLE,
+	ASUS_SUBCMD_GETSKUTABLE_TXBF,
+	ASUS_SUBCMD_CLIQ,
+	ASUS_SUBCMD_DRIVERVER,
+	ASUS_SUBCMD_RADIO_TEMPERATURE,
+	ASUS_SUBCMD_MAX
+};
 #endif /* _OID_H_ */
 

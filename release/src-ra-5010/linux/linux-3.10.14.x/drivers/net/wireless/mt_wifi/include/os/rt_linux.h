@@ -145,7 +145,7 @@ typedef struct usb_ctrlrequest devctrlrequest;
 #ifdef INTELP6_SUPPORT
 #define L1_PROFILE_PATH	"/tmp/l1profile.dat"
 #else
-#define L1_PROFILE_PATH	"/etc/wireless/l1profile.dat"
+#define L1_PROFILE_PATH	"/ra_SKU/l1profile.dat"
 #endif
 #define L1PROFILE_INDEX_LEN		10
 #define	L1PROFILE_ATTRNAME_LEN	30

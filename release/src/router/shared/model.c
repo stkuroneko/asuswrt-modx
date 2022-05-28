@@ -60,6 +60,8 @@ static const struct model_s model_list[] = {
 	{ "RT-R2100", MODEL_RTR2100},
 #elif defined(RTNEWIFI2)
 	{ "RT-NEWIFI2", MODEL_RTNEWIFI2},
+#elif defined(RTRS1200P)
+	{ "RT-RS1200P", MODEL_RTRS1200P},
 #elif defined(RTXYC3)
 	{ "RT-XYC3", MODEL_RTXYC3},
 #elif defined(RTNEWIFI3)
@@ -78,6 +80,9 @@ static const struct model_s model_list[] = {
 	{ "RT-MT1300", MODEL_RTMT1300},
 #else
 	{ "RT-AC85U", MODEL_RTAC85U},
+#endif
+#if defined(RMAC2100)
+	{ "RM-AC2100", MODEL_RMAC2100},
 #endif
 	{ "RT-AC85P", MODEL_RTAC85P},
 	{ "RT-ACRH26", MODEL_RTACRH26},
@@ -159,6 +164,58 @@ static const struct model_s model_list[] = {
 	{ NULL, 0 },
 };
 
+
+static const struct model_s modelname_list[] = {
+	{ "K3", MODEL_K3 },
+	{ "XWR3100", MODEL_XWR3100 },
+	{ "R7000P", MODEL_R7000P },
+	{ "EA6700", MODEL_EA6700 },
+	{ "SBRAC1900P", MODEL_SBRAC1900P },
+	{ "F9K1118", MODEL_F9K1118 },
+	{ "SBRAC3200P", MODEL_SBRAC3200P },
+	{ "R8500", MODEL_R8500 },
+	{ "R8000P", MODEL_R8000P },
+	{ "K3C", MODEL_K3C },
+	{ "TY6201_RTK", MODEL_TY6201_RTK },
+	{ "TY6201_BCM", MODEL_TY6201_BCM },
+	{ "RAX120", MODEL_RAX120 },
+	//{ "RMAC2100", MODEL_RMAC2100 },move to model_list
+	{ NULL, 0 },
+};
+
+int get_modelname(void)
+{
+	static int model = MODEL_SWRTMIN;
+	char *pid;
+	const struct model_s *p;
+
+	if (model != MODEL_SWRTMIN)
+		return model;
+
+	pid = nvram_safe_get("modelname");
+	for (p = &modelname_list[0]; p->pid; ++p) {
+		if (!strcmp(pid, p->pid)) {
+			model = p->model;
+			break;
+		}
+	}
+	return model;
+}
+
+char *get_modelnameid(int model)
+{
+	char *pid = "unknown";
+	const struct model_s *p;
+
+	for (p = &modelname_list[0]; p->pid; ++p) {
+		if (model == p->model) {
+			pid = p->pid;
+			break;
+		}
+	}
+	return pid;
+}
+
 #if defined(RTCONFIG_RALINK)
 #elif defined(RTCONFIG_QCA)
 #else
@@ -233,6 +290,8 @@ int get_model(void)
 	return MODEL_RTR2100;
 #elif defined(RTNEWIFI2)
 	return MODEL_RTNEWIFI2;
+#elif defined(RTRS1200P)
+	return MODEL_RTRS1200P;
 #elif defined(RTXYC3)
 	return MODEL_RTXYC3;
 #elif defined(RTNEWIFI3)

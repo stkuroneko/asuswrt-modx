@@ -1,4 +1,4 @@
-﻿
+
 var keyPressed;
 var wItem;
 var ip = "";
@@ -313,6 +313,100 @@ function show_cert_settings(show){
 	}
 }
 
+function change_ddns_setting(v){
+		var hostname_x = '<% nvram_get("ddns_hostname_x"); %>';
+		document.getElementById("ddns_result_tr").style.display = "none";
+		if (v == "WWW.ASUS.COM"){
+				document.getElementById("ddns_hostname_info_tr").style.display = "none";
+				document.getElementById("ddns_hostname_tr").style.display="";
+				document.form.ddns_hostname_x.parentNode.style.display = "none";
+				document.form.DDNSName.parentNode.style.display = "";
+				var ddns_hostname_title = hostname_x.substring(0, hostname_x.indexOf('.asuscomm.com'));
+				if(hostname_x != '' && ddns_hostname_title)
+						document.getElementById("DDNSName").value = ddns_hostname_title;
+				else
+						document.getElementById("DDNSName").value = "<#asusddns_inputhint#>";
+	
+				inputCtrl(document.form.ddns_username_x, 0);
+				inputCtrl(document.form.ddns_passwd_x, 0);
+				document.form.ddns_wildcard_x[0].disabled= 1;
+				document.form.ddns_wildcard_x[1].disabled= 1;
+				showhide("link", 0);
+				showhide("linkToHome", 0);
+				showhide("wildcard_field",0);
+				document.form.ddns_regular_check.value = 0;
+				showhide("check_ddns_field", 0);
+				inputCtrl(document.form.ddns_regular_period, 0);
+				showhide("customnote", 0);
+				showhide("need_custom_scripts", 0);
+		}else if (v == "CUSTOM"){
+				document.form.ddns_hostname_x.parentNode.style.display = "";
+				document.form.DDNSName.parentNode.style.display = "none";
+				inputCtrl(document.form.ddns_username_x, 0);
+				inputCtrl(document.form.ddns_passwd_x, 0);
+				document.form.ddns_wildcard_x[0].disabled= 1;
+				document.form.ddns_wildcard_x[1].disabled= 1;
+				showhide("customnote", 1);
+				showhide("link", 0);
+				showhide("linkToHome", 0);
+				showhide("wildcard_field",0);
+				showhide("check_ddns_field", 0);
+				if (('<% nvram_get("jffs2_enable"); %>' != '1') || ('<% nvram_get("jffs2_scripts"); %>' != '1'))
+					showhide("need_custom_scripts", 1);
+				else
+					showhide("need_custom_scripts", 0);
+
+		}
+		else if( v == "WWW.ORAY.COM"){
+			document.getElementById("ddns_hostname_tr").style.display="none";
+			inputCtrl(document.form.ddns_username_x, 1);
+			inputCtrl(document.form.ddns_passwd_x, 1);
+			document.form.ddns_wildcard_x[0].disabled= 1;
+			document.form.ddns_wildcard_x[1].disabled= 1;
+			showhide("link", 1);
+			showhide("linkToHome", 0);
+			showhide("wildcard_field",0);
+			document.form.ddns_regular_check.value = 0;
+			showhide("check_ddns_field", 0);
+			inputCtrl(document.form.ddns_regular_period, 0);
+		}
+		else{
+				document.getElementById("ddns_hostname_info_tr").style.display = "none";
+				document.getElementById("ddns_hostname_tr").style.display="";
+				document.form.ddns_hostname_x.parentNode.style.display = "";
+				document.form.DDNSName.parentNode.style.display = "none";
+				inputCtrl(document.form.ddns_username_x, 1);
+				inputCtrl(document.form.ddns_passwd_x, 1);
+				if(v == "WWW.TUNNELBROKER.NET" || v == "WWW.SELFHOST.DE" || v == "DOMAINS.GOOGLE.COM")
+					var disable_wild = 1;
+				else
+					var disable_wild = 0;
+				document.form.ddns_wildcard_x[0].disabled= disable_wild;
+				document.form.ddns_wildcard_x[1].disabled= disable_wild;
+				if(v == "WWW.ZONEEDIT.COM" || v == "DOMAINS.GOOGLE.COM"){
+					showhide("link", 0);
+					showhide("linkToHome", 1);
+				}
+				else{
+					showhide("link", 1);
+					showhide("linkToHome", 0);
+				}
+				
+				showhide("wildcard_field",!disable_wild);
+				showhide("check_ddns_field", 1);
+				showhide("customnote", 0);
+				showhide("need_custom_scripts", 0);
+				if(document.form.ddns_regular_check.value == 0)
+					inputCtrl(document.form.ddns_regular_period, 0);
+				else
+					inputCtrl(document.form.ddns_regular_period, 1);
+		}
+
+		if(letsencrypt_support){
+			document.getElementById("le_crypt").style.display = "";
+		}
+}
+
 function change_common_radio(o, s, v, r){
 	if(v == "ddns_enable_x"){
 		var hostname_x = '<% nvram_get("ddns_hostname_x"); %>';
@@ -482,6 +576,12 @@ function openLink(s){
 			tourl = "http://www.no-ip.com/newUser.php";
 		else if (document.form.ddns_server_x.value == 'WWW.ORAY.COM')
 			tourl = "http://www.oray.com/";
+		else if (document.form.ddns_server_x.value == '3322')
+			tourl = "http://www.pubyun.com/";
+		else if (document.form.ddns_server_x.value == 'oray')
+			tourl = "http://www.oray.com/";
+		else if (document.form.ddns_server_x.value == 'changeip')
+			tourl = "https://www.changeip.com/";
 		else if (document.form.ddns_server_x.value == 'DOMAINS.GOOGLE.COM')
 			tourl = "https://domains.google/";
 		else	tourl = "";
@@ -1887,3 +1987,4 @@ function gen_tab_menu(_tab_list_array, _currentItem) {
 		return code;
 	}
 }
+

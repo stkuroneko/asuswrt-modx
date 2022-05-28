@@ -26,10 +26,6 @@ int check_wrs_switch()
 }
 #endif
 
-int IS_ATE_FACTORY_MODE(void)
-{
-	return 0;
-}
 
 #ifdef RTCONFIG_RALINK
 #include <ralink.h>
@@ -42,6 +38,8 @@ int IS_ATE_FACTORY_MODE(void)
 #if defined(RTCONFIG_LP5523)
 #include <lp5523led.h>
 #endif
+
+#include "swrt.h"
 
 #ifndef ARRAYSIZE
 #define ARRAYSIZE(a) (sizeof(a) / sizeof(a[0]))
@@ -293,14 +291,12 @@ static int rctest_main(int argc, char *argv[])
 		setup_passwd();
 	}
 #endif
-#if 0
 	else if (strcmp(argv[1], "GetPhyStatus")==0) {
 		printf("Get Phy status:%d\n", GetPhyStatus(0));
 	}
 	else if (strcmp(argv[1], "GetExtPhyStatus")==0) {
 		printf("Get Ext Phy status:%d\n", GetPhyStatus(atoi(argv[2])));
 	}
-#endif
 #ifdef HND_ROTUER
 	else if (strcmp(argv[1], "memdw")==0) {
 		const char *dws[]={"dw", argv[2]};
@@ -502,7 +498,7 @@ static int rctest_main(int argc, char *argv[])
 					f_write_string("/proc/sys/net/ipv4/conf/all/force_igmp_version", "2", 0, 0);
 #endif
 
-#if defined(RTN14U) || defined(RTAC52U) || defined(RTAC51U) || defined(RTN11P) || defined(RTN300) || defined(RTN54U) || defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTAC54U) || defined(RTN56UB2) || defined(RTAC1200GA1) || defined (RTAC1200GU) || defined(RTAC85U) || defined(RTAC85P) || defined(RTAC51UP) || defined(RTAC53) || defined(RTN800HP) || defined(RTACRH26) || defined(RMAC2100) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTXYC3) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300)
+#if defined(RTN14U) || defined(RTAC52U) || defined(RTAC51U) || defined(RTN11P) || defined(RTN300) || defined(RTN54U) || defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTAC54U) || defined(RTN56UB2) || defined(RTAC1200GA1) || defined (RTAC1200GU) || defined(RTAC85U) || defined(RTAC85P) || defined(RTAC51UP) || defined(RTAC53) || defined(RTN800HP) || defined(RTACRH26) || defined(RMAC2100) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTXYC3) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300)
 					if (!(!nvram_match("switch_wantag", "none")&&!nvram_match("switch_wantag", "")))
 #endif
 					{
@@ -807,6 +803,7 @@ static const applets_t applets[] = {
 	{ "usbled",			usbled_main			},
 #endif
 	{ "ddns_updated", 		ddns_updated_main		},
+	{ "ddns_custom_updated",	ddns_custom_updated_main	},
 	{ "radio",			radio_main			},
 	{ "udhcpc",			udhcpc_wan			},
 	{ "udhcpc_lan",			udhcpc_lan			},
@@ -824,6 +821,7 @@ static const applets_t applets[] = {
 #endif
 #endif
 #ifdef RTCONFIG_WPS
+	{ "wpsaide",			wpsaide_main			},
 #ifdef RTCONFIG_QCA
 	{ "get_wps_er",			get_wps_er_main			},
 #endif
@@ -901,6 +899,9 @@ static const applets_t applets[] = {
 #ifdef RTCONFIG_TR069
 	{ "dhcpc_lease",		dhcpc_lease_main		},
 #endif
+#if 1
+	{ "dhcpc_lease",		dnsmasq_script_main		},
+#endif
 #ifdef RTCONFIG_NEW_USER_LOW_RSSI
 	{ "roamast",			roam_assistant_main		},
 #endif
@@ -925,6 +926,7 @@ static const applets_t applets[] = {
 #ifdef RTCONFIG_ADTBW
 	{ "adtbw",			adtbw_main		},
 #endif
+	{ "toolbox",			swrt_toolbox		},
 	{NULL, NULL}
 };
 
@@ -1555,7 +1557,7 @@ int main(int argc, char **argv)
 		return 0;
 	}
 #endif
-	else if (/*!strcmp(base, "ATE")*/ 0) {
+	else if (!strcmp(base, "ATE")) {
 		if ( argc == 2 || argc == 3 || argc == 4) {
 			asus_ate_command(argv[1], argv[2], argv[3]);
 		}
@@ -1633,7 +1635,7 @@ int main(int argc, char **argv)
 #endif
 #endif
 
-#if 0
+#if defined(CONFIG_BCMWL5) || defined(RTCONFIG_RALINK) || defined(RTCONFIG_QCA) || defined(RTCONFIG_REALTEK)
 	else if (!strcmp(base, "set_factory_mode")) {
 		set_factory_mode();
 		return 0;
@@ -1971,7 +1973,6 @@ int main(int argc, char **argv)
 		return 0;
 	}
 #endif	/* RTCONFIG_BT_CONN */
-#if !defined(RTMIR3G) && !defined(RTMIR3P) && !defined(RTMIR4A) && !defined(RTRM2100) && !defined(RTR2100) && !defined(RTNEWIFI2) && !defined(RTXYC3) && !defined(RTNEWIFI3) && !defined(RTHIWIFI4) && !defined(RTE8820S) && !defined(RTA040WQ) && !defined(RTMSG1500) && !defined(RTJDC1) && !defined(RTMT1300)
 #if defined(RTCONFIG_RALINK) || defined(RTCONFIG_QCA)
 	else if (!strcmp(base, "dump_powertable")) {
 		if (!IS_ATE_FACTORY_MODE())
@@ -1987,7 +1988,6 @@ int main(int argc, char **argv)
 		dump_txbftable();
 		return 0;
 	}
-#endif
 #endif
 	printf("Unknown applet: %s\n", base);
 	return 0;

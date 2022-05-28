@@ -550,18 +550,15 @@ function show_middle_status(auth_mode, wl_wep_x){
 		case "psk2":
 				security_mode = "WPA2-Personal";
 				break;
+		case "sae":
+				security_mode = "WPA3-Personal";
+				break;
+		case "psk2sae":
+				security_mode = "WPA2/WPA3-Personal";
+				break;
 		case "pskpsk2":
 				security_mode = "WPA-Auto-Personal";
 				document.getElementById("wl_securitylevel_span").style.fontSize = "16px";
-				break;
-		case "psk3":
-				security_mode = "WPA3-Personal";
-				break;
-		case "psk2psk3":
-				security_mode = "WPA2/WPA3-Personal";
-				break;
-		case "owe":
-				security_mode = "Enhanced Open System (OWE)";
 				break;
 		case "wpa":
 				security_mode = "WPA-Enterprise";
@@ -1749,7 +1746,7 @@ function popupEditBlock(clientObj){
 }
 
 function check_usb3(){
-	if(based_modelid == "DSL-AC68U" || based_modelid == "RT-AC3200" || based_modelid == "RT-AC87U" || based_modelid == "RT-AC68U" || based_modelid == "RT-AC68A" || based_modelid == "RT-AC56S" || based_modelid == "RT-AC56U" || based_modelid == "RT-AC55U" || based_modelid == "RT-AC55UHP" || based_modelid == "RT-N18U" || based_modelid == "RT-AC88U" || based_modelid == "RT-AC86U" || based_modelid == "AC2900" || based_modelid == "RT-AC3100" || based_modelid == "RT-AC5300" || based_modelid == "RP-AC68U" || based_modelid == "RT-AC58U" || based_modelid == "RT-AC82U" || based_modelid == "MAP-AC3000" || based_modelid == "RT-AC85P" || based_modelid == "RT-ACRH26" || based_modelid == "RT-AC85U" || based_modelid == "RT-MIR3G" || based_modelid == "RT-MIR3P" || based_modelid == "RT-AC65U"|| based_modelid == "4G-AC68U" || based_modelid == "BLUECAVE" || based_modelid == "RT-NEWIFI2" || based_modelid == "RT-XYC3" || based_modelid == "RT-NEWIFI3" || based_modelid == "RT-HIWIFI4" || based_modelid == "RT-JDC1" || based_modelid == "RT-MT1300"){
+	if(based_modelid == "DSL-AC68U" || based_modelid == "RT-AC3200" || based_modelid == "RT-AC87U" || based_modelid == "RT-AC68U" || based_modelid == "RT-AC68A" || based_modelid == "RT-AC56S" || based_modelid == "RT-AC56U" || based_modelid == "RT-AC55U" || based_modelid == "RT-AC55UHP" || based_modelid == "RT-N18U" || based_modelid == "RT-AC88U" || based_modelid == "RT-AC86U" || based_modelid == "AC2900" || based_modelid == "RT-AC3100" || based_modelid == "RT-AC5300" || based_modelid == "RP-AC68U" || based_modelid == "RT-AC58U" || based_modelid == "RT-AC82U" || based_modelid == "MAP-AC3000" || based_modelid == "RT-AC85P" || based_modelid == "RT-ACRH26" || based_modelid == "RT-AC85U" || based_modelid == "RT-MIR3G" || based_modelid == "RT-MIR3P" || based_modelid == "RT-AC65U"|| based_modelid == "4G-AC68U" || based_modelid == "BLUECAVE" || based_modelid == "RT-NEWIFI2" || based_modelid == "RT-RS1200P" || based_modelid == "RT-XYC3" || based_modelid == "RT-NEWIFI3" || based_modelid == "RT-HIWIFI4" || based_modelid == "RT-JDC1" || based_modelid == "RT-MT1300"){
 		document.getElementById('usb_text_1').innerHTML = "USB 3.0";
 	}
 	else if(based_modelid == "RT-AC88Q" || based_modelid == "RT-AD7200" || based_modelid == "RT-N65U" || based_modelid == "GT-AC5300" || based_modelid == "GT-AC9600"){

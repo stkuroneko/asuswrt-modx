@@ -203,7 +203,7 @@ function initial(){
 	}
 
 	/* MODELDEP */
-	if(based_modelid == "AC2900" || based_modelid == "RT-MIR3G" || based_modelid == "RT-MIR3P" || based_modelid == "RT-MIR4A" || based_modelid == "RT-RM2100" || based_modelid == "RT-R2100" || based_modelid == "RT-NEWIFI2" || based_modelid == "RT-XYC3" || based_modelid == "RT-NEWIFI3" || based_modelid == "RT-HIWIFI4" || based_modelid == "RT-E8820S" || based_modelid == "RT-A040WQ" || based_modelid == "RT-MSG1500" || based_modelid == "RT-JDC1" || based_modelid == "RT-MT1300"){	//MODELDEP: AC2900(RT-AC86U)
+	if(based_modelid == "AC2900" || based_modelid == "RT-MIR3G" || based_modelid == "RT-MIR3P" || based_modelid == "RT-MIR4A" || based_modelid == "RT-RM2100" || based_modelid == "RT-R2100" || based_modelid == "RT-NEWIFI2" || based_modelid == "RT-RS1200P" || based_modelid == "RT-XYC3" || based_modelid == "RT-NEWIFI3" || based_modelid == "RT-HIWIFI4" || based_modelid == "RT-E8820S" || based_modelid == "RT-A040WQ" || based_modelid == "RT-MSG1500" || based_modelid == "RT-JDC1" || based_modelid == "RT-MT1300"){	//MODELDEP: AC2900(RT-AC86U)
 		document.form.btn_ez_radiotoggle[0].disabled = true;
 		document.form.btn_ez_radiotoggle[1].disabled = true;
 		document.form.btn_ez_radiotoggle[2].disabled = true;
@@ -1206,7 +1206,7 @@ function change_url(num, flag){
 	else if(flag == 'https_wan'){
 		var https_wanport = num;
 		var host_addr = "";
-		if(check_ddns_status())
+		if(ddns_enable_x == "1" && ddns_hostname_x_t.length != 0)
 				host_addr = ddns_hostname_x_t;
 		else
 			host_addr = wan_ipaddr;
@@ -1593,6 +1593,27 @@ function save_cert_key(){
 					</td>
 				</tr>
 			</table>
+			<table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3"  class="FormTable">
+				<thead>
+					<tr>
+						<td colspan="2">Persistent JFFS2 partition</td>
+					</tr>
+				</thead>
+				<tr>
+					<th>Format JFFS partition at next boot</th>
+					<td>
+						<input type="radio" name="jffs2_format" value="1" <% nvram_match("jffs2_format", "1", "checked"); %>><#checkbox_Yes#>
+						<input type="radio" name="jffs2_format" value="0" <% nvram_match("jffs2_format", "0", "checked"); %>><#checkbox_No#>
+					</td>
+				</tr>
+				<tr>
+					<th>Enable JFFS custom scripts and configs</th>
+					<td>
+						<input type="radio" name="jffs2_scripts" value="1" <% nvram_match("jffs2_scripts", "1", "checked"); %>><#checkbox_Yes#>
+						<input type="radio" name="jffs2_scripts" value="0" <% nvram_match("jffs2_scripts", "0", "checked"); %>><#checkbox_No#>
+					</td>
+				</tr>
+			</table>
 
 			<table id="hdd_spindown_table" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3"  class="FormTable" style="margin-top:8px;display:none;">
 				<thead>
@@ -1626,7 +1647,7 @@ function save_cert_key(){
 						<script>
 							var needReboot = false;
 
-							if( based_modelid == "DSL-AC68U" || based_modelid == "RT-AC3200" || based_modelid == "RT-AC87U" || based_modelid == "RT-AC68U" || based_modelid == "RT-AC68A" || based_modelid == "RT-AC56S" || based_modelid == "RT-AC56U" || based_modelid == "RT-AC55U" || based_modelid == "RT-AC55UHP" || based_modelid == "RT-N18U" || based_modelid == "RT-AC88U" || based_modelid == "RT-AC86U" || based_modelid == "AC2900" || based_modelid == "RT-AC3100" || based_modelid == "RT-AC5300" || based_modelid == "RP-AC68U" || based_modelid == "RT-AC58U" || based_modelid == "RT-AC82U" || based_modelid == "MAP-AC3000" || based_modelid == "RT-AC85U" || based_modelid == "RT-AC65U" || based_modelid == "4G-AC68U" || based_modelid == "BLUECAVE" || based_modelid == "RT-AC88Q" || based_modelid == "RT-AD7200" || based_modelid == "RT-N65U" || based_modelid == "GT-AC5300" || based_modelid == "RT-AX88U" || based_modelid == "RT-AX95U" || based_modelid == "BRT-AC828" || based_modelid == "RT-MIR3G" || based_modelid == "RT-MIR3P"
+							if( based_modelid == "DSL-AC68U" || based_modelid == "RT-AC3200" || based_modelid == "RT-AC87U" || based_modelid == "RT-AC68U" || based_modelid == "RT-AC68A" || based_modelid == "RT-AC56S" || based_modelid == "RT-AC56U" || based_modelid == "RT-AC55U" || based_modelid == "RT-AC55UHP" || based_modelid == "RT-N18U" || based_modelid == "RT-AC88U" || based_modelid == "RT-AC86U" || based_modelid == "AC2900" || based_modelid == "RT-AC3100" || based_modelid == "RT-AC5300" || based_modelid == "RP-AC68U" || based_modelid == "RT-AC58U" || based_modelid == "RT-AC82U" || based_modelid == "MAP-AC3000" || based_modelid == "RT-AC85U" || based_modelid == "RT-AC65U" || based_modelid == "4G-AC68U" || based_modelid == "BLUECAVE" || based_modelid == "RT-AC88Q" || based_modelid == "RT-AD7200" || based_modelid == "RT-N65U" || based_modelid == "GT-AC5300" || based_modelid == "RT-AX88U" || based_modelid == "RT-AX95U" || based_modelid == "BRT-AC828" || based_modelid == "RT-MIR3G" || based_modelid == "RT-MIR3P" || based_modelid == "RT-NEWIFI2" || based_modelid == "RT-RS1200P" || based_modelid == "RT-XYC3" || based_modelid == "RT-NEWIFI3" || based_modelid == "RT-HIWIFI4" || based_modelid == "RT-JDC1"  || based_modelid == "RT-MT1300"
 							){
 								$("#reduce_usb3_tr").show();
 							}
@@ -1773,6 +1794,20 @@ function save_cert_key(){
 						<input type="radio" name="btn_ez_radiotoggle" id="turn_LED" class="input" style="display:none;" value="0" <% nvram_match_x("", "btn_ez_mode", "1", "checked"); %>><label for="turn_LED" id="turn_LED_str"><#LED_switch#></label>
 					</td>
 				</tr>
+				<tr id="disabled_led_tr" style="display:none">
+					<th><#CTL_close#> LEDs</th>
+					<td>
+						<input type="radio" name="led_disable" class="input" value="1" <% nvram_match_x("", "led_disable", "1", "checked"); %>><#checkbox_Yes#>
+						<input type="radio" name="led_disable" class="input" value="0" <% nvram_match_x("", "led_disable", "0", "checked"); %>><#checkbox_No#>
+					</td>
+				</tr>
+				<tr>
+					<th><#CTL_Enabled#> UU</th>
+					<td>
+						<input type="radio" name="uu_enable" class="input" value="1" <% nvram_match_x("", "uu_enable", "1", "checked"); %>><#checkbox_Yes#>
+						<input type="radio" name="uu_enable" class="input" value="0" <% nvram_match_x("", "uu_enable", "0", "checked"); %>><#checkbox_No#>
+					</td>
+				</tr>
 				<tr id="pwrsave_tr">
 					<th align="right">Power Save Mode<!--untranslated--></th>
 					<td>
@@ -1788,6 +1823,13 @@ function save_cert_key(){
 					<td>
 						<input type="radio" value="1" name="reboot_schedule_enable_x" onClick="hide_reboot_option(1);" <% nvram_match_x("LANHostConfig","reboot_schedule_enable", "1", "checked"); %>><#checkbox_Yes#>
 						<input type="radio" value="0" name="reboot_schedule_enable_x" onClick="hide_reboot_option(0);" <% nvram_match_x("LANHostConfig","reboot_schedule_enable", "0", "checked"); %>><#checkbox_No#>
+					</td>
+				</tr>
+				<tr id="led_on_off">
+					<th align="right"><a class="hintstyle" href="javascript:void(0);" onClick="openHint(11,6);"><#Enable_led_on_off#></a></th>
+					<td>
+						<input type="radio" name="led_on_off" class="input" value="1" <% nvram_match_x("","led_on_off","1", "checked"); %> ><#checkbox_Yes#>
+						<input type="radio" name="led_on_off" class="input" value="0" <% nvram_match_x("","led_on_off","0", "checked"); %> ><#checkbox_No#>
 					</td>
 				</tr>
 				<tr id="reboot_schedule_date_tr">
@@ -2020,7 +2062,7 @@ function save_cert_key(){
 			<div id="http_clientlist_Block"></div>
 			<div class="apply_gen">
 				<input name="button" type="button" class="button_gen" onclick="applyRule();" value="<#CTL_apply#>"/>
-			</div>
+			</div>   
 		</td>
 	</tr>
 </tbody>
@@ -2039,3 +2081,4 @@ function save_cert_key(){
 <div id="footer"></div>
 </body>
 </html>
+

@@ -643,6 +643,7 @@ int
 udhcpc_wan(int argc, char **argv)
 {
 	_dprintf("%s:: %s\n", __FUNCTION__, argv[1] ? : "");
+	run_custom_script("dhcpc-event", 0, argv[1], NULL);
 	if (!argv[1])
 		return EINVAL;
 	else if (strstr(argv[1], "deconfig"))
@@ -892,14 +893,12 @@ config(void)
 	nvram_unset("vivso");
 #endif
 #endif
-
 	/* Clean nat conntrack for this interface,
 	 * but skip physical VPN subinterface for PPTP/L2TP */
 	if (changed && !(unit < 0 &&
 	    (nvram_match(strcat_r(wanprefix, "proto", tmp), "l2tp") ||
 	     nvram_match(strcat_r(wanprefix, "proto", tmp), "pptp"))))
 		ifconfig(wan_ifname, IFUP, "0.0.0.0", NULL);
-
 	ifconfig(wan_ifname, IFUP,
 		 nvram_safe_get(strcat_r(prefix, "ipaddr", tmp)),
 		 nvram_safe_get(strcat_r(prefix, "netmask", tmp)));
@@ -917,6 +916,7 @@ int
 zcip_wan(int argc, char **argv)
 {
 	_dprintf("%s:: %s\n", __FUNCTION__, argv[1] ? : "");
+	run_custom_script("zcip-event", 0, argv[1], NULL);
 	if (!argv[1])
 		return EINVAL;
 	else if (strstr(argv[1], "deconfig"))
@@ -1127,6 +1127,10 @@ _dprintf("%s: IFUP.\n", __FUNCTION__);
 
 	lan_up(lan_ifname);
 
+#if defined(RTCONFIG_SWRT_KVR) && defined(RTCONFIG_RALINK)
+	system("/usr/bin/iappd.sh restart");
+#endif
+
 	_dprintf("done\n");
 	return 0;
 }
@@ -1152,6 +1156,7 @@ int
 udhcpc_lan(int argc, char **argv)
 {
 	_dprintf("%s:: %s\n", __FUNCTION__, argv[1] ? : "");
+	run_custom_script("dhcpc-event", 0, argv[1], NULL);
 	if (!argv[1])
 		return EINVAL;
 	else if (strstr(argv[1], "deconfig"))
@@ -1344,6 +1349,7 @@ ra_updated6(char *wan_ifname)
 
 int dhcp6c_wan(int argc, char **argv)
 {
+	if (argv[2]) run_custom_script("dhcpc-event", 0, argv[2], NULL);
 	if (!argv[1] || !argv[2])
 		return EINVAL;
 	else if (strcmp(argv[2], "started") == 0 ||
@@ -1485,3 +1491,4 @@ void stop_6relayd(void)
 #endif // RTCONFIG_6RELAYD
 
 #endif // RTCONFIG_IPV6
+

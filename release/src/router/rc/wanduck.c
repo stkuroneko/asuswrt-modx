@@ -986,8 +986,13 @@ int detect_internet(int wan_unit)
 #ifdef RTCONFIG_DUALWAN
 			strcmp(dualwan_mode, "lb") &&
 #endif
-			!found_default_route(wan_unit))
+			!found_default_route(wan_unit)){
 		link_internet = DISCONN;
+
+		// fix the missed gateway sometimes.
+		if(is_wan_connect(wan_unit))
+			add_multi_routes();
+	}
 #ifdef DETECT_INTERNET_MORE
 	else if(!get_packets_of_net_dev(wan_ifname, &rx_packets, &tx_packets) || rx_packets <= RX_THRESHOLD)
 		link_internet = DISCONN;
@@ -1815,7 +1820,12 @@ _dprintf("# wanduck(%d): if_wan_phyconnected: x_Setting=%d, link_modem=%d, sim_s
 		&& nvram_match("AllLED", "1")
 #endif
 	)
+	if (nvram_match("led_on_off", "1")) {
 		led_control(LED_LAN, LED_ON);
+		}
+	else{
+		led_control(LED_LAN, LED_OFF);
+		}
 	else led_control(LED_LAN, LED_OFF);
 #endif
 
@@ -4593,3 +4603,4 @@ WANDUCK_SELECT:
 	_dprintf("# wanduck exit error\n");
 	exit(1);
 }
+

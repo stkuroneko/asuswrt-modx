@@ -84,4 +84,6 @@
 
 #endif /* CONFIG_AP_SUPPORT */
 
+#define RTPRIV_IOCTL_ASUSCMD		(SIOCIWFIRSTPRIV + 0x1E)
+
 #endif /* _RT_OS_H_ */

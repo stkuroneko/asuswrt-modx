@@ -77,6 +77,8 @@
 #include <cfg_event.h>
 #endif
 
+#include "swrt.h"
+
 #define BCM47XX_SOFTWARE_RESET	0x40		/* GPIO 6 */
 #define RESET_WAIT		2		/* seconds */
 #define RESET_WAIT_COUNT	RESET_WAIT * 10 /* 10 times a second */
@@ -2393,6 +2395,17 @@ static void handle_eject_usb_button(void)
 static inline void handle_eject_usb_button(void) { }
 #endif	/* RTCONFIG_EJUSB_BTN && RTCONFIG_BLINK_LED */
 
+
+void led_on_off(void)
+{
+	if (nvram_match("led_on_off", "0")) {
+		led_control(LED_POWER, LED_OFF);
+		led_control(LED_LAN, LED_OFF);
+		led_control(LED_USB, LED_OFF);
+	}
+}
+
+
 void btn_check(void)
 {
 #ifdef RTCONFIG_WIFI_SON
@@ -2482,7 +2495,12 @@ void btn_check(void)
 					}
 					else
 					{
-						led_control(LED_LAN, LED_ON);
+	if (nvram_match("led_on_off", "1")) {
+		led_control(LED_LAN, LED_ON);
+		}
+	else{
+		led_control(LED_LAN, LED_OFF);
+		}
 						led_control(LED_WAN, LED_ON);
 						led_control(LED_WPS, LED_ON);
 					}
@@ -2576,7 +2594,12 @@ void btn_check(void)
 						system("reg s 0xB0000000; reg w 0x64 0x30015014");
 						system("reg s 0xB0000600; reg w 0x04 0x1C20; reg w 0x24 0x69CB");
 						led_control(LED_WAN, LED_ON);
-						led_control(LED_LAN, LED_ON);
+	if (nvram_match("led_on_off", "1")) {
+		led_control(LED_LAN, LED_ON);
+		}
+	else{
+		led_control(LED_LAN, LED_OFF);
+		}
 						led_control(LED_2G, LED_ON);
 #endif
 					}
@@ -2647,7 +2670,12 @@ void btn_check(void)
 				led_control(LED_2G, LED_OFF);
 				sleep(1);
 				led_control(LED_WAN, LED_ON);
-				led_control(LED_LAN, LED_ON);
+	if (nvram_match("led_on_off", "1")) {
+		led_control(LED_LAN, LED_ON);
+		}
+	else{
+		led_control(LED_LAN, LED_OFF);
+		}
 				led_control(LED_2G, LED_ON);
 				sleep(1);
 				led_control(LED_WAN, LED_OFF);
@@ -2805,7 +2833,7 @@ void btn_check(void)
 			if (LED_status_on) {
 				TRACE_PT("LED turn to normal\n");
 				led_control(LED_POWER, LED_ON);
-#if defined(RTAC65U) || defined(RTAC85U) || defined(RTAC85P) || defined(RTN800HP) || defined(RTACRH26)
+#if defined(RTAC65U) || defined(RTAC85U) || defined(RTAC85P) || defined(RTN800HP) || defined(RTACRH26) || defined(RMAC2100) || defined(RTA040WQ) || defined(RTMSG1500)
 			if (nvram_match("wl0_radio", "1")) {
 				led_control(LED_2G, LED_ON);
 			}
@@ -3170,6 +3198,7 @@ void btn_check(void)
 							}
 						}
 #endif
+						kill_pidfile_s("/var/run/wpsaide.pid", SIGTSTP);
 #endif
 						wsc_timeout = WPS_TIMEOUT_COUNT;
 #if defined(RTCONFIG_CONCURRENTREPEATER) && defined(RTCONFIG_MTK_REP)
@@ -3233,6 +3262,7 @@ void btn_check(void)
 						}
 					}
 #endif
+					kill_pidfile_s("/var/run/wpsaide.pid", SIGTSTP);
 #endif
 					wsc_timeout = WPS_TIMEOUT_COUNT;
 				}
@@ -3376,6 +3406,24 @@ void btn_check(void)
 #endif
 	}
 #endif	/* BTN_SETUP */
+			if (nvram_match("wl0_radio", "1")) {
+				if (nvram_match("led_on_off", "1")){
+					led_control(LED_2G, LED_ON);				
+				}else{
+				led_control(LED_2G, LED_OFF);
+				}
+			}else{
+				led_control(LED_2G, LED_OFF);
+			}
+			if (nvram_match("wl1_radio", "1")) {
+				if (nvram_match("led_on_off", "1")){
+					led_control(LED_5G, LED_ON);				
+				}else{
+				led_control(LED_5G, LED_OFF);
+				}
+			}else{
+				led_control(LED_5G, LED_OFF);
+			}
 }
 
 #define DAYSTART (0)
@@ -3564,6 +3612,7 @@ int timecheck_reboot(char *activeSchedule)
 
 	return active;
 }
+
 
 int svcStatus[12] = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
 
@@ -4059,7 +4108,12 @@ void fake_etlan_led(void)
 			data_etlan = count_etlan;
 		}
 		else blink_etlan = 0;
+	if (nvram_match("led_on_off", "1")) {
 		led_control(LED_LAN, LED_ON);
+		}
+		else{
+			led_control(LED_LAN, LED_OFF);
+			}
 	}
 
 	if (blink_etlan) {
@@ -4076,12 +4130,22 @@ void fake_etlan_led(void)
 			if (status != status_old)
 			{
 				if (status)
-					led_control(LED_LAN, LED_ON);
+	if (nvram_match("led_on_off", "1")) {
+		led_control(LED_LAN, LED_ON);
+		}
+	else{
+		led_control(LED_LAN, LED_OFF);
+		}
 				else
 					led_control(LED_LAN, LED_OFF);
 			}
 		}
+	if (nvram_match("led_on_off", "1")) {
 		led_control(LED_LAN, LED_ON);
+		}
+	else{
+		led_control(LED_LAN, LED_OFF);
+		}
 	}
 
 	blink_etlan_check++;
@@ -5243,6 +5307,126 @@ void dnsmasq_check()
 	}
 }
 
+#if defined(RTCONFIG_SMARTDNS)
+extern void start_smartdns();
+void smartdns_check()
+{
+	if (!pids("smartdns")) {
+		start_smartdns();
+		logmessage("watchdog", "restart smartdns");
+	}
+}
+#endif
+
+#if defined(K3)
+void k3screen_check()
+{
+	if ((strcmp(nvram_get("k3screen"), "A")==0) || (strcmp(nvram_get("k3screen"), "a")==0))
+	{
+		if (!pids("phi_speed"))
+			doSystem("phi_speed &");
+		if (!pids("wl_cr"))
+			doSystem("wl_cr &");
+		if (!pids("uhmi"))
+			doSystem("uhmi &");
+	} else {
+		if (!pids("k3screend")){
+			char *k3screend_argv[] = { "k3screend",NULL };
+			pid_t pid;
+			_eval(k3screend_argv, NULL, 0, &pid);
+			logmessage("watchdog", "restart k3screend");
+		}
+		if (!pids("k3screenctrl")){
+			char *timeout;
+			if (nvram_get_int("k3screen_timeout")==1)
+				timeout = "-m0";
+			else
+				timeout = "-m30";
+			char *k3screenctrl_argv[] = { "k3screenctrl", timeout,NULL };
+			pid_t pid;
+			_eval(k3screenctrl_argv, NULL, 0, &pid);
+			logmessage("watchdog", "restart k3screenctrl");
+		}
+	}
+}
+#endif
+
+#if defined(RTCONFIG_SOFTCENTER)
+static void softcenter_sig_check()
+{
+	//1=wan,2=nat,3=mount
+	if(nvram_match("sc_installed", "1")){
+		if(nvram_match("sc_wan_sig", "1")) {
+			if(nvram_match("sc_mount", "1")) {
+				if(f_exists("/jffs/softcenter/bin/softcenter.sh")) {
+					softcenter_eval(SOFTCENTER_WAN);
+					nvram_set_int("sc_wan_sig", 0);
+				}
+			} else {
+				softcenter_eval(SOFTCENTER_WAN);
+				nvram_set_int("sc_wan_sig", 0);
+			}
+		}
+		if(nvram_match("sc_nat_sig", "1")) {
+			if(nvram_match("sc_mount", "1")) {
+				if(f_exists("/jffs/softcenter/bin/softcenter.sh")) {
+					softcenter_eval(SOFTCENTER_NAT);
+					nvram_set_int("sc_nat_sig", 0);
+				}
+			} else {
+				softcenter_eval(SOFTCENTER_NAT);
+				nvram_set_int("sc_nat_sig", 0);
+			}
+		}
+		if(nvram_match("sc_mount_sig", "1")) {
+			if(f_exists("/jffs/softcenter/bin/softcenter.sh")) {
+				softcenter_eval(SOFTCENTER_MOUNT);
+				nvram_set_int("sc_mount_sig", 0);
+			} else if(!f_exists("/jffs/softcenter/bin/softcenter.sh") && nvram_match("sc_mount", "1")) {
+				//remount to sdb sdc not sda
+				doSystem("sh /jffs/softcenter/automount.sh &");
+			}
+		}
+		if(nvram_match("sc_services_start_sig", "1")) {
+			if(f_exists("/jffs/softcenter/bin/softcenter.sh")) {
+				softcenter_eval(SOFTCENTER_SERVICES_START);
+				nvram_set_int("sc_services_start_sig", 0);
+			}
+		}
+		if(nvram_match("sc_services_stop_sig", "1")) {
+			if(f_exists("/jffs/softcenter/bin/softcenter.sh")) {
+				softcenter_eval(SOFTCENTER_SERVICES_STOP);
+				nvram_set_int("sc_services_stop_sig", 0);
+			}
+		}
+		if(nvram_match("sc_unmount_sig", "1")) {
+			if(f_exists("/jffs/softcenter/bin/softcenter.sh")) {
+				softcenter_eval(SOFTCENTER_UNMOUNT);
+				nvram_set_int("sc_unmount_sig", 0);
+			}
+		}
+	}
+}
+#endif
+#if defined(RTCONFIG_ENTWARE)
+static void entware_sig_check()
+{
+	if(nvram_match("entware_installed", "1")){
+		if(nvram_match("entware_wan_sig", "1")){
+			if(f_exists("/opt/etc/init.d/rc.unslung")){
+				doSystem("/opt/etc/init.d/rc.unslung start");
+				nvram_set_int("entware_wan_sig", 0);
+			}
+		}
+		if(nvram_match("entware_stop_sig", "1")) {
+			if(f_exists("/opt/etc/init.d/rc.unslung")) {
+				doSystem("/opt/etc/init.d/rc.unslung stop");
+				nvram_set_int("entware_stop_sig", 0);
+			}
+		}
+	}
+}
+#endif
 #ifdef RTCONFIG_NEW_USER_LOW_RSSI
 void roamast_check()
 {
@@ -6778,8 +6962,14 @@ void watchdog(int sig)
 #ifdef RTL_WTDOG
 	watchdog_func();
 #endif
+
 	/* handle button */
 	btn_check();
+
+
+	/* handle led */
+	led_on_off();
+
 
 	if (nvram_match("asus_mfg", "0")
 #if defined(RTCONFIG_LED_BTN) || defined(RTCONFIG_WPS_ALLLED_BTN)
@@ -6997,7 +7187,9 @@ void watchdog(int sig)
 	bs_pre = bs;
 #endif
 #endif
-
+#if defined(RTCONFIG_SOFTCENTER)
+	softcenter_sig_check();
+#endif
 	if (watchdog_period)
 		return;
 
@@ -7029,6 +7221,9 @@ wdp:
 	ddns_check();
 	networkmap_check();
 	httpd_check();
+#if defined(RTCONFIG_SMARTDNS)
+	smartdns_check();
+#endif
 	dnsmasq_check();
 #ifdef RTCONFIG_NEW_USER_LOW_RSSI
 	roamast_check();
@@ -7059,7 +7254,7 @@ wdp:
 	auto_firmware_check();
 #endif
 #ifdef RTCONFIG_BWDPI
-#if !defined(RTMIR3G) && !defined(RTMIR3P) && !defined(RTMIR4A) && !defined(RTRM2100) && !defined(RTR2100) && !defined(RTNEWIFI2) && !defined(RTXYC3) && !defined(RTNEWIFI3) && !defined(RTHIWIFI4) && !defined(RTE8820S) && !defined(RTA040WQ) && !defined(RTMSG1500) && !defined(RTJDC1) && !defined(RTMT1300)
+#if !defined(RTMIR3G) && !defined(RTMIR3P) && !defined(RTMIR4A) && !defined(RTRM2100) && !defined(RTR2100) && !defined(RTNEWIFI2) && !defined(RTRS1200P) && !defined(RTXYC3) && !defined(RTNEWIFI3) && !defined(RTHIWIFI4) && !defined(RTE8820S) && !defined(RTA040WQ) && !defined(RTMSG1500) && !defined(RTJDC1) && !defined(RTMT1300)
 	auto_sig_check();		// libbwdpi.so
 	web_history_save();		// libbwdpi.so
 	AiProtectionMonitor_mail_log();	// libbwdpi.so
@@ -7285,3 +7480,4 @@ int wdg_monitor_main(int argc, char *argv[])
 	return 0;
 }
 #endif
+

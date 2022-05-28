@@ -4668,7 +4668,7 @@ VOID RTMPCommSiteSurveyData(
 			pBss->Bssid[4],
 			pBss->Bssid[5]);
 	/*Security*/
-	sprintf(msg+strlen(msg), "%-9s%-16s", GetEncryModeStr2(pBss->PairwiseCipher), GetAuthModeStr2(pBss->AKMMap));
+	sprintf(msg+strlen(msg), "%-9s%-16s", GetEncryModeStr(pBss->PairwiseCipher), GetAuthModeStr(pBss->AKMMap));
 	/* Rssi*/
 	Rssi = (INT)pBss->Rssi;
 

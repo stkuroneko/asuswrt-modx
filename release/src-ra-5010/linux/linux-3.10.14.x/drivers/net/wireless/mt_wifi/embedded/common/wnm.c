@@ -3678,3 +3678,4 @@ VOID WNMNotifyStateMachineInit(
 	StateMachineSetAction(S, WAIT_WNM_NOTIFY_RSP, WNM_NOTIFY_RSP, (STATE_MACHINE_FUNC)SendWNMNotifyConfirm);
 #endif /* CONFIG_AP_SUPPORT */
 }
+
