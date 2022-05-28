@@ -53,7 +53,7 @@
 char *wlc_nvname(char *keyword);
 //#endif
 
-#if defined(RTAC52U) || defined(RTAC51U) || defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTAC54U) || defined(RTN56UB2) || defined(RTAC1200GA1)  || defined(RTAC1200GU) || defined(RTAC1200) || defined(RTCONFIG_MTK_REP) || defined(RTAC51UP) || defined(RTAC53) || defined(RTAC85U) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTNEWIFI3)  || defined(RTHIWIFI4) || defined(RTE8820S)
+#if defined(RTAC52U) || defined(RTAC51U) || defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTAC54U) || defined(RTN56UB2) || defined(RTAC1200GA1)  || defined(RTAC1200GU) || defined(RTAC1200) || defined(RTCONFIG_MTK_REP) || defined(RTAC51UP) || defined(RTAC53) || defined(RTAC85U) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTXYC3) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300)
 #define VHT_SUPPORT /* 11AC */
 #endif
 
@@ -1562,7 +1562,7 @@ int gen_ralink_config(int band, int is_iNIC)
 	{
 		fprintf(fp, "GreenAP=%d\n", 1);
 	}
-#elif defined(RTN14U) || defined(RTAC52U) || defined(RTAC51U) || defined(RTAC51UP) || defined(RTAC53) || defined(RTN11P) || defined(RTN300) || defined(RTN54U) || defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTAC54U) || defined(RTN56UB2) || defined(RTAC1200GA1)  || defined(RTAC1200GU) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTCONFIG_MTK_REP) || defined(RTNEWIFI2) || defined(RTNEWIFI3)  || defined(RTHIWIFI4) || defined(RTE8820S)
+#elif defined(RTN14U) || defined(RTAC52U) || defined(RTAC51U) || defined(RTAC51UP) || defined(RTAC53) || defined(RTN11P) || defined(RTN300) || defined(RTN54U) || defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTAC54U) || defined(RTN56UB2) || defined(RTAC1200GA1)  || defined(RTAC1200GU) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTCONFIG_MTK_REP) || defined(RTNEWIFI2) || defined(RTXYC3) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300)
 	/// MT7620 GreenAP will impact TSSI, force to disable GreenAP here..
 	//  MT7620 GreenAP cause bad site survey result on RTAC52 2G.
 	{
@@ -1784,7 +1784,7 @@ int gen_ralink_config(int band, int is_iNIC)
 		fprintf(fp, "RekeyInterval=%d\n", 0);
 	}
 
-#if defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100)
+#if defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTXYC3) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300)
 	str = nvram_safe_get(strcat_r(prefix, "mfp", tmp));
 	if (str && strlen(str)) {
 		fprintf(fp, "PMFMFPC=%d\n", str[0] > '0');
@@ -3298,9 +3298,9 @@ next_mrate:
 		str = " (5G)";
 	else
 		str = "";
-	fprintf(fp, "WscManufacturer=%s\n", "ASUSTeK Computer Inc.");
+	fprintf(fp, "WscManufacturer=%s\n", "Xiaomi");
 	fprintf(fp, "WscModelName=%s%s\n", "WPS Router", str);
-	fprintf(fp, "WscDeviceName=%s%s\n", "ASUS WPS Router", str);
+	fprintf(fp, "WscDeviceName=%s%s\n", "Xiaomi WPS Router", str);
 	fprintf(fp, "WscModelNumber=%s\n", get_productid());
 	fprintf(fp, "WscSerialNumber=%s\n", "00000000");
 

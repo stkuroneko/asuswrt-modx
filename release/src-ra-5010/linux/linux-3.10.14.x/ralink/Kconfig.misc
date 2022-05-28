@@ -55,6 +55,10 @@ config  MODEL_RTNEWIFI2
 	bool "RT-NEWIFI2"
 	default n
 
+config  MODEL_RTXYC3
+	bool "RT-XYC3"
+	default n
+
 config  MODEL_RTNEWIFI3
 	bool "RT-NEWIFI3"
 	default n
@@ -65,6 +69,22 @@ config  MODEL_RTHIWIFI4
 
 config  MODEL_RTE8820S
 	bool "RT-E8820S"
+	default n
+
+config  MODEL_RTA040WQ
+	bool "RT-A040WQ"
+	default n
+
+config  MODEL_RTMSG1500
+	bool "RT-MSG1500"
+	default n
+
+config  MODEL_RTJDC1
+	bool "RT-JDC1"
+	default n
+
+config  MODEL_RTMT1300
+	bool "RT-MT1300"
 	default n
 
 endmenu

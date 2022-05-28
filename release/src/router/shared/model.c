@@ -60,12 +60,22 @@ static const struct model_s model_list[] = {
 	{ "RT-R2100", MODEL_RTR2100},
 #elif defined(RTNEWIFI2)
 	{ "RT-NEWIFI2", MODEL_RTNEWIFI2},
+#elif defined(RTXYC3)
+	{ "RT-XYC3", MODEL_RTXYC3},
 #elif defined(RTNEWIFI3)
 	{ "RT-NEWIFI3", MODEL_RTNEWIFI3},
 #elif defined(RTHIWIFI4)
 	{ "RT-HIWIFI4", MODEL_RTHIWIFI4},
 #elif defined(RTE8820S)
 	{ "RT-E8820S", MODEL_RTE8820S},
+#elif defined(RTA040WQ)
+	{ "RT-A040WQ", MODEL_RTA040WQ},
+#elif defined(RTMSG1500)
+	{ "RT-MSG1500", MODEL_RTMSG1500},
+#elif defined(RTJDC1)
+	{ "RT-JDC1", MODEL_RTJDC1},
+#elif defined(RTMT1300)
+	{ "RT-MT1300", MODEL_RTMT1300},
 #else
 	{ "RT-AC85U", MODEL_RTAC85U},
 #endif
@@ -223,12 +233,22 @@ int get_model(void)
 	return MODEL_RTR2100;
 #elif defined(RTNEWIFI2)
 	return MODEL_RTNEWIFI2;
+#elif defined(RTXYC3)
+	return MODEL_RTXYC3;
 #elif defined(RTNEWIFI3)
 	return MODEL_RTNEWIFI3;
 #elif defined(RTHIWIFI4)
 	return MODEL_RTHIWIFI4;
 #elif defined(RTE8820S)
 	return MODEL_RTE8820S;
+#elif defined(RTA040WQ)
+	return MODEL_RTA040WQ;
+#elif defined(RTMSG1500)
+	return MODEL_RTMSG1500;
+#elif defined(RTJDC1)
+	return MODEL_RTJDC1;
+#elif defined(RTMT1300)
+	return MODEL_RTMT1300;
 #endif
 	static int model = MODEL_UNKNOWN;
 	char *pid;
