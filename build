@@ -1,0 +1,27 @@
+#!/bin/sh
+
+if [ ! -d "brcm" ];then
+echo "=================EXTRACT-brcm============================="
+tar xjf brcm.tar.bz2
+fi
+if [ ! -d "buildroot-gcc463" ];then
+echo "=================EXTRACT-buildroot-gcc463================="
+tar xjf buildroot-gcc463_32bits.tar.bz2
+fi
+if [ -h "/opt/brcm" ];then
+sudo rm -rf /opt/brcm
+fi
+if [ -h "/opt/buildroot-gcc463" ];then
+sudo rm -rf /opt/buildroot-gcc463
+fi
+if [ ! -h "/opt/brcm" ];then
+sudo ln -s ~/asuswrt-modx/tools/brcm /opt/brcm
+fi
+if [ ! -h "/opt/buildroot-gcc463" ];then
+sudo ln -s ~/asuswrt-modx/tools/buildroot-gcc463 /opt/buildroot-gcc463
+fi
+cd ~/asuswrt-modx/release/src-ra-5010
+export PATH=/opt/brcm/hndtools-mipsel-linux/bin:$PATH
+export PATH=/opt/brcm/hndtools-mipsel-uclibc/bin:$PATH
+export PATH=/opt/buildroot-gcc463/bin:$PATH
+make RT-MIR3G
