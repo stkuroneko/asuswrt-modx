@@ -395,15 +395,10 @@ var wl_info = {
 			})()
 };
 //wireless end
-var rc_support = '<% nvram_get("rc_support"); %>';
+
 function uiSupport(_ptn){
 	var ui_support = [<% get_ui_support(); %>][0];
-	if(_ptn == "uu_accel"){
-		if(rc_support.search("uu_accel") != -1)
-			return true;
-		else if ('<% nvram_get("uu_enable"); %>' == 0)
-			return false;
-	}
+
 	if(ui_support[_ptn])
 		return ui_support[_ptn];
 	else
@@ -623,6 +618,7 @@ var tr069_support = isSupport("tr069");
 var tor_support = isSupport("tor");
 var stainfo_support = isSupport("stainfo");
 var dhcp_override_support = isSupport("dhcp_override");
+var redirect_dname_support = isSupport("redirect_dname");
 var disnwmd_support = isSupport("disable_nwmd");
 var wtfast_support = isSupport("wtfast");
 var wtf_redeem_support = uiSupport("wtf_redeem");
@@ -3823,3 +3819,21 @@ function setRadioValue(obj,val) {
 	}
 }
 
+function check_ddns_status(){
+	var ddns_flag = true;
+	if('<% nvram_get("ddns_enable_x");%>' == "1" && '<% nvram_get("ddns_hostname_x");%>' != ""){
+		if('<% nvram_get("ddns_server_x");%>' == 'WWW.ASUS.COM') { //ASUS DDNS
+			if((ddns_return_code.indexOf('200')==-1) && (ddns_return_code.indexOf('220')==-1) && (ddns_return_code.indexOf('230')==-1))
+				ddns_flag = false;
+
+		}
+		else{ //Other ddns service
+			if(ddns_updated != '1' || ddns_return_code=='unknown_error' || ddns_return_code=="auth_fail")
+				ddns_flag = false;
+		}
+	}
+	else
+		ddns_flag = false;
+
+	return ddns_flag;
+}

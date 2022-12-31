@@ -1992,4 +1992,3 @@ int main(int argc, char **argv)
 	printf("Unknown applet: %s\n", base);
 	return 0;
 }
-
