@@ -1026,8 +1026,8 @@ typedef struct _COUNTER_RALINK {
 	UINT32 OneSecTxBACnt;
 #endif /* ANTI_INTERFERENCE_SUPPORT */
 
-	UINT64 TransmittedByteCount;	/* both successful and failure, used to calculate TX throughput */
-	UINT64 ReceivedByteCount;	/* both CRC okay and CRC error, used to calculate RX throughput */
+	ULONG TransmittedByteCount;	/* both successful and failure, used to calculate TX throughput */
+	ULONG ReceivedByteCount;	/* both CRC okay and CRC error, used to calculate RX throughput */
 	ULONG BadCQIAutoRecoveryCount;
 	ULONG PoorCQIRoamingCount;
 	ULONG MgmtRingFullCount;
@@ -2039,8 +2039,8 @@ typedef struct _BSS_STRUCT {
 	/*MBSS_STATISTICS MbssStat;*/
 	ULONG TxCount;
 	ULONG RxCount;
-	UINT64 ReceivedByteCount;
-	UINT64 TransmittedByteCount;
+	ULONG ReceivedByteCount;
+	ULONG TransmittedByteCount;
 	ULONG RxErrorCount;
 	ULONG RxDropCount;
 
@@ -5707,7 +5707,7 @@ MONITOR_STRUCT monitor_ctrl;
 	/* EDCCA related param  END */
 #ifdef ANTI_INTERFERENCE_SUPPORT
 	BOOLEAN bDynamicRaInterval;
-	int8_t ra_interval_extend;
+	INT8 ra_interval_extend;
 #endif /* ANTI_INTERFERENCE_SUPPORT */
 	UINT32 OneSecChBusyTime;
 	BOOLEAN bPingLog;

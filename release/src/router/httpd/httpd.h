@@ -448,4 +448,3 @@ extern int is_captcha_match(char *catpch);
 extern int get_external_ip(void);
 extern int get_rtinfo(void);
 #endif /* _httpd_h_ */
-

@@ -267,7 +267,7 @@ static USHORT update_associated_mac_entry(
 			ie_list->operating_mode.rx_nss_type == 0) {
 			pEntry->operating_mode = ie_list->operating_mode;
 			pEntry->force_op_mode = TRUE;
-			MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
+			MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF,
 					 ("%s(): Peer's OperatingMode=>RxNssType: %d, RxNss: %d, ChBW: %d\n",
 					  __func__, pEntry->operating_mode.rx_nss_type,
 					  pEntry->operating_mode.rx_nss,
@@ -672,8 +672,6 @@ BOOLEAN IAPP_L2_Update_Frame_Send(RTMP_ADAPTER *pAd, UINT8 *mac, INT wdev_idx)
 	NDIS_PACKET	 *pNetBuf;
 	struct wifi_dev *wdev;
 
-	if (!VALID_MBSS(pAd, wdev_idx))
-		return FALSE;
 	wdev = pAd->wdev_list[wdev_idx];
 	pNetBuf = RtmpOsPktIappMakeUp(get_netdev_from_bssid(pAd, wdev_idx), mac);
 
@@ -2427,12 +2425,10 @@ assoc_post:
 		/*		POS_COOKIE pObj = (POS_COOKIE) pAd->OS_Cookie; */
 		{
 			/* send association ok message to IAPPD */
-			if (IS_ENTRY_CLIENT(pEntry)) {
 			IAPP_L2_Update_Frame_Send(pAd, pEntry->Addr, pEntry->wdev->wdev_idx);
 			MTWF_LOG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_TRACE,
 					 ("####### Send L2 Frame Mac=%02x:%02x:%02x:%02x:%02x:%02x\n",
 					  PRINT_MAC(pEntry->Addr)));
-			}
 		}
 
 		/*		SendSingalToDaemon(SIGUSR2, pObj->IappPid); */

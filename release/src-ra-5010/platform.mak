@@ -922,3 +922,4 @@ define platformKernelConfig
 	fi; \
 	)
 endef
+

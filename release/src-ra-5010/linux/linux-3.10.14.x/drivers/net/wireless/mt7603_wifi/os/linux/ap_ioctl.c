@@ -141,7 +141,6 @@ INT rt28xx_ap_ioctl(struct net_device *net_dev, struct ifreq *rq, int cmd)
 
 	wrq->u.data.pointer = wrqin->u.data.pointer;
 	wrq->u.data.length = wrqin->u.data.length;
-	wrq->u.data.flags = wrqin->u.data.flags;
 	org_len = wrq->u.data.length;
 
 	pIoctlConfig->Status = 0;
@@ -255,7 +254,7 @@ skip_check:
 				RTMP_DRIVER_BITRATE_GET(pAd, pIoctlRate);
 
 
-			wrqin->u.bitrate.value = (pIoctlRate->BitRate/1000);
+			wrqin->u.bitrate.value = pIoctlRate->BitRate;
 			wrqin->u.bitrate.disabled = 0;
             }
 			break;
@@ -467,10 +466,7 @@ skip_check:
 			RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_GET_PROCESS_INFO, 0, NULL, 0);
 			break;
 #endif
-		case RTPRIV_IOCTL_ASUSCMD:
-			subcmd = wrqin->u.data.flags;
-			RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_ASUSCMD,subcmd, wrqin->u.data.pointer, 0);
-			break;
+
 		default:
 /*			DBGPRINT(RT_DEBUG_ERROR, ("IOCTL::unknown IOCTL's cmd = 0x%08x\n", cmd)); */
 			Status = RTMP_IO_EOPNOTSUPP;

@@ -149,6 +149,7 @@
 #include <linux/swrt_fastpath/fast_path.h>
 #endif
 
+
 #ifdef CONFIG_NF_SHORTCUT_HOOK
 extern int (*smb_nf_local_in_hook)(struct sk_buff *skb);
 extern int (*smb_nf_pre_routing_hook)(struct sk_buff *skb);

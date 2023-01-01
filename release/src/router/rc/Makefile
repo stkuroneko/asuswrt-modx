@@ -964,7 +964,6 @@ endif
 
 	@cd $(INSTALLDIR)/sbin && ln -sf rc dhcpc_lease
 
-
 ifeq ($(RTCONFIG_NEW_USER_LOW_RSSI),y)
 	@cd $(INSTALLDIR)/sbin && ln -sf rc roamast
 endif

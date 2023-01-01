@@ -822,7 +822,6 @@ char detect_timestampstr[32];
 
 
 #define APPLYAPPSTR 	"applyapp.cgi"
-#define GETAPPSTR 	"getapp"
 #define APPGETCGI 	"appGet.cgi"
 
 #ifdef RTCONFIG_ROG
@@ -1115,11 +1114,6 @@ handle_request(void)
 #endif
 	)
 		fromapp=1;
-	else if(strncmp(url, GETAPPSTR, strlen(GETAPPSTR))==0)  {
-		fromapp=1;
-		strcpy(url, url+strlen(GETAPPSTR));
-		file += strlen(GETAPPSTR);
-	}
 
 	memset(user_agent, 0, sizeof(user_agent));
 	if(useragent != NULL)
@@ -1145,7 +1139,7 @@ handle_request(void)
 // _dprintf("[httpd] file: %s\n", file);
         }
 #endif
-        HTTPD_DBG("file = %s\n", file);
+	HTTPD_DBG("IP(%s), file = %s\nUser-Agent: %s\n", inet_ntoa(login_usa_tmp.sa_in.sin_addr), file, user_agent);
 
 #ifdef RTCONFIG_SOFTCENTER
 	char scPath[128];
@@ -1301,7 +1295,7 @@ handle_request(void)
 				else {
 					if(do_referer&CHECK_REFERER){
 						referer_result = referer_check(referer, fromapp);
-						HTTPD_DBG("referer_result = %d\n", referer_result);
+
 						if(referer_result != 0){
 							if(strcasecmp(method, "post") == 0 && handler->input)	//response post request
 								while (cl--) (void)fgetc(conn_fp);
@@ -1313,7 +1307,7 @@ handle_request(void)
 					}
 					handler->auth(auth_userid, auth_passwd, auth_realm);
 					auth_result = auth_check(auth_realm, authorization, url, file, cookies, fromapp);
-					HTTPD_DBG("auth_result = %d\n", auth_result);
+
 					if (auth_result != 0)
 					{
 						if(strcasecmp(method, "post") == 0 && handler->input)	//response post request
@@ -2305,21 +2299,17 @@ int main(int argc, char **argv)
 }
 
 #ifdef RTCONFIG_HTTPS
+#define HTTPS_CA_JFFS  "/jffs/cert.tgz"
+
 void save_cert(void)
 {
-	if (eval("tar", "-C", "/", "-czf", "/tmp/cert.tgz", "etc/cert.pem", "etc/key.pem") == 0) {
-		if (nvram_set_file("https_crt_file", "/tmp/cert.tgz", 8192)) {
-			nvram_commit_x();
-		}
-	}
-	unlink("/tmp/cert.tgz");
+	eval("tar", "-C", "/", "-czf", HTTPS_CA_JFFS, "etc/cert.pem", "etc/key.pem");
 }
 
 void erase_cert(void)
 {
 	unlink("/etc/cert.pem");
 	unlink("/etc/key.pem");
-	nvram_unset("https_crt_file");
 	nvram_set("https_crt_gen", "0");
 }
 
@@ -2357,8 +2347,7 @@ void start_ssl(int http_port)
 			ok = 0;
 			if (save) {
 				logmessage("httpd", "Save SSL certificate...%d", http_port);
-				if (nvram_get_file("https_crt_file", "/tmp/cert.tgz", 8192)) {
-					if (eval("tar", "-xzf", "/tmp/cert.tgz", "-C", "/", "etc/cert.pem", "etc/key.pem") == 0){
+					if (eval("tar", "-xzf", HTTPS_CA_JFFS, "-C", "/", "etc/cert.pem", "etc/key.pem") == 0){
 						system("cat /etc/key.pem /etc/cert.pem > /etc/server.pem");
 						system("cp /etc/cert.pem /etc/cert.crt"); // openssl self-signed certificate for router.asus.com LAN access
 						ok = 1;
@@ -2366,11 +2355,8 @@ void start_ssl(int http_port)
 
 					int save_intermediate_crt = nvram_match("https_intermediate_crt_save", "1");
 					if(save_intermediate_crt){
-						eval("tar", "-xzf", "/tmp/cert.tgz", "-C", "/", "etc/intermediate_cert.pem");
+						eval("tar", "-xzf", HTTPS_CA_JFFS, "-C", "/", "etc/intermediate_cert.pem");
 					}
-
-					unlink("/tmp/cert.tgz");
-				}
 			}
 			if (!ok) {
 				erase_cert();
@@ -2383,7 +2369,7 @@ void start_ssl(int http_port)
 			}
 		}
 
-		if ((save) && (*nvram_safe_get("https_crt_file")) == 0) {
+		if ((save)) {
 			save_cert();
 		}
 

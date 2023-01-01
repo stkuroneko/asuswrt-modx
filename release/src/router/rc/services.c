@@ -1026,6 +1026,7 @@ int restart_dnsmasq(int need_link_DownUp)
 }
 #endif
 
+
 #ifdef RTCONFIG_WIFI_SON
 void gen_apmode_dnsmasq(void)
 {
@@ -1146,6 +1147,7 @@ void start_dnsmasq(void)
 					    nvram_safe_get("lan_hostname"));
 			}
 		}
+
 #endif
 		fclose(fp);
 	} else
@@ -1612,6 +1614,7 @@ void start_dnsmasq(void)
 	append_custom_config("dnsmasq.conf", fp);
 	/* close fp move to the last */
 	fclose(fp);
+
 	use_custom_config("dnsmasq.conf", "/etc/dnsmasq.conf");
 	run_postconf("dnsmasq", "/etc/dnsmasq.conf");
 	chmod("/etc/dnsmasq.conf", 0644);
@@ -1624,6 +1627,7 @@ void start_dnsmasq(void)
 #else
 	/* Create resolv.dnsmasq with empty server list */
 	f_write(dmservers, NULL, 0, FW_APPEND, 0666);
+
 #endif
 #if (defined(RTCONFIG_TR069) && !defined(RTCONFIG_TR181))
 	eval("dnsmasq", "--log-async", "-6", "/sbin/dhcpc_lease");
@@ -7758,9 +7762,9 @@ start_services(void)
 #ifdef RTCONFIG_QCA_PLC_UTILS
 	start_plchost();
 #endif
-#ifdef RTCONFIG_NEW_USER_LOW_RSSI
+//#ifdef RTCONFIG_NEW_USER_LOW_RSSI
 	start_roamast();
-#endif
+//#endif
 
 #if defined(RTCONFIG_KEY_GUARD)
 	start_keyguard();
@@ -9299,7 +9303,9 @@ again:
 				stop_lan_wl();
 				stop_dnsmasq();
 				stop_networkmap();
+#if defined(RTCONFIG_WPS)
 				stop_wpsaide();
+#endif
 #if defined(RTCONFIG_QCA) || defined(RTCONFIG_RALINK)
 #ifdef RTCONFIG_CONCURRENTREPEATER
 				stop_wlcconnect();
@@ -9416,6 +9422,7 @@ again:
 			if(sw_mode() == SW_MODE_REPEATER)
 			stop_wlcconnect();
 #endif
+
 			stop_hour_monitor_service();
 #if defined(RTCONFIG_USB_MODEM) && (defined(RTCONFIG_JFFS2) || defined(RTCONFIG_BRCM_NAND_JFFS2) || defined(RTCONFIG_UBIFS))
 			_dprintf("modem data: save the data during upgrading\n");
@@ -9554,7 +9561,9 @@ again:
 				stop_lan_wl();
 				stop_dnsmasq();
 				stop_networkmap();
+#if defined(RTCONFIG_WPS)
 				stop_wpsaide();
+#endif
 #if defined(RTCONFIG_QCA) || defined(RTCONFIG_RALINK)
 #ifdef RTCONFIG_CONCURRENTREPEATER
 				stop_wlcconnect();
@@ -12055,9 +12064,9 @@ retry_wps_enr:
 			start_dnsmasq();
 			start_httpd();
 			start_telnetd();
-#ifdef RTCONFIG_NEW_USER_LOW_RSSI
+//#ifdef RTCONFIG_NEW_USER_LOW_RSSI
 			start_roamast();
-#endif
+//#endif
 
 #ifdef RTCONFIG_SSH
 			start_sshd();
@@ -12773,6 +12782,7 @@ _dprintf("goto again(%d)...\n", getpid());
 		unsetenv("unit");
 	}
 #endif
+
 	run_custom_script("service-event-end", 0, actionstr, script);
 	nvram_set("rc_service", "");
 	nvram_set("rc_service_pid", "");

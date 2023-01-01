@@ -313,6 +313,7 @@ int ip_mc_output(struct sk_buff *skb)
 			NF_HOOK(NFPROTO_IPV4, NF_INET_POST_ROUTING, newskb,
 				NULL, newskb->dev, dev_loopback_xmit);
 	}
+
 #ifdef PGB_QUICK_PATH
 	if (SWRT_FASTPATH(skb))
 		return ip_finish_output(skb);

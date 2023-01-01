@@ -4668,7 +4668,7 @@ VOID RTMPCommSiteSurveyData(
 			pBss->Bssid[4],
 			pBss->Bssid[5]);
 	/*Security*/
-	sprintf(msg+strlen(msg), "%-9s%-16s", GetEncryModeStr(pBss->PairwiseCipher), GetAuthModeStr(pBss->AKMMap));
+	sprintf(msg+strlen(msg), "%-9s%-16s", GetEncryModeStr2(pBss->PairwiseCipher), GetAuthModeStr2(pBss->AKMMap));
 	/* Rssi*/
 	Rssi = (INT)pBss->Rssi;
 
@@ -8908,31 +8908,60 @@ INT show_sysinfo_proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 void wifi_dump_info(void)
 {
 	RTMP_ADAPTER *pAd = NULL;
-	UCHAR idx = 0;
+	struct net_device *ndev = NULL;
 
 	MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("%s--------------------\n", __func__));
+	ndev = dev_get_by_name(&init_net, "ra0");
 
-	for (idx = 0; idx < MAX_NUM_OF_INF; idx++) {
-		if (adapt_list[idx]) {
-			pAd = adapt_list[idx];
-			show_tpinfo_proc(pAd, "");
-			show_trinfo_proc(pAd, "");
-			ShowPLEInfo(pAd, "");
-			ShowPseInfo(pAd, "");
-			Show_PSTable_Proc(pAd, "");
+	if (ndev) {
+		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("--------RA0--------\n"));
+		pAd = ((struct mt_dev_priv *)netdev_priv(ndev))->sys_handle;
+		show_tpinfo_proc(pAd, "");
+		show_trinfo_proc(pAd, "");
+		ShowPLEInfo(pAd, "");
+		ShowPseInfo(pAd, "");
+		Show_PSTable_Proc(pAd, "");
 #ifdef CONFIG_AP_SUPPORT
-			set_qiscdump_proc(pAd, "");
+		set_qiscdump_proc(pAd, "");
 #endif /*CONFIG_AP_SUPPORT*/
-			show_swqinfo(pAd, "");
+		show_swqinfo(pAd, "");
 #ifdef ERR_RECOVERY
-			ShowSerProc2(pAd, "");
+		ShowSerProc2(pAd, "");
 #endif
 #ifdef FQ_SCH_SUPPORT
-			show_fq_info(pAd, "");
+		show_fq_info(pAd, "");
 #endif
-		}
+	}
+
+	ndev = dev_get_by_name(&init_net, "rai0");
+
+	if (ndev) {
+		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("--------RAI0--------\n"));
+		pAd = ((struct mt_dev_priv *)netdev_priv(ndev))->sys_handle;
+		show_tpinfo_proc(pAd, "");
+		show_trinfo_proc(pAd, "");
+		ShowPLEInfo(pAd, "");
+		Show_PSTable_Proc(pAd, "");
+#ifdef FQ_SCH_SUPPORT
+		show_fq_info(pAd, "");
+#endif
+	}
+
+	ndev = dev_get_by_name(&init_net, "rae0");
+
+	if (ndev) {
+		MTWF_LOG(DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_OFF, ("--------RAE0--------\n"));
+		pAd = ((struct mt_dev_priv *)netdev_priv(ndev))->sys_handle;
+		show_tpinfo_proc(pAd, "");
+		show_trinfo_proc(pAd, "");
+		ShowPLEInfo(pAd, "");
+		Show_PSTable_Proc(pAd, "");
+#ifdef FQ_SCH_SUPPORT
+		show_fq_info(pAd, "");
+#endif
 	}
 }
+EXPORT_SYMBOL(wifi_dump_info);
 
 INT show_tpinfo_proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 {

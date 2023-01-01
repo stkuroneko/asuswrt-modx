@@ -129,7 +129,7 @@ config DOT11K_RRM_SUPPORT
 	depends on MT_AP_SUPPORT
 	default n
 
-config MT_INTERWORKING
+config INTERWORKING
 	bool "802.11u Interworking/Gas Support"
         depends on MT_AP_SUPPORT
         default n
@@ -250,10 +250,10 @@ config CON_WPS_SUPPORT
 #	depends on MULTI_INF_SUPPORT
 	default n
 
-#config LLTD_SUPPORT
-#	bool "LLTD (Link Layer Topology Discovery Protocol)"
-#	depends on MT_AP_SUPPORT
-#	default y
+config LLTD_SUPPORT
+	bool "LLTD (Link Layer Topology Discovery Protocol)"
+	depends on MT_AP_SUPPORT
+	default y
 
 #config COC_SUPPORT
 #	bool "CoC Support"

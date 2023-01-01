@@ -172,7 +172,7 @@ typedef enum _CMD_RTPRIV_IOCTL_AP {
 #ifdef WH_EZ_SETUP
 	CMD_RTPRIV_IOCTL_GET_EZ_SCAN_TABLE = 0x150,
 #endif /* WH_EZ_SETUP */
-	CMD_RTPRIV_IOCTL_ASUSCMD,
+
 	/* can not exceed 0x5000 */
 } CMD_RTPRIV_IOCTL_AP;
 
@@ -366,8 +366,8 @@ typedef struct __RT_CMD_STATS {
 
 	OUT unsigned long rx_packets;	/* total packets received       */
 	OUT unsigned long tx_packets;	/* total packets transmitted */
-	OUT unsigned long long rx_bytes;	/* total bytes received         */
-	OUT unsigned long long tx_bytes;	/* total bytes transmitted      */
+	OUT unsigned long rx_bytes;	/* total bytes received         */
+	OUT unsigned long tx_bytes;	/* total bytes transmitted      */
 	OUT unsigned long rx_errors;	/* bad packets received         */
 	OUT unsigned long tx_errors;	/* packet transmit problems     */
 	OUT unsigned long multicast;	/* multicast packets received */

@@ -1295,25 +1295,7 @@ void init_syspara(void)
 		nvram_set("wl_mssid", "0");
 	else
 		nvram_set("wl_mssid", "1");
-#if defined(R6800) || defined(RMAC2100)
-	nvram_set("wl_mssid", "1");//fix guest wifi
-#endif
-#if !defined(RTACRH26) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTMT1300)
-#if defined(RMAC2100)
-	if (FRead(dst, OFFSET_MAC_GMAC0, bytes)<0)
-		dbg("READ MAC address GMAC0: Out of scope\n");
-	else {
-		ether_etoa(buffer, macaddr);
-		nvram_set("et0macaddr", macaddr);
-	}
 
-	if (FRead(dst, OFFSET_MAC_GMAC2, bytes)<0)
-		dbg("READ MAC address GMAC2: Out of scope\n");
-	else {
-		ether_etoa(buffer, macaddr2);
-		nvram_set("et1macaddr", macaddr2);
-	}
-#else
 #if defined(RTN14U) || defined(RTN11P) || defined(RTN300) || defined(RTN11P_B1) || defined(RTN800HP)// single band
 	nvram_set("et0macaddr", macaddr);
 	nvram_set("et1macaddr", macaddr);
@@ -1323,7 +1305,6 @@ void init_syspara(void)
 	nvram_set("et1macaddr", macaddr);
 #elif defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTXYC3) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTJDC1) || defined(RTMT1300)
 #else
-
 	//TODO: separate for different chipset solution
 	nvram_set("et0macaddr", macaddr);
 	nvram_set("et1macaddr", macaddr2);
@@ -1360,22 +1341,6 @@ void init_syspara(void)
         nvram_set("et1macaddr", macaddr2);
 #endif
 	}
-#endif
-#else /*!defined(RTACRH26)*/
-	if (FRead(dst, OFFSET_MAC_GMAC0, bytes)<0)
-		dbg("READ MAC address GMAC0: Out of scope\n");
-	else {
-		ether_etoa(buffer, macaddr);
-		nvram_set("et0macaddr", macaddr);
-	}
-
-	if (FRead(dst, OFFSET_MAC_GMAC2, bytes)<0)
-		dbg("READ MAC address GMAC2: Out of scope\n");
-	else {
-		ether_etoa(buffer, macaddr2);
-		nvram_set("et1macaddr", macaddr2);
-	}
-#endif
 
 	{
 #ifdef RTCONFIG_ODMPID
@@ -1427,6 +1392,11 @@ void init_syspara(void)
 #if defined(RTAC51U) || defined(RTAC51UP) || defined(RTAC53) || defined(RTN11P) 
 	reg_spec_def = "CE";
 #else
+#if 0
+	if (!nvram_match("location_code", "US"))
+		reg_spec_def = "CE";
+	else
+#endif
 	reg_spec_def = "FCC";
 #endif
 	bytes = MAX_REGSPEC_LEN;

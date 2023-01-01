@@ -4901,7 +4901,7 @@ INT RTMPAPSetInformation(
 		break;
 
 	case OID_802_11_VOW_BW_AT_EN: {
-		P_VOW_UI_CONFIG cfg = NULL;
+		P_VOW_UI_CONFIG cfg;
 		UCHAR buf[VOW_CMD_STR_LEN];
 		UINT8 group;
 
@@ -4929,7 +4929,7 @@ INT RTMPAPSetInformation(
 	break;
 
 	case OID_802_11_VOW_BW_TPUT_EN: {
-		P_VOW_UI_CONFIG cfg = NULL;
+		P_VOW_UI_CONFIG cfg;
 		UCHAR buf[VOW_CMD_STR_LEN];
 		UINT8 group;
 
@@ -4957,8 +4957,7 @@ INT RTMPAPSetInformation(
 	break;
 
 	case OID_802_11_VOW_ATF_EN: {
-		UCHAR *val = NULL;
-		UCHAR buf[VOW_CMD_STR_LEN] = {0};
+		UCHAR *val, buf[VOW_CMD_STR_LEN];
 
 		os_alloc_mem(val, (UCHAR **)&val, wrq->u.data.length);
 
@@ -4981,8 +4980,7 @@ INT RTMPAPSetInformation(
 	break;
 
 	case OID_802_11_VOW_RX_EN: {
-		UCHAR *val = NULL;
-		UCHAR buf[VOW_CMD_STR_LEN] = {0};
+		UCHAR *val, buf[VOW_CMD_STR_LEN];
 
 		os_alloc_mem(val, (UCHAR **)&val, wrq->u.data.length);
 
@@ -5005,7 +5003,7 @@ INT RTMPAPSetInformation(
 	break;
 
 	case OID_802_11_VOW_GROUP_MAX_RATE: {
-		P_VOW_UI_CONFIG cfg = NULL;
+		P_VOW_UI_CONFIG cfg;
 		UCHAR buf[VOW_CMD_STR_LEN];
 		UINT8 group;
 
@@ -5033,7 +5031,7 @@ INT RTMPAPSetInformation(
 	break;
 
 	case OID_802_11_VOW_GROUP_MIN_RATE: {
-		P_VOW_UI_CONFIG cfg = NULL;
+		P_VOW_UI_CONFIG cfg;
 		UCHAR buf[VOW_CMD_STR_LEN];
 		UINT8 group;
 
@@ -5061,7 +5059,7 @@ INT RTMPAPSetInformation(
 	break;
 
 	case OID_802_11_VOW_GROUP_MAX_RATIO: {
-		P_VOW_UI_CONFIG cfg = NULL;
+		P_VOW_UI_CONFIG cfg;
 		UCHAR buf[VOW_CMD_STR_LEN];
 		UINT8 group;
 
@@ -5089,7 +5087,7 @@ INT RTMPAPSetInformation(
 	break;
 
 	case OID_802_11_VOW_GROUP_MIN_RATIO: {
-		P_VOW_UI_CONFIG cfg = NULL;
+		P_VOW_UI_CONFIG cfg;
 		UCHAR buf[VOW_CMD_STR_LEN];
 		UINT8 group;
 
@@ -5287,7 +5285,7 @@ INT RTMPAPSetInformation(
 	case OID_802_11_VENDOR_IE_UPDATE:
 	case OID_802_11_VENDOR_IE_REMOVE:
 	{
-		UCHAR *Buf = NULL;
+		UCHAR *Buf;
 		struct vie_op_data_s *vie_op_data;
 		struct wifi_dev *wdev = &pAd->ApCfg.MBSSID[pObj->ioctl_if].wdev;
 		UINT32 length = 0;
@@ -17423,9 +17421,11 @@ INT RTMP_AP_IoctlHandle(
 		DiagGetProcessInfo(pAd, wrq);
 		break;
 #endif
+
 	case CMD_RTPRIV_IOCTL_ASUSCMD:
-		//RTMPIoctlAsusHandle(pAd, wrq, subcmd, pData, Data);
-		if ( subcmd == ASUS_SUBCMD_CHLIST) {
+		switch (subcmd) {
+			case ASUS_SUBCMD_CHLIST:
+			{
 			UCHAR BandIdx = 0, ChIdx;
 			CHANNEL_CTRL *pChCtrl;
 			RTMP_STRING Channel[256], Tmp[4];
@@ -17443,8 +17443,11 @@ INT RTMP_AP_IoctlHandle(
 			//Channel[wrq->u.data.length] = '\0';
 			if (copy_to_user(wrq->u.data.pointer, Channel, wrq->u.data.length))
 				Status = -EFAULT;
+			}
+				break;
 #ifdef DBDC_MODE
-		} else if ( subcmd == ASUS_SUBCMD_CHLIST2) {
+		        case ASUS_SUBCMD_CHLIST2:
+                        {
 			UCHAR BandIdx = 1, ChIdx;
 			CHANNEL_CTRL *pChCtrl;
 			RTMP_STRING Channel[256], Tmp[4];
@@ -17462,8 +17465,11 @@ INT RTMP_AP_IoctlHandle(
 			//Channel[wrq->u.data.length] = '\0';
 			if (copy_to_user(wrq->u.data.pointer, Channel, wrq->u.data.length))
 				Status = -EFAULT;
+                        }
+				break;
 #endif
-		} else if ( subcmd == ASUS_SUBCMD_DRIVERVER ) {
+		        case ASUS_SUBCMD_DRIVERVER:
+                        {
 			RTMP_STRING *driverVersion;
 			os_alloc_mem(NULL, (PUCHAR *)&driverVersion, 64);
 			snprintf(driverVersion, sizeof(driverVersion), "RT-AC85P %s", AP_DRIVER_VERSION);
@@ -17471,51 +17477,8 @@ INT RTMP_AP_IoctlHandle(
 			if (copy_to_user(wrq->u.data.pointer, driverVersion, wrq->u.data.length))
 				Status = -EFAULT;
 			os_free_mem(driverVersion);
-		} else if ( subcmd == ASUS_SUBCMD_RADIO_STATUS ) {
-			UINT Enable = 0;
-			if(pAd->Flags & fRTMP_ADAPTER_RADIO_OFF)
-				Enable = 0;
-			else
-				Enable = 1;
-			wrq->u.data.length = 1;
-			if (copy_to_user(wrq->u.data.pointer, &Enable, wrq->u.data.length))
-				Status = -EFAULT;
-		} else if ( subcmd == ASUS_SUBCMD_RADIO_TEMPERATURE ) {
-			UINT32 temperature = 0;
-			RTMP_GET_TEMPERATURE(pAd, &temperature);
-			wrq->u.data.length = sizeof(UINT32);
-			if (copy_to_user(wrq->u.data.pointer, &temperature, wrq->u.data.length))
-				Status = -EFAULT;
-		} else if ( subcmd == ASUS_SUBCMD_CONN_STATUS ) {
-			UINT32 pCurrState = 0;
-			PAPCLI_STRUCT pApCliEntry;
-			pApCliEntry = &pAd->ApCfg.ApCliTab[pObj->ioctl_if];
-			pCurrState = pApCliEntry->CtrlCurrState;
-			wrq->u.data.length = sizeof(UINT32);
-			if (copy_to_user(wrq->u.data.pointer, &pCurrState, wrq->u.data.length))
-				Status = -EFAULT;
-		} else if ( subcmd == ASUS_SUBCMD_GSTAINFO ) {
-		} else if ( subcmd == ASUS_SUBCMD_GSTAT ) {
-		} else if ( subcmd == ASUS_SUBCMD_GRSSI ) {
-		} else if ( subcmd == ASUS_SUBCMD_GROAM ) {
-		} else if ( subcmd == ASUS_SUBCMD_GETSKUTABLE ) {
-		} else if ( subcmd == ASUS_SUBCMD_GETSKUTABLE_TXBF ) {
-		} else if ( subcmd == ASUS_SUBCMD_CLIQ ) {
-			RTMP_STRING tmp[20];
-			PAPCLI_STRUCT pApCliEntry;
-			PMAC_TABLE_ENTRY mac;
-			memset(tmp, 0, sizeof(tmp));
-			pApCliEntry = &pAd->ApCfg.ApCliTab[pObj->ioctl_if];
-			mac = &pAd->MacTab.Content[pApCliEntry->MacTabWCID];
-			snprintf(tmp, sizeof(tmp), "%lu", mac->ChannelQuality);
-			wrq->u.data.length = strlen(tmp);
-			if (copy_to_user(wrq->u.data.pointer, tmp, wrq->u.data.length))
-				Status = -EFAULT;
-		}
-		break;
-
-	case CMD_RTPRIV_IOCTL_ASUSCMD:
-		switch (subcmd) {
+                        }
+				break;
 			case ASUS_SUBCMD_RADIO_STATUS:
 			{
 				INT RadioStatus = !(pAd->Flags & fRTMP_ADAPTER_RADIO_OFF);
@@ -17523,8 +17486,21 @@ INT RTMP_AP_IoctlHandle(
 				copy_to_user(wrq->u.data.pointer, &RadioStatus, 4);
 			}
 				break;
+			case ASUS_SUBCMD_RADIO_TEMPERATURE:
+			{
+			UINT32 temperature = 0;
+			RTMP_GET_TEMPERATURE(pAd, &temperature);
+			wrq->u.data.length = sizeof(UINT32);
+			if (copy_to_user(wrq->u.data.pointer, &temperature, wrq->u.data.length))
+				Status = -EFAULT;
+			}
+				break;
 			case ASUS_SUBCMD_GSTAINFO:
+			case ASUS_SUBCMD_GSTAT:
+			case ASUS_SUBCMD_GRSSI:
 			case ASUS_SUBCMD_GROAM:
+			case ASUS_SUBCMD_GETSKUTABLE:
+			case ASUS_SUBCMD_GETSKUTABLE_TXBF:
 			case ASUS_SUBCMD_CLIQ:
 			{
 				UCHAR *msg;

@@ -623,9 +623,6 @@ function initial(){
 				setTimeout("top_delay_redirect('"+next_page+"');", restart_time*1000);
 		}
 	}
-	else if(getflag == "background"){
-			return;
-	}
 	else if(action_script == "reboot" || action_script.search("restart_subnet") !== -1){
 		parent.showLoading(restart_time);
 		setTimeout("top_delay_redirect('"+next_page+"');", restart_time*1000);

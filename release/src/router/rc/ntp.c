@@ -179,8 +179,7 @@ int ntp_main(int argc, char *argv[])
 	{
 		if (sig_cur == SIGTSTP)
 			;
-		else if (is_router_mode() &&
-			!nvram_match("link_internet", "2"))
+		else if (is_router_mode() && !nvram_match("link_internet", "2"))
 		{
 			alarm(SECONDS_TO_WAIT);
 		}

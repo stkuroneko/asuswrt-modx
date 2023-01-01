@@ -2193,10 +2193,6 @@ VOID N_ChannelCheck(RTMP_ADAPTER *pAd)
 			157, EXTCHA_ABOVE, 161, EXTCHA_BELOW,
 			0, 0};
 
-	/* channel is not set yet (e.g. AutoChannelSelect > 0) */
-	if (Channel == 0)
-		return;
-
 	if (WMODE_CAP_N(pAd->CommonCfg.PhyMode) &&
 		(pAd->CommonCfg.RegTransmitSetting.field.BW >= BW_40))
 	{

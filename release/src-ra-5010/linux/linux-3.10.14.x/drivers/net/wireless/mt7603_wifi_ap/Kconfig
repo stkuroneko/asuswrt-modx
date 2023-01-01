@@ -5,22 +5,6 @@ config MT7603E_RLT_AP_SUPPORT
 	select WEXT_SPY
 	select WEXT_PRIV
 
-config  MT7603E_RLT_AP_LED
-	bool "LED support"
-	depends on MT7603E_RLT_AP
-	default y
-
-config  MT7603E_RLT_AP_LED_SOFT
-	bool "Soft LED support"
-	depends on MT7603E_RLT_AP && !MT7603E_RLT_AP_LED && RALINK_GPIO_LED
-	default y
-
-config  MT7603E_RLT_AP_LED_SOFT_GPIO
-	int "Soft LED GPIO pin (dev #0)"
-	depends on MT7603E_RLT_AP
-	depends on MT7603E_RLT_AP_LED_SOFT
-	default -1
-
 #config RLT_AP_SUPPORT
 #	bool "7603"
 #	depends on MT7603E_RLT_AP_SUPPORT
