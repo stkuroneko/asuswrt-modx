@@ -79,4 +79,8 @@ config  MODEL_RTMSG1500
 	bool "RT-MSG1500"
 	default n
 
+config  MODEL_RTK2P
+	bool "RT-K2P"
+	default n
+
 endmenu
