@@ -25,7 +25,7 @@ void patch_Factory()
 			write(mtdfd, buffer, strlen(buffer));
 			lseek(mtdfd, offset[3], SEEK_SET);
 			memset(buffer, 0, sizeof(buffer));
-			sprintf(buffer, "%s","RM-AC2100");
+			sprintf(buffer, "%s","RT-AC2100");
 			write(mtdfd, buffer, strlen(buffer));
 			lseek(mtdfd, offset[9], SEEK_SET);
 			memset(buffer, 0, sizeof(buffer));

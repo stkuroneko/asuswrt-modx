@@ -98,4 +98,8 @@ RT-A040WQ
 RT-MSG1500
 RT-JDC1
 RT-MT1300
+<<<<<<< HEAD
 
+=======
+RT-K2P
+>>>>>>> back211003

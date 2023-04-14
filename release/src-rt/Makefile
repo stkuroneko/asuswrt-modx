@@ -535,7 +535,11 @@ ifeq ($(CONFIG_RALINK),y)
 	PAD2=`expr $${ISIZE} - $${KSIZE} - $${RSIZE}` ; \
 	RFSOFFSET=`expr 64 + $${KSIZE} + $${PAD2}` ; \
 	echo "PAD2: $${PAD2}" ; \
+<<<<<<< HEAD
 	if [ "$(BUILD_NAME)" = "RT-N56UB1" ] || [ "$(BUILD_NAME)" = "RT-N56UB2" ] || [ "$(BUILD_NAME)" = "RT-AC1200GA1" ] || [ "$(BUILD_NAME)" = "RT-AC1200GU" ] || [ "$(BUILD_NAME)" = "RP-AC56" ] || [ "$(BUILD_NAME)" = "RP-AC87" ] || [ "$(BUILD_NAME)" = "RT-AC85U" ] || [ "$(BUILD_NAME)" = "RT-AC85P" ] || [ "$(BUILD_NAME)" = "RT-AC65U" ] || [ "$(BUILD_NAME)" = "RT-N800HP" ] || [ "$(BUILD_NAME)" = "RT-ACRH26" ] || [ "$(BUILD_NAME)" = "RT-MIR3G" ] || [ "$(BUILD_NAME)" = "RT-MIR3P" ] || [ "$(BUILD_NAME)" = "RT-MIR4A" ] || [ "$(BUILD_NAME)" = "RT-RM2100" ] || [ "$(BUILD_NAME)" = "RT-R2100" ] || [ "$(BUILD_NAME)" = "RT-NEWIFI2" ] || [ "$(BUILD_NAME)" = "RT-RS1200P" ]|| [ "$(BUILD_NAME)" = "RT-XYC3" ] || [ "$(BUILD_NAME)" = "RT-NEWIFI3" ] || [ "$(BUILD_NAME)" = "RT-HIWIFI4" ] || [ "$(BUILD_NAME)" = "RT-E8820S" ] || [ "$(BUILD_NAME)" = "RT-A040WQ" ] || [ "$(BUILD_NAME)" = "RT-MSG1500" ] || [ "$(BUILD_NAME)" = "RT-JDC1" ] || [ "$(BUILD_NAME)" = "RT-MT1300" ]; then \
+=======
+	if [ "$(BUILD_NAME)" = "RT-N56UB1" ] || [ "$(BUILD_NAME)" = "RT-N56UB2" ] || [ "$(BUILD_NAME)" = "RT-AC1200GA1" ] || [ "$(BUILD_NAME)" = "RT-AC1200GU" ] || [ "$(BUILD_NAME)" = "RP-AC56" ] || [ "$(BUILD_NAME)" = "RP-AC87" ] || [ "$(BUILD_NAME)" = "RT-AC85U" ] || [ "$(BUILD_NAME)" = "RT-AC85P" ] || [ "$(BUILD_NAME)" = "RT-AC65U" ] || [ "$(BUILD_NAME)" = "RT-N800HP" ] || [ "$(BUILD_NAME)" = "RT-ACRH26" ] || [ "$(BUILD_NAME)" = "RT-MIR3G" ] || [ "$(BUILD_NAME)" = "RT-MIR3P" ] || [ "$(BUILD_NAME)" = "RT-MIR4A" ] || [ "$(BUILD_NAME)" = "RT-RM2100" ] || [ "$(BUILD_NAME)" = "RT-R2100" ] || [ "$(BUILD_NAME)" = "RT-NEWIFI2" ] || [ "$(BUILD_NAME)" = "RT-RS1200P" ] || [ "$(BUILD_NAME)" = "RT-XYC3" ] || [ "$(BUILD_NAME)" = "RT-NEWIFI3" ] || [ "$(BUILD_NAME)" = "RT-HIWIFI4" ] || [ "$(BUILD_NAME)" = "RT-E8820S" ] || [ "$(BUILD_NAME)" = "RT-A040WQ" ] || [ "$(BUILD_NAME)" = "RT-MSG1500" ] || [ "$(BUILD_NAME)" = "RT-JDC1" ] || [ "$(BUILD_NAME)" = "RT-MT1300" ] || [ "$(BUILD_NAME)" = "RT-K2P" ]; then \
+>>>>>>> back211003
 		asustools/mkimage -A mips -O linux -T kernel -C lzma -a 80001000 -e $${ENTRY} -r $${RFSOFFSET} \
 		-n $(BUILD_NAME) -V "$(KERNEL_VER)" "$(FS_VER)"  "$(SERIALNO)" "$(EXTENDNO)" "0" "0" "0" "0" "0" "0"  \
 		-d $(PLATFORMDIR)/zImage.img image/$(IMGNAME).trx ; \
@@ -2687,6 +2691,10 @@ define RouterOptions
 	sed -i "/RTCONFIG_ENTWARE/d" $(1); \
 	echo "RTCONFIG_ENTWARE=y" >>$(1); \
 	fi; \
+	if [ "$(ENTWARE)" = "n" ]; then \
+	sed -i "/RTCONFIG_ENTWARE/d" $(1); \
+	echo "# RTCONFIG_ENTWARE is not set" >>$(1); \
+	fi; \
 	)
 	$(call platformRouterOptions, $(1))
 endef
@@ -4082,7 +4090,7 @@ else
 			cp $(LINUXDIR)/config_base_rtmir3p $(LINUXDIR)/config_$(lowercase_B) ; \
 		elif [ "$(BUILD_NAME)" = "RT-E8820S" ]; then \
 			cp $(LINUXDIR)/config_base_rte8820s $(LINUXDIR)/config_$(lowercase_B) ; \
-		elif [ "$(BUILD_NAME)" = "RT-A040WQ" ] || [ "$(BUILD_NAME)" = "RT-MSG1500" ]; then \
+		elif [ "$(BUILD_NAME)" = "RT-A040WQ" ] || [ "$(BUILD_NAME)" = "RT-MSG1500" ] || [ "$(BUILD_NAME)" = "RT-K2P" ]; then \
 			cp $(LINUXDIR)/config_base_rta040wq $(LINUXDIR)/config_$(lowercase_B) ; \
 		elif [ "$(BUILD_NAME)" = "RT-NEWIFI2" ] || [ "$(BUILD_NAME)" = "RT-RS1200P" ]; then \
 			cp $(LINUXDIR)/config_base_rtnewifi2 $(LINUXDIR)/config_$(lowercase_B) ; \

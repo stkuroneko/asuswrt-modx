@@ -486,7 +486,11 @@ obj-y += $(if $(RTCONFIG_ATED122),ated_1.2.2,ated)
 endif
 obj-y += $(if $(RTCONFIG_MII_MGR),mii_mgr)
 
+<<<<<<< HEAD
 ifeq ($(or $(RTAC85P),$(RTN800HP),$(RTACRH26),$(RTMIR3G),$(RTMIR3P),$(RTMIR4A),$(RTRM2100),$(RTR2100),$(RTNEWIFI2),$(RTRS1200P),$(RTXYC3),$(RTNEWIFI3),$(RTHIWIFI4),$(RTE8820S),$(RTA040WQ),$(RTMSG1500),$(RTJDC1),$(RTMT1300)),y)
+=======
+ifeq ($(or $(RTAC85P),$(RTN800HP),$(RTACRH26),$(RTMIR3G),$(RTMIR3P),$(RTMIR4A),$(RTRM2100),$(RTR2100),$(RTNEWIFI2),$(RTRS1200P),$(RTXYC3),$(RTNEWIFI3),$(RTHIWIFI4),$(RTE8820S),$(RTA040WQ),$(RTMSG1500),$(RTJDC1),$(RTMT1300),$(RTK2P)),y)
+>>>>>>> back211003
 obj-y += switch
 endif
 
@@ -2061,6 +2065,13 @@ ifeq ($(RTCONFIG_QTN),y)
 endif
 ifeq ($(RTCONFIG_BWDPI),y)
 	@install -d $(TARGETDIR)/usr/bwdpi/
+<<<<<<< HEAD
+=======
+ifneq ($(or $(RTMIR3G),$(RTMIR3P),$(RTMIR4A),$(RTRM2100),$(RTR2100),$(RTNEWIFI2),$(RTRS1200P),$(RTXYC3),$(RTNEWIFI3),$(RTHIWIFI4),$(RTE8820S),$(RTA040WQ),$(RTMSG1500),$(RTJDC1),$(RTMT1300),$(RTK2P)),y)
+	@install -D $(TOP)/bwdpi_source/RC_INDEP/wred $(TARGETDIR)/usr/sbin/wred
+	@install -D $(TOP)/bwdpi_source/RC_INDEP/wred_set_conf $(TARGETDIR)/usr/sbin/wred_set_conf
+	@install -D $(TOP)/bwdpi_source/RC_INDEP/wred_set_wbl $(TARGETDIR)/usr/sbin/wred_set_wbl
+>>>>>>> back211003
 	@cp -f $(TOP)/bwdpi_source/RC_INDEP/*.so $(TARGETDIR)/usr/lib/
 	@cp -f $(TOP)/bwdpi_source/RC_INDEP/*.ko $(TARGETDIR)/usr/bwdpi/
 	@cp -f $(TOP)/bwdpi_source/RC_INDEP/*.trf $(TARGETDIR)/usr/bwdpi/
