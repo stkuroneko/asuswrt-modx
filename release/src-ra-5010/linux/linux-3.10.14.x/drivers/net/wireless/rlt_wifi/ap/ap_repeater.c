@@ -35,48 +35,28 @@
 #define IS_BROADCAST_MAC_ADDR(Addr)			((((Addr[0]) & 0xff) == 0xff))
 
 REPEATER_CLIENT_ENTRY *RTMPLookupRepeaterCliEntry(
-	IN PVOID pData,
+	IN PRTMP_ADAPTER pAd,
 	IN BOOLEAN bRealMAC,
-	IN PUCHAR pAddr,
-	IN BOOLEAN bIsPad,
-	OUT PUCHAR pIsLinkValid)
+	IN PUCHAR pAddr)
 {
 	ULONG HashIdx;
 	UCHAR tempMAC[6];
 	REPEATER_CLIENT_ENTRY *pEntry = NULL;
 	REPEATER_CLIENT_ENTRY_MAP *pMapEntry = NULL;
 
-	if (bIsPad == TRUE) {
-		NdisAcquireSpinLock(&((PRTMP_ADAPTER)pData)->ApCfg.ReptCliEntryLock);	
-	} else {
-		NdisAcquireSpinLock(((REPEATER_ADAPTER_DATA_TABLE *)pData)->EntryLock);
-	}
-	
+	NdisAcquireSpinLock(&pAd->ApCfg.ReptCliEntryLock);
 	COPY_MAC_ADDR(tempMAC, pAddr);
 	HashIdx = MAC_ADDR_HASH_INDEX(tempMAC);
-    *pIsLinkValid = TRUE;
 
 	if (bRealMAC == TRUE)
 	{
-		if (bIsPad == TRUE) {
-			pMapEntry = ((PRTMP_ADAPTER)pData)->ApCfg.ReptMapHash[HashIdx];
-		} else
-			pMapEntry = *((((REPEATER_ADAPTER_DATA_TABLE *)pData)->MapHash) + HashIdx) ;
-
-		
+		pMapEntry = pAd->ApCfg.ReptMapHash[HashIdx];
 		while (pMapEntry)
 		{
 			pEntry = pMapEntry->pReptCliEntry;
 
-			if (MAC_ADDR_EQUAL(pEntry->OriginalAddress, tempMAC))
-			{
-				if (pEntry->CliValid == FALSE) {
-					*pIsLinkValid = FALSE;
-					pEntry = NULL;
-				}
-				
-				break;			
-			}
+			if (pEntry->CliValid && MAC_ADDR_EQUAL(pEntry->OriginalAddress, tempMAC))
+				break;
 			else
 			{
 				pEntry = NULL;
@@ -86,63 +66,19 @@ REPEATER_CLIENT_ENTRY *RTMPLookupRepeaterCliEntry(
 	}
 	else
 	{
-		if (bIsPad == TRUE) {
-			pEntry = ((PRTMP_ADAPTER)pData)->ApCfg.ReptCliHash[HashIdx];
-		} else {
-			pEntry = *((((REPEATER_ADAPTER_DATA_TABLE *)pData)->CliHash) + HashIdx) ;
-		}
-
+		pEntry = pAd->ApCfg.ReptCliHash[HashIdx];
 		while (pEntry)
 		{
-			if (MAC_ADDR_EQUAL(pEntry->CurrentAddress, tempMAC))
-			{
-				if (pEntry->CliValid == FALSE) {
-					*pIsLinkValid = FALSE;
-					pEntry = NULL;
-				}
+			if (pEntry->CliValid && MAC_ADDR_EQUAL(pEntry->CurrentAddress, tempMAC))
 				break;
-			}
 			else
 				pEntry = pEntry->pNext;
 		}
 	}
-
-	if (bIsPad == TRUE) {
-		NdisReleaseSpinLock(&((PRTMP_ADAPTER)pData)->ApCfg.ReptCliEntryLock);
-	} else {
-		NdisReleaseSpinLock(((REPEATER_ADAPTER_DATA_TABLE *)pData)->EntryLock);
-	}
+	NdisReleaseSpinLock(&pAd->ApCfg.ReptCliEntryLock);
 
 	return pEntry;
 }
-
-BOOLEAN RTMPQueryLookupRepeaterCliEntry(
-	IN PRTMP_ADAPTER pAd,
-	IN PUCHAR pAddr)
-{
-	UCHAR isLinkValid;
-
-	DBGPRINT(RT_DEBUG_INFO, ("%s:: %02x:%02x:%02x:%02x:%02x:%02x\n", 
-							__FUNCTION__,
-							pAddr[0],
-							pAddr[1],
-							pAddr[2], 
-							pAddr[3],
-							pAddr[4],
-							pAddr[5]));
-
-	if (RTMPLookupRepeaterCliEntry(pAd, FALSE, pAddr, TRUE, &isLinkValid) == NULL) {
-		DBGPRINT(RT_DEBUG_INFO, ("%s:: not the repeater client\n", __FUNCTION__));
-		return FALSE;
-	} else {
-		DBGPRINT(RT_DEBUG_INFO, ("%s:: is the repeater client\n", __FUNCTION__));
-		return TRUE;
-	}
-}
-
-#if defined (CONFIG_WIFI_PKT_FWD)
-EXPORT_SYMBOL(RTMPQueryLookupRepeaterCliEntry);
-#endif /* CONFIG_WIFI_PKT_FWD */
 
 VOID RTMPInsertRepeaterAsicEntry(
 	IN PRTMP_ADAPTER pAd,
@@ -202,19 +138,8 @@ VOID RTMPInsertRepeaterEntry(
 	UCHAR SPEC_ADDR[6][3] = {{0x02, 0x0F, 0xB5}, {0x02, 0x09, 0x5B},
 								{0x02, 0x14, 0x6C}, {0x02, 0x18, 0x4D},
 								{0x02, 0x1B, 0x2F}, {0x02, 0x1E, 0x2A}};
-	MAC_TABLE_ENTRY *pMacEntry = NULL;
 
 	DBGPRINT(RT_DEBUG_TRACE, (" %s.\n", __FUNCTION__));
-
-       pMacEntry = MacTableLookup(pAd, pAddr);
-       if (pMacEntry && IS_ENTRY_CLIENT(pMacEntry))
-       {
-               if (pMacEntry->PortSecured == WPA_802_1X_PORT_NOT_SECURED)
-               {
-                       DBGPRINT(RT_DEBUG_ERROR, (" wireless client is not ready !!!\n"));
-                       return;
-               }
-       }
 
 	NdisAcquireSpinLock(&pAd->ApCfg.ReptCliEntryLock);
 
@@ -358,7 +283,7 @@ VOID RTMPRemoveRepeaterEntry(
 	REPEATER_CLIENT_ENTRY_MAP *pMapEntry, *pPrevMapEntry, *pProbeMapEntry;
 	BOOLEAN bVaild;
 
-	DBGPRINT(RT_DEBUG_OFF, (" %s. apIdx=%d CliIdx=%d\n", __FUNCTION__,apIdx,CliIdx));
+	DBGPRINT(RT_DEBUG_ERROR, (" %s.\n", __FUNCTION__));
 
 	RTMPRemoveRepeaterAsicEntry(pAd, CliIdx);
 
@@ -611,8 +536,7 @@ MAC_TABLE_ENTRY *RTMPInsertRepeaterMacEntry(
 				FifoExtTblUpdateEntry(pAd, tblIdx, i);
 		}
 #endif
-		DBGPRINT(RT_DEBUG_TRACE, ("%s - allocate entry #%d, Aid = %d, Wcid = %d Addr(%02x:%02x:%02x:%02x:%02x:%02x) Total= %d\n",__FUNCTION__, i, 
-		pEntry->Aid, pEntry->wcid, PRINT_MAC(pEntry->Addr), pAd->MacTab.Size));
+		DBGPRINT(RT_DEBUG_TRACE, ("%s - allocate entry #%d, Aid = %d, Total= %d\n",__FUNCTION__, i, pEntry->Aid, pAd->MacTab.Size));
 	}
 	else
 	{
@@ -701,7 +625,7 @@ VOID RTMPRemoveRepeaterDisconnectEntry(
 	MLME_DEAUTH_REQ_STRUCT	DeAuthFrame;
 	BOOLEAN Cancelled;
 
-	DBGPRINT(RT_DEBUG_OFF, ("(%s) disconnect apIdx=%d CliIdx=%d.\n", __FUNCTION__,apIdx, CliIdx));
+	DBGPRINT(RT_DEBUG_ERROR, ("(%s) disconnect.\n", __FUNCTION__));
 
 	if (ifIndex >= MAX_APCLI_NUM)
 		return;
@@ -940,7 +864,7 @@ INT	Show_Repeater_Cli_Proc(
 {
 	INT i;
     UINT32 RegValue;
-	UINT32 DataRate=0;
+	ULONG DataRate=0;
 
 	if (!pAd->ApCfg.bMACRepeaterEn)
 		return TRUE;
@@ -969,7 +893,7 @@ INT	Show_Repeater_Cli_Proc(
 			//getRate(pEntry->HTPhyMode, &DataRate);
 			RtmpDrvRateGet(pAd, pEntry->HTPhyMode.field.MODE, pEntry->HTPhyMode.field.ShortGI,
 				 pEntry->HTPhyMode.field.BW,pEntry->HTPhyMode.field.MCS,
-				 newRateGetAntenna(pEntry->HTPhyMode.field.MCS, pEntry->HTPhyMode.field.MODE),&DataRate);
+				 newRateGetAntenna(pEntry->HTPhyMode.field.MCS),&DataRate);
 			DataRate /= 500000;
 			DataRate /= 2;
 
@@ -1001,40 +925,6 @@ INT	Show_Repeater_Cli_Proc(
 	} 
 
 	return TRUE;
-}
-
-INT	Show_Repeater_Cli_Dump_Proc(
-	IN PRTMP_ADAPTER pAd, 
-	IN PSTRING arg)
-{
-	INT CliIdx;
-	
-	printk("\n%-19s%-19s%-12s%-12s%-12s%-12s%-12s\n",
-		   "C_MAC","O_MAC", "CliEnable", "CliValid", "bEthCli", "MacTabWCID","MatchLinkIdx");
-
-	
-	for (CliIdx = 0; CliIdx < MAX_EXT_MAC_ADDR_SIZE; CliIdx++)
-	{
-			REPEATER_CLIENT_ENTRY *pReptEntry = NULL;
-			pReptEntry = &pAd->ApCfg.ApCliTab[0].RepeaterCli[CliIdx];
-			
-			{
-
-				printk("%02X:%02X:%02X:%02X:%02X:%02X  ",
-						pReptEntry->CurrentAddress[0], pReptEntry->CurrentAddress[1], pReptEntry->CurrentAddress[2],
-						pReptEntry->CurrentAddress[3], pReptEntry->CurrentAddress[4], pReptEntry->CurrentAddress[5]);
-				printk("%02X:%02X:%02X:%02X:%02X:%02X  ",
-						pReptEntry->OriginalAddress[0], pReptEntry->OriginalAddress[1], pReptEntry->OriginalAddress[2],
-						pReptEntry->OriginalAddress[3], pReptEntry->OriginalAddress[4], pReptEntry->OriginalAddress[5]);
-				
-				printk("%-12d", (int)pReptEntry->CliEnable);
-				printk("%-12d", (int)pReptEntry->CliValid);
-				printk("%-12d", (int)pReptEntry->bEthCli);
-				printk("%-12d", (int)pReptEntry->MacTabWCID);
-				printk("%-12d", (int)pReptEntry->MatchLinkIdx);
-				printk("\n");
-			}
-		}	
 }
 #endif /* MAC_REPEATER_SUPPORT */
 

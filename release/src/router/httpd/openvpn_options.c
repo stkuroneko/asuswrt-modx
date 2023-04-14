@@ -655,10 +655,10 @@ void parse_openvpn_status(int unit)
 	char *token;
 	ovpn_sconf_t conf;
 
-	snprintf(buf, sizeof(buf), "/etc/openvpn/server%d/status", unit);
+	sprintf(buf, "/etc/openvpn/server%d/status", unit);
 	fpi = fopen(buf, "r");
 
-	snprintf(buf, sizeof(buf), "/etc/openvpn/server%d/client_status", unit);
+	sprintf(buf, "/etc/openvpn/server%d/client_status", unit);
 	fpo = fopen(buf, "w");
 
 	get_ovpn_sconf(unit, &conf);

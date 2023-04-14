@@ -165,8 +165,6 @@ struct {
 	UCHAR E1aMidBeg;
 	UCHAR E1aMidMid;
 	UCHAR E1aMidEnd;	
-    UCHAR E1aPhase[13];
-    UCHAR E1aPhaseErr[13];
 #endif	
 } ITXBF_PHASE_PARAMS;			// ITxBF BBP reg phase calibration parameters
 
@@ -199,30 +197,14 @@ struct {
 	UCHAR E1aMidBeg;
 	UCHAR E1aMidMid;
 	UCHAR E1aMidEnd;
-    UCHAR E1aDivPhase[5];
 #endif	
 } ITXBF_DIV_PARAMS;				// ITxBF Divider Calibration parameters
 
-typedef
-struct {
-#ifdef MT76x2
-	UCHAR TankCode[10];          
-#endif	
-} ITXBF_TANK_PARAMS;				// ITxBF Divider Calibration parameters
-
-BOOLEAN ITxBFGetEEPROM(
+void ITxBFGetEEPROM(
 	IN RTMP_ADAPTER *pAd,
 	IN ITXBF_PHASE_PARAMS *phaseParams,
 	IN ITXBF_LNA_PARAMS *lnaParams,
-	IN ITXBF_DIV_PARAMS *divParams,
-	IN ITXBF_TANK_PARAMS *tankParams);
-
-void ITxBFSetEEPROM(
-	IN RTMP_ADAPTER *pAd,
-	IN ITXBF_PHASE_PARAMS *phaseParams,
-	IN ITXBF_LNA_PARAMS *lnaParams,
-	IN ITXBF_DIV_PARAMS *divParams,
-	IN ITXBF_TANK_PARAMS *tankParams);
+	IN ITXBF_DIV_PARAMS *divParams);
 
 #ifdef MT76x2
 INT ITxBFDividerCalibrationStartUp(
@@ -358,6 +340,12 @@ int iCalcCalibration(
 	IN RTMP_ADAPTER *pAd, 
 	IN int calParams[2], 
 	IN int profileNum);
+
+void ITxBFSetEEPROM(
+	IN RTMP_ADAPTER *pAd,
+	IN ITXBF_PHASE_PARAMS *phaseParams,
+	IN ITXBF_LNA_PARAMS *lnaParams,
+	IN ITXBF_DIV_PARAMS *divParams);
 
 #endif // TXBF_SUPPORT //
 

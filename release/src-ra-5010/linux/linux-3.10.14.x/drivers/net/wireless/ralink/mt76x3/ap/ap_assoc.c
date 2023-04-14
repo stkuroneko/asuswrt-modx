@@ -344,7 +344,7 @@ static USHORT update_associated_mac_entry(
 				pEntry->MaxHTPhyMode.field.MCS = 9;
 			} else if (ie_list->vht_cap.mcs_set.rx_mcs_map.mcs_ss1 == VHT_MCS_CAP_8) {
 				pEntry->MaxHTPhyMode.field.MCS = 8;
-			} else if (ie_list->vht_cap.mcs_set.rx_mcs_map.mcs_ss1 == VHT_MCS_CAP_7) {
+			} else if (ie_list->vht_cap.mcs_set.rx_mcs_map.mcs_ss1 == VHT_MCS_CAP_8) {
 				pEntry->MaxHTPhyMode.field.MCS = 7;
 			}
 			
@@ -810,7 +810,7 @@ static USHORT APBuildAssociation(
  Note:
  ========================================================================
 */
-BOOLEAN IAPP_L2_Update_Frame_Send(RTMP_ADAPTER *pAd, UINT8 *mac, INT wdev_idx)
+static BOOLEAN IAPP_L2_Update_Frame_Send(RTMP_ADAPTER *pAd, UINT8 *mac, INT wdev_idx)
 {
 
 	NDIS_PACKET	*pNetBuf;
@@ -818,8 +818,6 @@ BOOLEAN IAPP_L2_Update_Frame_Send(RTMP_ADAPTER *pAd, UINT8 *mac, INT wdev_idx)
 #if (MT7615_MT7603_COMBO_FORWARDING == 1)
 	struct wifi_dev *wdev;
 	wdev = pAd->wdev_list[wdev_idx];
-	if (!VALID_MBSS(pAd, wdev_idx))
-		return FALSE;
 #endif
 #endif
 	pNetBuf = RtmpOsPktIappMakeUp(get_netdev_from_bssid(pAd, wdev_idx), mac);
@@ -1448,7 +1446,7 @@ VOID ap_cmm_peer_assoc_req_action(
 #endif /* DOT1X_SUPPORT */
 #ifdef DOT11R_FT_SUPPORT
 	PFT_CFG pFtCfg = NULL;
-	FT_INFO FtInfoBuf;
+	FT_INFO FtInfoBuf = {0};
 #endif /* DOT11R_FT_SUPPORT */
 #ifdef WSC_AP_SUPPORT
 	WSC_CTRL *wsc_ctrl;
@@ -1464,9 +1462,7 @@ VOID ap_cmm_peer_assoc_req_action(
 	UINT8 wapp_cnnct_stage = WAPP_ASSOC;
 	UINT16 wapp_assoc_fail = NOT_FAILURE;
 #endif/* WAPP_SUPPORT */
-#ifdef DOT11R_FT_SUPPORT
-	NdisZeroMemory(&FtInfoBuf, sizeof(FT_INFO));
-#endif /* DOT11R_FT_SUPPORT */
+
 #ifdef WH_EZ_SETUP
 	if(IS_ADPTR_EZ_SETUP_ENABLED(pAd))
 		EZ_DEBUG(DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_OFF,
@@ -2403,11 +2399,11 @@ SendAssocResponse:
 		PUCHAR pInfo;
 		UCHAR extInfoLen;
 		BOOLEAN bNeedAppendExtIE = FALSE;
-		EXT_CAP_INFO_ELEMENT extCapInfo = {0};
+		EXT_CAP_INFO_ELEMENT extCapInfo;
 
 		
 		extInfoLen = sizeof(EXT_CAP_INFO_ELEMENT);
-		//NdisZeroMemory(&extCapInfo, extInfoLen);
+		NdisZeroMemory(&extCapInfo, extInfoLen);
 
 #ifdef DOT11_N_SUPPORT
 #ifdef DOT11N_DRAFT3

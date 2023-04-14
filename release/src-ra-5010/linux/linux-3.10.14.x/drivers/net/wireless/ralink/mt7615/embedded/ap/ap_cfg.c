@@ -4673,7 +4673,7 @@ INT RTMPAPSetInformation(
 		break;
 
 	case OID_802_11_VOW_BW_AT_EN: {
-		P_VOW_UI_CONFIG cfg = NULL;
+		P_VOW_UI_CONFIG cfg;
 		UCHAR buf[VOW_CMD_STR_LEN];
 		UINT8 group;
 
@@ -4701,7 +4701,7 @@ INT RTMPAPSetInformation(
 	break;
 
 	case OID_802_11_VOW_BW_TPUT_EN: {
-		P_VOW_UI_CONFIG cfg = NULL;
+		P_VOW_UI_CONFIG cfg;
 		UCHAR buf[VOW_CMD_STR_LEN];
 		UINT8 group;
 
@@ -4729,8 +4729,7 @@ INT RTMPAPSetInformation(
 	break;
 
 	case OID_802_11_VOW_ATF_EN: {
-		UCHAR *val = NULL;
-		UCHAR buf[VOW_CMD_STR_LEN] = {0};
+		UCHAR *val, buf[VOW_CMD_STR_LEN];
 
 		os_alloc_mem(val, (UCHAR **)&val, wrq->u.data.length);
 
@@ -4753,8 +4752,7 @@ INT RTMPAPSetInformation(
 	break;
 
 	case OID_802_11_VOW_RX_EN: {
-		UCHAR *val = NULL;
-		UCHAR buf[VOW_CMD_STR_LEN] = {0};
+		UCHAR *val, buf[VOW_CMD_STR_LEN];
 
 		os_alloc_mem(val, (UCHAR **)&val, wrq->u.data.length);
 
@@ -4777,7 +4775,7 @@ INT RTMPAPSetInformation(
 	break;
 
 	case OID_802_11_VOW_GROUP_MAX_RATE: {
-		P_VOW_UI_CONFIG cfg = NULL;
+		P_VOW_UI_CONFIG cfg;
 		UCHAR buf[VOW_CMD_STR_LEN];
 		UINT8 group;
 
@@ -4805,7 +4803,7 @@ INT RTMPAPSetInformation(
 	break;
 
 	case OID_802_11_VOW_GROUP_MIN_RATE: {
-		P_VOW_UI_CONFIG cfg = NULL;
+		P_VOW_UI_CONFIG cfg;
 		UCHAR buf[VOW_CMD_STR_LEN];
 		UINT8 group;
 
@@ -4833,7 +4831,7 @@ INT RTMPAPSetInformation(
 	break;
 
 	case OID_802_11_VOW_GROUP_MAX_RATIO: {
-		P_VOW_UI_CONFIG cfg = NULL;
+		P_VOW_UI_CONFIG cfg;
 		UCHAR buf[VOW_CMD_STR_LEN];
 		UINT8 group;
 
@@ -4861,7 +4859,7 @@ INT RTMPAPSetInformation(
 	break;
 
 	case OID_802_11_VOW_GROUP_MIN_RATIO: {
-		P_VOW_UI_CONFIG cfg = NULL;
+		P_VOW_UI_CONFIG cfg;
 		UCHAR buf[VOW_CMD_STR_LEN];
 		UINT8 group;
 
@@ -5051,7 +5049,7 @@ INT RTMPAPSetInformation(
 	case OID_802_11_VENDOR_IE_UPDATE:
 	case OID_802_11_VENDOR_IE_REMOVE:
 	{
-		UCHAR *Buf = NULL;
+		UCHAR *Buf;
 		struct vie_op_data_s *vie_op_data;
 		struct wifi_dev *wdev = &pAd->ApCfg.MBSSID[pObj->ioctl_if].wdev;
 		UINT32 length = 0;
@@ -16526,12 +16524,15 @@ INT RTMP_AP_IoctlHandle(
 			if (copy_to_user(wrq->u.data.pointer, &temperature, wrq->u.data.length))
 				Status = -EFAULT;
 		} else if ( subcmd == ASUS_SUBCMD_CONN_STATUS ) {
-			UINT32 pCurrState = 0;
+			UINT32 pCurrState[2] = {0};
 			PAPCLI_STRUCT pApCliEntry;
+			PMAC_TABLE_ENTRY mac;
 			pApCliEntry = &pAd->ApCfg.ApCliTab[pObj->ioctl_if];
-			pCurrState = pApCliEntry->CtrlCurrState;
-			wrq->u.data.length = sizeof(UINT32);
-			if (copy_to_user(wrq->u.data.pointer, &pCurrState, wrq->u.data.length))
+			mac = &pAd->MacTab.Content[pApCliEntry->MacTabWCID];
+			pCurrState[0] = pApCliEntry->CtrlCurrState;
+			pCurrState[1] = mac->CurrTxRate;//LastRxRate/LastTxRate/CurrTxRate
+			wrq->u.data.length = sizeof(pCurrState);
+			if (copy_to_user(wrq->u.data.pointer, pCurrState, wrq->u.data.length))
 				Status = -EFAULT;
 		} else if ( subcmd == ASUS_SUBCMD_GSTAINFO ) {
 		} else if ( subcmd == ASUS_SUBCMD_GSTAT ) {

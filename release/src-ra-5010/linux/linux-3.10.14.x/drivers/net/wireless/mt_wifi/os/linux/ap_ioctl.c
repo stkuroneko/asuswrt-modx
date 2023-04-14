@@ -123,10 +123,8 @@ struct iw_priv_args ap_privtab[] = {
 #ifdef CONFIG_APSTA_MIXED_SUPPORT
 const struct iw_handler_def rt28xx_ap_iw_handler_def = {
 #define	N(a)	(sizeof(a) / sizeof(a[0]))
-#ifdef CONFIG_WEXT_PRIV
 	.private_args	= (struct iw_priv_args *) ap_privtab,
 	.num_private_args	= N(ap_privtab),
-#endif /* CONFIG_WEXT_PRIV */
 #if IW_HANDLER_VERSION >= 7
 	.get_wireless_stats = rt28xx_get_wireless_stats,
 #endif
@@ -307,7 +305,7 @@ INT rt28xx_ap_ioctl(struct net_device *net_dev, struct ifreq *rq, int cmd)
 
 		pIoctlRate->priv_flags = RT_DEV_PRIV_FLAGS_GET(net_dev);
 		RTMP_DRIVER_BITRATE_GET(pAd, pIoctlRate);
-		wrqin->u.bitrate.value = pIoctlRate->BitRate;
+		wrqin->u.bitrate.value = (pIoctlRate->BitRate/1000);
 		wrqin->u.bitrate.disabled = 0;
 	}
 	break;
@@ -502,9 +500,9 @@ INT rt28xx_ap_ioctl(struct net_device *net_dev, struct ifreq *rq, int cmd)
 		RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_GET_PROCESS_INFO, 0, NULL, 0);
 		break;
 #endif
-
 	case RTPRIV_IOCTL_ASUSCMD:
-		Status = RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_ASUSCMD, wrqin->u.data.flags, NULL, 0);
+		subcmd = wrqin->u.data.flags;
+		RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_ASUSCMD,subcmd, wrqin->u.data.pointer, 0);
 		break;
 
 	default:

@@ -16,6 +16,7 @@
 <script language="JavaScript" type="text/javascript" src="/state.js"></script>
 <script language="JavaScript" type="text/javascript" src="/general.js"></script>
 <script language="JavaScript" type="text/javascript" src="/popup.js"></script>
+<script type="text/javascript" language="JavaScript" src="/merlin.js"></script>
 <script language="JavaScript" type="text/javascript" src="/validator.js"></script>
 <script type="text/javascript" src="/js/jquery.js"></script>
 <script type="text/javascript" src="/switcherplugin/jquery.iphone-switch.js"></script>
@@ -715,9 +716,9 @@ function showopenvpnd_clientlist(){
 					if(vpn_server_clientlist_col[0].length >32){
 						overlib_str2[i] += vpn_server_clientlist_col[0];
 						vpn_server_clientlist_col[0] = vpn_server_clientlist_col[0].substring(0, 30)+"...";
-						code +='<td width="35%" title="'+htmlEnDeCode.htmlEncode(overlib_str2[i])+'">'+ htmlEnDeCode.htmlEncode(vpn_server_clientlist_col[0]) +'</td>';
+						code +='<td width="35%" title="'+overlib_str2[i]+'">'+ vpn_server_clientlist_col[0] +'</td>';
 					}else{
-						code +='<td width="35%" title="'+htmlEnDeCode.htmlEncode(vpn_server_clientlist_col[0])+'">'+ htmlEnDeCode.htmlEncode(vpn_server_clientlist_col[0]) +'</td>';
+						code +='<td width="35%" title="'+vpn_server_clientlist_col[0]+'">'+ vpn_server_clientlist_col[0] +'</td>';
 					}	
 				}
 				else if(j ==1){

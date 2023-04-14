@@ -202,7 +202,7 @@ static void getWPSConfig(int unit, WPS_CONFIGURED_VALUE *result)
 
 	memset(result, 0, sizeof(WPS_CONFIGURED_VALUE));
 
-	snprintf(buf, sizeof(buf), "hostapd_cli -i%s get_config", get_wifname(unit));
+	sprintf(buf, "hostapd_cli -i%s get_config", get_wifname(unit));
 	fp = popen(buf, "r");
 	if (fp) {
 		while (fgets(buf, sizeof(buf), fp) != NULL) {
@@ -212,12 +212,12 @@ static void getWPSConfig(int unit, WPS_CONFIGURED_VALUE *result)
 			//BSSID
 			if ((pt1 = strstr(buf, "bssid="))) {
 				pt2 = pt1 + strlen("bssid=");
-				strlcpy(result->BSSID, pt2, sizeof(result->BSSID));
+				strcpy(result->BSSID, pt2);
 			}
 			//SSID
 			if ((pt1 = strstr(buf, "ssid="))) {
 				pt2 = pt1 + strlen("ssid=");
-				strlcpy(result->SSID, pt2, sizeof(result->SSID));
+				strcpy(result->SSID, pt2);
 			}
 			//Configured
 			else if ((pt1 = strstr(buf, "wps_state="))) {
@@ -232,24 +232,24 @@ static void getWPSConfig(int unit, WPS_CONFIGURED_VALUE *result)
 			//WPAKey
 			else if ((pt1 = strstr(buf, "passphrase="))) {
 				pt2 = pt1 + strlen("passphrase=");
-				strlcpy(result->WPAKey, pt2, sizeof(result->WPAKey));
+				strcpy(result->WPAKey, pt2);
 			}
 			//AuthMode
 			else if ((pt1 = strstr(buf, "key_mgmt="))) {
 				pt2 = pt1 + strlen("key_mgmt=");
-				strlcpy(result->AuthMode, pt2, sizeof(result->AuthMode));/* FIXME: NEED TRANSFORM CONTENT */
+				strcpy(result->AuthMode, pt2);/* FIXME: NEED TRANSFORM CONTENT */
 			}
 			//Encryp
 			else if ((pt1 = strstr(buf, "rsn_pairwise_cipher="))) {
 				pt2 = pt1 + strlen("rsn_pairwise_cipher=");
 				if (!strcmp(pt2, "NONE"))
-					strlcpy(result->Encryp, "None", sizeof(result->Encryp));
+					strcpy(result->Encryp, "None");
 				else if (!strncmp(pt2, "WEP", 3))
-					strlcpy(result->Encryp, "WEP", sizeof(result->Encryp));
+					strcpy(result->Encryp, "WEP");
 				else if (!strcmp(pt2, "TKIP"))
-					strlcpy(result->Encryp, "TKIP", sizeof(result->Encryp));
+					strcpy(result->Encryp, "TKIP");
 				else if (!strncmp(pt2, "CCMP", 4))
-					strlcpy(result->Encryp, "AES", sizeof(result->Encryp));
+					strcpy(result->Encryp, "AES");
 			}
 		}
 		pclose(fp);
@@ -268,15 +268,15 @@ char *get_vphyifname(int band)
 }
 
 
-static char *__get_wlifname(int band, int subunit, char *buf, int buf_len)
+static char *__get_wlifname(int band, int subunit, char *buf)
 {
 	if (!buf)
 		return buf;
 
 	if (!subunit)
-		strlcpy(buf, (!band)? WIF_2G:WIF_5G, buf_len);
+		strcpy(buf, (!band)? WIF_2G:WIF_5G);
 	else
-		snprintf(buf, buf_len, "%s%02d", (!band)? WIF_2G:WIF_5G, subunit);
+		sprintf(buf, "%s%02d", (!band)? WIF_2G:WIF_5G, subunit);
 
 	return buf;
 }
@@ -294,7 +294,7 @@ static int get_wlsubnet(int band, const char *ifname)
 			continue;
 		}
 
-		if(strcmp(ifname, __get_wlifname(band, sidx, buf, sizeof(buf))) == 0)
+		if(strcmp(ifname, __get_wlifname(band, sidx, buf)) == 0)
 			return subnet;
 
 		sidx++;
@@ -380,14 +380,14 @@ unsigned int getAPChannelbyIface(const char *ifname)
 	char buf[8192];
 	FILE *fp;
 	int len, i = 0;
-	char *pt1, *pt2, ch_mhz[5] = {0}, ch_mhz_t[5] = {0};
+	char *pt1, *pt2, ch_mhz[5];
 
 	if (!ifname || *ifname == '\0') {
 		dbg("%S: got invalid ifname %p\n", __func__, ifname);
 		return 0;
 	}
 
-	snprintf(buf, sizeof(buf), "iwconfig %s", ifname);
+	sprintf(buf, "iwconfig %s", ifname);
 	fp = popen(buf, "r");
 	if (fp) {
 		memset(buf, 0, sizeof(buf));
@@ -407,14 +407,10 @@ unsigned int getAPChannelbyIface(const char *ifname)
 						if (i < len) {
 							if (pt2[i] == '.')
 								continue;
-
-							snprintf(ch_mhz_t, sizeof(ch_mhz_t), "%s%c", ch_mhz, pt2[i]);
-							strlcpy(ch_mhz, ch_mhz_t, sizeof(ch_mhz));
+							sprintf(ch_mhz, "%s%c", ch_mhz, pt2[i]);
 						}
-						else{
-							snprintf(ch_mhz_t, sizeof(ch_mhz_t), "%s0", ch_mhz);
-							strlcpy(ch_mhz, ch_mhz_t, sizeof(ch_mhz));
-						}
+						else
+							sprintf(ch_mhz, "%s0", ch_mhz);
 					}
 					//dbg("Frequency:%s MHz\n", ch_mhz);
 					return ieee80211_mhz2ieee((unsigned int)atoi(ch_mhz));
@@ -447,7 +443,7 @@ char* getSSIDbyIFace(const char *ifname)
 		return ssid;
 	}
 
-	snprintf(buf, sizeof(buf), "iwconfig %s", ifname);
+	sprintf(buf, "iwconfig %s", ifname);
 	if (!(fp = popen(buf, "r")))
 		return ssid;
 
@@ -484,7 +480,7 @@ long getSTAConnTime(char *ifname, char *bssid)
 	int len;
 	char *pt1,*pt2;
 
-	snprintf(buf, sizeof(buf), "hostapd_cli -i%s sta %s", ifname, bssid);
+	sprintf(buf, "hostapd_cli -i%s sta %s", ifname, bssid);
 	fp = popen(buf, "r");
 	if (fp) {
 		memset(buf, 0, sizeof(buf));
@@ -765,7 +761,7 @@ show_wliface_info(webs_t wp, int unit, char *ifname, char *op_mode)
 	ret += websWrite(wp, "=======================================================================================\n"); // separator
 	ret += websWrite(wp, "OP Mode		: %s\n", op_mode);
 	ret += websWrite(wp, "SSID		: %s\n", getSSIDbyIFace(ifname));
-	snprintf(cmd, sizeof(cmd), "iwconfig %s", ifname);
+	sprintf(cmd, "iwconfig %s", ifname);
 	if ((fp = popen(cmd, "r")) != NULL && fread(tmpstr, 1, sizeof(tmpstr), fp) > 1) {
 		pclose(fp);
 		*(tmpstr + sizeof(tmpstr) - 1) = '\0';
@@ -963,9 +959,9 @@ static int wl_stainfo_list(int unit, webs_t wp)
 		if (s < 0 || s > 7)
 			s = 0;
 		if (!s)
-			strlcpy(idx_str, "main", sizeof(idx_str));
+			strcpy(idx_str, "main");
 		else
-			snprintf(idx_str, sizeof(idx_str), "GN%d", s);
+			sprintf(idx_str, "GN%d", s);
 		websWrite(wp, ", \"%s\"", idx_str);
 		websWrite(wp, "]");
 	}
@@ -982,7 +978,7 @@ char *getWscStatus(int unit)
 	int len;
 	char *pt1,*pt2;
 
-	snprintf(buf, sizeof(buf), "hostapd_cli -i%s wps_get_status", get_wifname(unit));
+	sprintf(buf, "hostapd_cli -i%s wps_get_status", get_wifname(unit));
 	fp = popen(buf, "r");
 	if (fp) {
 		memset(buf, 0, sizeof(buf));
@@ -1013,7 +1009,7 @@ char *getAPPIN(int unit)
 	int len;
 
 	buffer[0] = '\0';
-	snprintf(cmd, sizeof(cmd), "hostapd_cli -i%s wps_ap_pin get", get_wifname(unit));
+	sprintf(cmd, "hostapd_cli -i%s wps_ap_pin get", get_wifname(unit));
 	fp = popen(cmd, "r");
 	if (fp) {
 		len = fread(buffer, 1, sizeof(buffer), fp);
@@ -1022,7 +1018,7 @@ char *getAPPIN(int unit)
 			buffer[len] = '\0';
 			//dbg("%s: AP PIN[%s]\n", __FUNCTION__, buffer);
 			if(!strncmp(buffer,"FAIL",4))
-			   strlcpy(buffer,nvram_get("secret_code"), sizeof(buffer));
+			   strcpy(buffer,nvram_get("secret_code"));
 			return buffer;
 		}
 	}
@@ -1067,7 +1063,7 @@ static int wl_scan(int eid, webs_t wp, int argc, char_t **argv, int unit)
 	lock = file_lock("nvramcommit");
 	system("rm -f /tmp/wlist");
 	snprintf(prefix, sizeof(prefix), "wl%d_", unit);
-	snprintf(cmd, sizeof(cmd), "iwlist %s scanning >> /tmp/wlist",nvram_safe_get(strcat_r(prefix, "ifname", tmp)));
+	sprintf(cmd,"iwlist %s scanning >> /tmp/wlist",nvram_safe_get(strcat_r(prefix, "ifname", tmp)));
 	system(cmd);
 	file_unlock(lock);
 	
@@ -1075,7 +1071,7 @@ static int wl_scan(int eid, webs_t wp, int argc, char_t **argv, int unit)
 	   return -1;
 	
 	memset(header, 0, sizeof(header));
-	snprintf(header, sizeof(header), "%-4s%-33s%-18s%-9s%-16s%-9s%-8s\n", "Ch", "SSID", "BSSID", "Enc", "Auth", "Siganl(%)", "W-Mode");
+	sprintf(header, "%-4s%-33s%-18s%-9s%-16s%-9s%-8s\n", "Ch", "SSID", "BSSID", "Enc", "Auth", "Siganl(%)", "W-Mode");
 
 	dbg("\n%s", header);
 
@@ -1151,16 +1147,16 @@ static int wl_scan(int eid, webs_t wp, int argc, char_t **argv, int unit)
 		{   
 			if(strstr(pt1+strlen("Encryption key:"),"on"))
 			{  	
-				snprintf(enc, sizeof(enc),"ENC");
+				sprintf(enc,"ENC");
 		
 			} 
 			else
-				snprintf(enc, sizeof(enc),"NONE");
+				sprintf(enc,"NONE");
 		}
 
 		//auth
 		memset(auth,0,sizeof(auth));
-		snprintf(auth, sizeof(auth),"N/A");
+		sprintf(auth,"N/A");    
 
 		//sig
 	        pt1 = strstr(buf[3], "Quality=");	
@@ -1172,13 +1168,13 @@ static int wl_scan(int eid, webs_t wp, int argc, char_t **argv, int unit)
 			memset(a2,0,sizeof(a2));
 			strncpy(a1,pt1+strlen("Quality="),pt2-pt1-strlen("Quality="));
 			strncpy(a2,pt2+1,strstr(pt2," ")-(pt2+1));
-			snprintf(sig, sizeof(sig),"%d",atoi(a1)/atoi(a2));
+			sprintf(sig,"%d",atoi(a1)/atoi(a2));
 
 		}   
 
 		//wmode
 		memset(wmode,0,sizeof(wmode));
-		snprintf(wmode, sizeof(wmode),"11b/g/n");
+		sprintf(wmode,"11b/g/n");   
 
 
 #if 1
@@ -1213,7 +1209,7 @@ static int wl_scan(int eid, webs_t wp, int argc, char_t **argv, int unit)
 
 	snprintf(prefix, sizeof(prefix), "wl%d_", unit);
 	memset(data, 0x00, 255);
-	strlcpy(data, "SiteSurvey=1", sizeof(data));
+	strcpy(data, "SiteSurvey=1"); 
 	wrq.u.data.length = strlen(data)+1; 
 	wrq.u.data.pointer = data; 
 	wrq.u.data.flags = 0; 
@@ -1236,7 +1232,7 @@ static int wl_scan(int eid, webs_t wp, int argc, char_t **argv, int unit)
 	sleep(1);
 	dbg(".\n\n");
 	memset(data, 0, 8192);
-	strlcpy(data, "", sizeof(data));
+	strcpy(data, "");
 	wrq.u.data.length = 8192;
 	wrq.u.data.pointer = data;
 	wrq.u.data.flags = 0;
@@ -1246,11 +1242,11 @@ static int wl_scan(int eid, webs_t wp, int argc, char_t **argv, int unit)
 		return 0;
 	}
 	memset(header, 0, sizeof(header));
-	//snprintf(header, sizeof(header), "%-3s%-33s%-18s%-8s%-15s%-9s%-8s%-2s\n", "Ch", "SSID", "BSSID", "Enc", "Auth", "Siganl(%)", "W-Mode", "NT");
+	//sprintf(header, "%-3s%-33s%-18s%-8s%-15s%-9s%-8s%-2s\n", "Ch", "SSID", "BSSID", "Enc", "Auth", "Siganl(%)", "W-Mode", "NT");
 #if 0// defined(RTN14U)
-	snprintf(header, sizeof(header), "%-4s%-33s%-18s%-9s%-16s%-9s%-8s%-4s%-5s\n", "Ch", "SSID", "BSSID", "Enc", "Auth", "Siganl(%)", "W-Mode"," WPS", " DPID");
+	sprintf(header, "%-4s%-33s%-18s%-9s%-16s%-9s%-8s%-4s%-5s\n", "Ch", "SSID", "BSSID", "Enc", "Auth", "Siganl(%)", "W-Mode"," WPS", " DPID");
 #else
-	snprintf(header, sizeof(header), "%-4s%-33s%-18s%-9s%-16s%-9s%-8s\n", "Ch", "SSID", "BSSID", "Enc", "Auth", "Siganl(%)", "W-Mode");
+	sprintf(header, "%-4s%-33s%-18s%-9s%-16s%-9s%-8s\n", "Ch", "SSID", "BSSID", "Enc", "Auth", "Siganl(%)", "W-Mode");
 #endif
 	dbg("\n%s", header);
 	if (wrq.u.data.length > 0)

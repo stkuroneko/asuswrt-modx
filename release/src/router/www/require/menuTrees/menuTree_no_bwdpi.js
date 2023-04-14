@@ -1,4 +1,4 @@
-﻿/* menuTree_no_bwdpi.js */
+/* menuTree_no_bwdpi.js */
 define(function(){
 	var menuTree = {
 		list: [
@@ -161,7 +161,6 @@ define(function(){
 					{url: "Advanced_GWStaticRoute_Content.asp", tabName: "<#menu5_2_3#>"},
 					{url: "Advanced_IPTV_Content.asp", tabName: "IPTV"},
 					{url: "Advanced_SwitchCtrl_Content.asp", tabName: "<#Switch_itemname#>"},
-					{url: "Advanced_SmartDNS_Content.asp", tabName: "SmartDNS"},
 					{url: "NULL", tabName: "__INHERIT__"}
 				] 
 			},
@@ -418,12 +417,6 @@ define(function(){
 							menuTree.list.splice(i,1);
 					}
 				}
-				if (!smartdns_support){
-					for(i=0; i<menuTree.list.length; i++){
-						if(menuTree.list[i].menuName == 'SmartDNS')
-							menuTree.list.splice(i,1);
-					}
-				}
 
 				return retArray;
 			},
@@ -629,7 +622,6 @@ define(function(){
 					retArray.push("Main_RouteStatus_Content.asp");
 					retArray.push("Main_IPTStatus_Content.asp");
 					retArray.push("Main_ConnStatus_Content.asp");
-					retArray.push("Advanced_Smart_Connect.asp");
 
 					if(!concurrep_support){
 						retArray.push("Advanced_Wireless_Content.asp");

@@ -5,6 +5,22 @@ config MT7603E_RLT_AP_SUPPORT
 	select WEXT_SPY
 	select WEXT_PRIV
 
+config  MT7603E_RLT_AP_LED
+	bool "LED support"
+	depends on MT7603E_RLT_AP
+	default y
+
+config  MT7603E_RLT_AP_LED_SOFT
+	bool "Soft LED support"
+	depends on MT7603E_RLT_AP && !MT7603E_RLT_AP_LED && RALINK_GPIO_LED
+	default y
+
+config  MT7603E_RLT_AP_LED_SOFT_GPIO
+	int "Soft LED GPIO pin (dev #0)"
+	depends on MT7603E_RLT_AP
+	depends on MT7603E_RLT_AP_LED_SOFT
+	default -1
+
 #config RLT_AP_SUPPORT
 #	bool "7603"
 #	depends on MT7603E_RLT_AP_SUPPORT
@@ -102,12 +118,12 @@ config MT7603E_WNM_SUPPORT
 
 config MT7603E_INTERWORKING
 	bool "802.11u Interworking/Gas Support"
-        depends on MT7603E_RLT_AP_SUPPORT
+        depends on MT_AP_SUPPORT
         default n
 
 config MT7603E_MAP_SUPPORT
 	bool "Multi-AP Support"
-	depends on MT7603E_RLT_AP_SUPPORT
+	depends on MT_AP_SUPPORT
 	#select MBO_SUPPORT
 	default n
 
@@ -115,11 +131,6 @@ config MT7603E_BAND_STEERING_7603
 	bool "Band Steering"
 	depends on MT7603E_RLT_AP_SUPPORT
 	default n
-
-config MT7603E_OFFCHANNEL_SCAN_FEATURE
-    	bool "Channel Quality Monitor"
-    	depends on MT_AP_SUPPORT
-    	default n
 
 config MT7603E_LLTD_SUPPORT
 	bool "LLTD (Link Layer Topology Discovery Protocol)"

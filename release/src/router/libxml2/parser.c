@@ -11567,7 +11567,7 @@ xmldecl_done:
              * if size is greater than len. Otherwise, memmove in xmlBufferAdd
              * will blindly copy extra bytes from memory.
              */
-            if ((unsigned int)size > len) {
+            if (size > len) {
                 remain = size - len;
                 size = len;
             } else {

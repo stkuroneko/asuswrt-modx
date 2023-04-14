@@ -2271,10 +2271,9 @@ VOID dev_rx_data_frm(RTMP_ADAPTER *pAd, RX_BLK *pRxBlk)
 #if defined(SOFT_ENCRYPT) || defined(ADHOC_WPA2PSK_SUPPORT)
 	NDIS_STATUS status;
 #endif /* defined(SOFT_ENCRYPT) || defined(ADHOC_WPA2PSK_SUPPORT) */
-#ifdef MAX_CONTINUOUS_TX_CNT
+#ifdef NEW_IXIA_METHOD
 	UCHAR rdrop_reson = 0;
 #endif
-
     DBGPRINT(RT_DEBUG_INFO, ("-->%s():pRxBlk->wcid=%d, pRxBlk->DataSize=%d\n",
                 __FUNCTION__, pRxBlk->wcid, pRxBlk->DataSize));
 
@@ -2439,7 +2438,7 @@ VOID dev_rx_data_frm(RTMP_ADAPTER *pAd, RX_BLK *pRxBlk)
 			}
 #endif /* CONFIG_AP_SUPPORT */
 		}
-#ifdef MAX_CONTINUOUS_TX_CNT
+#ifdef NEW_IXIA_METHOD
 		rdrop_reson = DROP_NOT_ALLOW;
 #endif
 		goto drop;
@@ -2521,7 +2520,7 @@ VOID dev_rx_data_frm(RTMP_ADAPTER *pAd, RX_BLK *pRxBlk)
 	if(rx_chk_duplicate_frame(pAd,pRxBlk) == NDIS_STATUS_FAILURE)
 	{
 		DBGPRINT(RT_DEBUG_INFO, ("%s(): duplication frame, drop it!\n", __FUNCTION__));
-#ifdef MAX_CONTINUOUS_TX_CNT
+#ifdef NEW_IXIA_METHOD
 		rdrop_reson = DROP_DUP_FRAME;
 #endif
 		goto drop;
@@ -2759,11 +2758,10 @@ drop:
 	//DBGPRINT(RT_DEBUG_OFF, ("%s():release packet!\n", __FUNCTION__));
 
 	RELEASE_NDIS_PACKET(pAd, pRxPacket, NDIS_STATUS_FAILURE);
-#ifdef MAX_CONTINUOUS_TX_CNT
+#ifdef NEW_IXIA_METHOD
 	/*RX Drop*/
 	pAd->tr_ststic.rx[rdrop_reson]++;
 #endif
-
     DBGPRINT(RT_DEBUG_INFO, ("<--%s(): Drop!\n", __FUNCTION__));
 
 	return;
@@ -2896,7 +2894,7 @@ BOOLEAN rtmp_rx_done_handle(RTMP_ADAPTER *pAd)
 			if (pRxPacket)
 			{
 				RELEASE_NDIS_PACKET(pAd, pRxPacket, NDIS_STATUS_SUCCESS);
-#ifdef MAX_CONTINUOUS_TX_CNT
+#ifdef NEW_IXIA_METHOD
 				/*RX Drop*/
 				pAd->tr_ststic.rx[DROP_RING_FULL]++;
 #endif
@@ -2944,11 +2942,10 @@ BOOLEAN rtmp_rx_done_handle(RTMP_ADAPTER *pAd)
                    if ((rxblk.DataSize == 0) && (pRxPacket)) {
                       RELEASE_NDIS_PACKET(pAd, pRxPacket, NDIS_STATUS_SUCCESS);
                       DBGPRINT(RT_DEBUG_INFO, ("%s():Packet Length is zero!\n", __FUNCTION__));
-#ifdef MAX_CONTINUOUS_TX_CNT
+#ifdef NEW_IXIA_METHOD
 					  /*RX Drop*/
 					  pAd->tr_ststic.rx[DROP_DATA_SIZE]++;
 #endif
-
 	              continue;
 		   }
 
@@ -3011,11 +3008,10 @@ BOOLEAN rtmp_rx_done_handle(RTMP_ADAPTER *pAd)
 		if (!pRxBlk->pRxInfo) {
 			DBGPRINT(RT_DEBUG_ERROR, ("%s(): pRxBlk->pRxInfo is NULL!\n", __FUNCTION__));
 			RELEASE_NDIS_PACKET(pAd, pRxPacket, NDIS_STATUS_SUCCESS);
-#ifdef MAX_CONTINUOUS_TX_CNT
+#ifdef NEW_IXIA_METHOD
 			/*RX Drop*/
 			pAd->tr_ststic.rx[DROP_INFO_NULL]++;
 #endif
-
 			continue;
 		}
 //---Add by shiang for debug
@@ -3110,14 +3106,13 @@ BOOLEAN rtmp_rx_done_handle(RTMP_ADAPTER *pAd)
 		pAd->RalinkCounters.OneSecReceivedByteCount += rxblk.DataSize;
 		pAd->RalinkCounters.RxCount++;
 		pAd->RalinkCounters.OneSecRxCount++;
-#ifdef MAX_CONTINUOUS_TX_CNT
+#ifdef NEW_IXIA_METHOD
 		if (IS_EXPECTED_LENGTH(GET_OS_PKT_LEN(pRxPacket) - 16)) {
-			pAd->tr_ststic.rx_pkt_from_hw++;
-			pAd->tr_ststic.rx_pkt_len = GET_OS_PKT_LEN(pRxPacket) - 16;
-			pAd->tr_ststic.rxpktdetect2s++;
+			rx_pkt_from_hw++;
+			rx_pkt_len = GET_OS_PKT_LEN(pRxPacket) - 16;
+			rxpktdetect2s++;
 		}
 #endif
-
 #ifdef STATS_COUNT_SUPPORT
 		INC_COUNTER64(pAd->WlanCounters.ReceivedFragmentCount);
 #endif /* STATS_COUNT_SUPPORT */
@@ -3127,7 +3122,7 @@ BOOLEAN rtmp_rx_done_handle(RTMP_ADAPTER *pAd)
 		/* Check for all RxD errors */
 		status = rtmp_chk_rx_err(pAd, pRxBlk, pHeader);
 		if (status != NDIS_STATUS_SUCCESS) {
-#ifdef MAX_CONTINUOUS_TX_CNT
+#ifdef NEW_IXIA_METHOD
 			/*RX Drop*/
 			pAd->tr_ststic.rx[DROP_RXD_ERROR]++;
 #endif
@@ -3156,18 +3151,6 @@ BOOLEAN rtmp_rx_done_handle(RTMP_ADAPTER *pAd)
 
 
 		// TODO: shiang-usw, for P2P, we original has following code, need to check it and merge to correct place!!!
-#ifdef MAX_CONTINUOUS_TX_CNT
-		if (pAd->ixiaCtrl.iMode == VERIWAVE_MODE) {
-			/*Fix Issue: select KeepAlive Item on IXIA, deduce the performace.*/
-			struct sk_buff *pRxPkt = RTPKT_TO_OSPKT(pRxPacket);
-
-			if ((pRxPkt->len == 268)
-				&& ((pRxPkt->data[70] << 8) | (pRxPkt->data[71] == 0x8A))) {
-				RELEASE_NDIS_PACKET(pAd, pRxPacket, NDIS_STATUS_FAILURE);
-				continue;
-			}
-		}
-#endif
 
 		switch (pHeader->FC.Type)
 		{

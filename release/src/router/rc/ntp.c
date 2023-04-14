@@ -79,7 +79,7 @@ static void ntp_service()
 #endif
 #ifdef RTCONFIG_UUPLUGIN
 		if(nvram_get_int("uu_enable"))
-#if defined(R8000P) || defined(R7900P) || defined(K3) || defined(SBRAC3200P) || defined(RTAC3100) || defined(RTAC3200) || defined(EA6700) || defined(RAX20) || defined(SBRAC1900P) || defined(RMAC2100) || defined(RTE8820S) || defined(RTMIR3P) || defined(RTMIR3G) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTXYC3) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTRM2100) || defined(RTR2100) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300)
+#if defined(R8000P) || defined(R7900P) || defined(K3) || defined(SBRAC3200P) || defined(RTAC3100) || defined(RTAC3200) || defined(EA6700) || defined(RAX20) || defined(SBRAC1900P) || defined(RMAC2100) || defined(RTE8820S) || defined(RTMIR3P) || defined(RTMIR3G) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTXYC3) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTRM2100) || defined(RTR2100) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300) || defined(RTK2P)
 		exec_uu_swrt();
 #else
 		exec_uu();
@@ -179,7 +179,8 @@ int ntp_main(int argc, char *argv[])
 	{
 		if (sig_cur == SIGTSTP)
 			;
-		else if (is_router_mode() && !nvram_match("link_internet", "2"))
+		else if (is_router_mode() &&
+			!nvram_match("link_internet", "2"))
 		{
 			alarm(SECONDS_TO_WAIT);
 		}

@@ -160,18 +160,18 @@ typedef struct usb_ctrlrequest devctrlrequest;
 #ifdef BB_SOC
 #define AP_PROFILE_PATH			"/etc/Wireless/RT2860AP_AC/RT2860AP.dat"
 #else
-#define AP_PROFILE_PATH			"/etc/Wireless/RT2860/RT2860.dat"
+#define AP_PROFILE_PATH			"/etc/Wireless/RT2860AP/RT2860AP.dat"
 #endif
 #define AP_RTMP_FIRMWARE_FILE_NAME "/etc/Wireless/RT2860AP/RT2860AP.bin"
 #endif
 
 
-#define AP_DRIVER_VERSION			"5.1.0.0"
+#define AP_DRIVER_VERSION			"5.0.4.0"
 #ifdef MULTIPLE_CARD_SUPPORT
 #define CARD_INFO_PATH			"/etc/Wireless/RT2860AP/RT2860APCard.dat"
 #endif /* MULTIPLE_CARD_SUPPORT */
 #ifdef WAPP_SUPPORT
-#define WAPP_SUPPORT_VERSION		"v2.0.2"
+#define WAPP_SUPPORT_VERSION		"2.0"
 #endif /* WAPP_SUPPORT */
 #endif /* RTMP_MAC_PCI */
 
@@ -191,8 +191,8 @@ typedef struct usb_ctrlrequest devctrlrequest;
 #define BF_GAIN_TABLE_FILE_NAME     "/tmp/.mt7615_SingleSKU_BF_Gain.dat"
 #define BF_SKU_TABLE_FILE_NAME      "/tmp/.mt7615_SingleSKU_BF.dat"
 #else
-#define SINGLE_SKU_TABLE_FILE_NAME	"/ra_SKU/SingleSKU_mt7615e-sku.dat"
-#define BF_SKU_TABLE_FILE_NAME      "/ra_SKU/SingleSKU_mt7615e-sku-bf.dat"
+#define SINGLE_SKU_TABLE_FILE_NAME	"/etc_ro/Wireless/RT2860AP/SingleSKU.dat"
+#define BF_SKU_TABLE_FILE_NAME      "/etc_ro/Wireless/RT2860AP/SingleSKU_BF.dat"
 #endif
 #endif /* SINGLE_SKU_V2 */
 
@@ -542,18 +542,9 @@ typedef spinlock_t			OS_NDIS_SPIN_LOCK;
 	do { \
 		if ((_pTask)->kthread_task) { \
 			(_pTask)->kthread_running = TRUE; \
-			wake_up_interruptible(&(_pTask)->kthread_q); \
+			wake_up(&(_pTask)->kthread_q); \
 		} \
 	} while (0)
-#endif
-
-#ifdef LINUX
-#define OS_SCHEDULE()	\
-{							\
-	schedule();			\
-}
-#else
-#define OS_SCHEDULE()
 #endif
 
 /***********************************************************************************

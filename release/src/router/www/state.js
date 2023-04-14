@@ -395,10 +395,15 @@ var wl_info = {
 			})()
 };
 //wireless end
-
+var rc_support = '<% nvram_get("rc_support"); %>';
 function uiSupport(_ptn){
 	var ui_support = [<% get_ui_support(); %>][0];
-
+	if(_ptn == "uu_accel"){
+		if(rc_support.search("uu_accel") != -1)
+			return true;
+		else if ('<% nvram_get("uu_enable"); %>' == 0)
+			return false;
+	}
 	if(ui_support[_ptn])
 		return ui_support[_ptn];
 	else
@@ -483,7 +488,7 @@ function isSupport(_ptn){
 
 		if(( based_modelid == "BRT-AC828" || based_modelid == "GT-AC5300" || based_modelid == "GT-AC9600" || based_modelid == "RT-AC5300" || based_modelid == "RT-AC3200" || based_modelid == "RT-AC3100" || 
 			based_modelid == "RT-AC88U" || based_modelid == "RT-AC87U" || based_modelid == "RT-AC86U" || based_modelid == "AC2900" || based_modelid == "RT-AC85U" || based_modelid == "RT-MIR3G" || based_modelid == "RT-MIR3P" || based_modelid == "RT-MIR4A" || based_modelid == "RT-RM2100" || based_modelid == "RT-R2100" ||
-			based_modelid == "RT-NEWIFI2" || based_modelid == "RT-RS1200P" ||based_modelid == "RT-XYC3" ||based_modelid == "RT-NEWIFI3" || based_modelid == "RT-HIWIFI4" || based_modelid == "RT-A040WQ" || based_modelid == "RT-MSG1500" || based_modelid == "RT-JDC1" || based_modelid == "RT-MT1300" ||
+			based_modelid == "RT-NEWIFI2" || based_modelid == "RT-RS1200P" ||based_modelid == "RT-XYC3" ||based_modelid == "RT-NEWIFI3" || based_modelid == "RT-HIWIFI4" || based_modelid == "RT-A040WQ" || based_modelid == "RT-MSG1500" || based_modelid == "RT-JDC1" || based_modelid == "RT-MT1300" || based_modelid == "RT-K2P" ||
 			based_modelid == "RT-AC65U" || based_modelid == "RT-AC85P" || based_modelid == "4G-AC68U" || based_modelid == "DSL-AC68U" || based_modelid == "RT-AC68U" || based_modelid == "RT-AC68R" || 
 			based_modelid == "RT-AC68W" || based_modelid == "RT-AC68RW" || based_modelid == "RT-AC1900P" || 
 			based_modelid == "RT-AC67U" || based_modelid == "RT-AC56U" || based_modelid == "RT-AC56R" || based_modelid == "BLUECAVE" ||
@@ -618,7 +623,6 @@ var tr069_support = isSupport("tr069");
 var tor_support = isSupport("tor");
 var stainfo_support = isSupport("stainfo");
 var dhcp_override_support = isSupport("dhcp_override");
-var redirect_dname_support = isSupport("redirect_dname");
 var disnwmd_support = isSupport("disable_nwmd");
 var wtfast_support = isSupport("wtfast");
 var wtf_redeem_support = uiSupport("wtf_redeem");
@@ -1359,7 +1363,7 @@ function showMenuTree(menuList, menuExclude){
 						menu_code += '" id="';
 						menu_code += curMenu.tab[firstEntry].url.split(".")[0];
 						menu_code += '_menu"><table><tr><td><div class="menu_Icon ';
-						if((based_modelid == "RT-AC85U" || based_modelid == "RT-AC85P" || based_modelid == "RM-AC2100" || based_modelid == "RT-MIR3G" || based_modelid == "RT-MIR3P" || based_modelid == "RT-MIR4A" || based_modelid == "RT-RM2100" || based_modelid == "RT-R2100" ||based_modelid == "RT-NEWIFI2" || based_modelid == "RT-RS1200P" ||based_modelid == "RT-NEWIFI3" || based_modelid == "RT-HIWIFI4" || based_modelid == "RT-A040WQ" || based_modelid == "RT-MSG1500" || based_modelid == "RT-JDC1" || based_modelid == "RT-MT1300" ) && curMenu.index == 'menu_QoS')	//MODELDEP : RT-AC85U change icon
+						if((based_modelid == "RT-AC85U" || based_modelid == "RT-AC85P" || based_modelid == "RM-AC2100" || based_modelid == "RT-MIR3G" || based_modelid == "RT-MIR3P" || based_modelid == "RT-MIR4A" || based_modelid == "RT-RM2100" || based_modelid == "RT-R2100" ||based_modelid == "RT-NEWIFI2" || based_modelid == "RT-RS1200P" ||based_modelid == "RT-NEWIFI3" || based_modelid == "RT-HIWIFI4" || based_modelid == "RT-A040WQ" || based_modelid == "RT-MSG1500" || based_modelid == "RT-JDC1" ||based_modelid == "RT-MT1300" ||  based_modelid == "RT-K2P" ) && curMenu.index == 'menu_QoS')	//MODELDEP : RT-AC85U change icon
 							menu_code += 'menu_BandwidthMonitor';
 						else
 							menu_code += curMenu.index;
@@ -2614,7 +2618,7 @@ function refreshStatus(xhr){
 		document.getElementById("bwdpi_status").onmouseover = function(){overHint("A");}
 		document.getElementById("bwdpi_status").onmouseout = function(){nd();}
 		
-		if(based_modelid == "RT-AC85U" || based_modelid == "RT-AC85P"  || based_modelid == "RT-AC68A" || based_modelid == "RT-AC65U" || based_modelid == "RM-AC2100" ||  based_modelid == "RT-MIR3G" || based_modelid == "RT-MIR3P" || based_modelid == "RT-MIR4A" || based_modelid == "RT-RM2100" || based_modelid == "RT-R2100" ||based_modelid == "RT-NEWIFI2" || based_modelid == "RT-RS1200P" ||based_modelid == "RT-XYC3" ||based_modelid == "RT-NEWIFI3" || based_modelid == "RT-HIWIFI4" || based_modelid == "RT-A040WQ" || based_modelid == "RT-MSG1500" || based_modelid == "RT-JDC1" || based_modelid == "RT-MT1300" ){	//MODELDEP : Spec special fine tune
+		if(based_modelid == "RT-AC85U" || based_modelid == "RT-AC85P"  || based_modelid == "RT-AC68A" || based_modelid == "RT-AC65U" || based_modelid == "RM-AC2100" ||  based_modelid == "RT-MIR3G" || based_modelid == "RT-MIR3P" || based_modelid == "RT-MIR4A" || based_modelid == "RT-RM2100" || based_modelid == "RT-R2100" ||based_modelid == "RT-NEWIFI2" || based_modelid == "RT-RS1200P" ||based_modelid == "RT-XYC3" ||based_modelid == "RT-NEWIFI3" || based_modelid == "RT-HIWIFI4" || based_modelid == "RT-A040WQ" || based_modelid == "RT-MSG1500" || based_modelid == "RT-JDC1" || based_modelid == "RT-MT1300" || based_modelid == "RT-K2P" ){	//MODELDEP : Spec special fine tune
 			document.getElementById("bwdpi_status").style.display = "none";
 		}	
 	}
@@ -3819,21 +3823,3 @@ function setRadioValue(obj,val) {
 	}
 }
 
-function check_ddns_status(){
-	var ddns_flag = true;
-	if('<% nvram_get("ddns_enable_x");%>' == "1" && '<% nvram_get("ddns_hostname_x");%>' != ""){
-		if('<% nvram_get("ddns_server_x");%>' == 'WWW.ASUS.COM') { //ASUS DDNS
-			if((ddns_return_code.indexOf('200')==-1) && (ddns_return_code.indexOf('220')==-1) && (ddns_return_code.indexOf('230')==-1))
-				ddns_flag = false;
-
-		}
-		else{ //Other ddns service
-			if(ddns_updated != '1' || ddns_return_code=='unknown_error' || ddns_return_code=="auth_fail")
-				ddns_flag = false;
-		}
-	}
-	else
-		ddns_flag = false;
-
-	return ddns_flag;
-}

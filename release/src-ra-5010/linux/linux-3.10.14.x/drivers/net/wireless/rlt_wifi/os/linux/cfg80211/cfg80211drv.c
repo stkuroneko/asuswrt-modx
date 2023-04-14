@@ -353,10 +353,7 @@ VOID CFG80211DRV_OpsMgmtFrameProbeRegister(
 		else 
 			pDevEntry->Cfg80211RegisterProbeReqFrame = FALSE;			
 			
-#ifndef RT_CFG80211_P2P_STATIC_CONCURRENT_DEVICE			
 		return;
-#endif /* RT_CFG80211_P2P_STATIC_CONCURRENT_DEVICE */
-
 	}
 #endif /* RT_CFG80211_P2P_CONCURRENT_DEVICE */
 	
@@ -625,7 +622,7 @@ BOOLEAN CFG80211DRV_StaGet(
 	//getRate(pEntry->HTPhyMode, &DataRate);
 	RtmpDrvRateGet(pAd, pEntry->HTPhyMode.field.MODE, pEntry->HTPhyMode.field.ShortGI,
 				 pEntry->HTPhyMode.field.BW,pEntry->HTPhyMode.field.MCS,
-				 newRateGetAntenna(pEntry->MaxHTPhyMode.field.MCS, pEntry->HTPhyMode.field.MODE),&DataRate);
+				 newRateGetAntenna(pEntry->MaxHTPhyMode.field.MCS),&DataRate);
 	DataRate /= 500000;
 	DataRate /= 2;
 
@@ -1239,11 +1236,7 @@ BOOLEAN CFG80211_checkScanResInKernelCache(
                                WLAN_CAPABILITY_ESS, WLAN_CAPABILITY_ESS);
 	if (bss)
         {
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,0))
-			cfg80211_put_bss(pWiphy, bss);
-#else
                 cfg80211_put_bss(bss);
-#endif
                 return TRUE;
         }
 
@@ -1288,12 +1281,8 @@ BOOLEAN CFG80211_checkScanTable(
 	if (bss)
 	{
 		DBGPRINT(RT_DEBUG_TRACE, ("Found %s in Kernel_ScanTable with CH[%d]\n", pApCliEntry->MlmeAux.Ssid, bss->channel->center_freq));
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,0))
-		cfg80211_put_bss(pWiphy, bss);
-#else
 		bss->tsf = timestamp;
 		cfg80211_put_bss(bss);
-#endif
 		return TRUE;
 	}
 	else
@@ -1352,11 +1341,7 @@ BOOLEAN CFG80211_checkScanTable(
 					PRINT_MAC(pApCliEntry->MlmeAux.Bssid),bss->channel->center_freq, pBssEntry->Channel,
 					pApCliEntry->MlmeAux.BeaconPeriod, pBssEntry->VarIeFromProbeRspLen);	
 			
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,0))
-			cfg80211_put_bss(pWiphy, bss);
-#else
 			cfg80211_put_bss(bss);
-#endif
 			isOk = TRUE;
 		}
 		

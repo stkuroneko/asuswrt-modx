@@ -893,14 +893,12 @@ config(void)
 	nvram_unset("vivso");
 #endif
 #endif
-
 	/* Clean nat conntrack for this interface,
 	 * but skip physical VPN subinterface for PPTP/L2TP */
 	if (changed && !(unit < 0 &&
 	    (nvram_match(strcat_r(wanprefix, "proto", tmp), "l2tp") ||
 	     nvram_match(strcat_r(wanprefix, "proto", tmp), "pptp"))))
 		ifconfig(wan_ifname, IFUP, "0.0.0.0", NULL);
-
 	ifconfig(wan_ifname, IFUP,
 		 nvram_safe_get(strcat_r(prefix, "ipaddr", tmp)),
 		 nvram_safe_get(strcat_r(prefix, "netmask", tmp)));
@@ -1128,10 +1126,6 @@ _dprintf("%s: IFUP.\n", __FUNCTION__);
 		nvram_safe_get("lan_netmask"));
 
 	lan_up(lan_ifname);
-
-#if defined(RTCONFIG_SWRT_KVR) && defined(RTCONFIG_RALINK)
-	system("/usr/bin/iappd.sh restart");
-#endif
 
 	_dprintf("done\n");
 	return 0;

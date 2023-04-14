@@ -216,6 +216,7 @@ a{
 }
 </style>	
 <script type="text/javascript">
+var bwdpi_support = ('<% nvram_get("rc_support"); %>'.search('bwdpi') == -1) ? false : true;
 var casenum = '<% get_parameter("cat_id"); %>';
 var flag = '<% get_parameter("flag"); %>';
 var block_info = '<% bwdpi_redirect_info(); %>';
@@ -316,6 +317,7 @@ function show_information(){
 	var code = "";	
 	var code_suggestion = "";
 	var code_title = "";
+	var parental_string = "";
 	
 	code = "<ul>";
 	code += "<li><div><span class='desc_info'><#Description#>:</span><br>" + target_info.desc + "</div></li>";
@@ -377,7 +379,12 @@ function show_information(){
 	else{		//for Parental Control(Time Scheduling)
 		code_title = "<div class='er_title' style='height:auto;'><#block_TS_title#></div>"
 		code_suggestion = "<ul>";
-		code_suggestion += "<li><#block_TS_suggest1#><#Parental_Control#><#block_TS_suggest2#></li>";
+		if(bwdpi_support)
+			parental_string = "<#Time_Scheduling#>";
+		else
+			parental_string = "<#Parental_Control#>";
+
+		code_suggestion += "<li><#block_TS_suggest1#> "+ parental_string +" <#block_TS_suggest2#></li>";
 		code_suggestion += "<li><#block_TS_suggest3#></li>";
 		code_suggestion += "</ul>";
 		$("#go_btn").click(function(){

@@ -89,11 +89,6 @@ VOID APPeerProbeReqAction(
 			continue;
 		}
 
-#ifdef AIRPLAY_SUPPORT
-		if (mbss->bBcnSntReq == FALSE)
-			continue;
-#endif /* AIRPLAY_SUPPORT */
-
 		PhyMode = wdev->PhyMode;
 
 		if ( ((((ProbeReqParam.SsidLen == 0) && (!mbss->bHideSsid)) ||
@@ -267,7 +262,7 @@ VOID APPeerProbeReqAction(
 			(wdev->DesiredHtPhyInfo.bHtEnable))
 		{
 			ULONG TmpLen;
-			UCHAR	HtLen, AddHtLen;
+			UCHAR	HtLen, AddHtLen, NewExtLen;
 #ifdef RT_BIG_ENDIAN
 			HT_CAPABILITY_IE HtCapabilityTmp;
 			ADD_HT_INFO_IE	addHTInfoTmp;
@@ -277,6 +272,7 @@ VOID APPeerProbeReqAction(
 
 			HtLen = sizeof(pAd->CommonCfg.HtCapability);
 			AddHtLen = sizeof(pAd->CommonCfg.AddHTInfo);
+			NewExtLen = 1;
 			/*New extension channel offset IE is included in Beacon, Probe Rsp or channel Switch Announcement Frame */
 #ifndef RT_BIG_ENDIAN
 			MakeOutgoingFrame(pOutBuffer + FrameLen,            &TmpLen,
@@ -872,24 +868,6 @@ VOID APPeerProbeReqAction(
 #endif /* DOT11R_FT_SUPPORT */
 
 
-#ifdef AIRPLAY_SUPPORT
-			if (AIRPLAY_ON(pAd))
-			{ 
-				ULONG	AirplayTmpLen = 0;		
-
-				/*User user setting IE*/
-				if (pAd->pAirplayIe && (pAd->AirplayIeLen != 0))
-				{	
-					//printk("AIRPLAY IE setting : MakeOutgoingFrame IeLen=%d\n",pAd->AirplayIeLen);
-					//hex_dump("APPLE IE:", pAd->pAirplayIe , pAd->AirplayIeLen);
-					MakeOutgoingFrame(pOutBuffer+FrameLen, &AirplayTmpLen,
-										 pAd->AirplayIeLen, pAd->pAirplayIe,	 
-											END_OF_ARGS);
-					FrameLen += AirplayTmpLen;
-				}
-			}
-#endif /* AIRPLAY_SUPPORT*/
-
 	/* 
 		add Ralink-specific IE here - Byte0.b0=1 for aggregation, Byte0.b1=1 for piggy-back
 		                                 Byte0.b3=1 for rssi-feedback 
@@ -1344,6 +1322,7 @@ VOID APPeerBeaconAction(
 		if (pAd->CommonCfg.bOverlapScanning == TRUE)
 		{
 			INT		index,secChIdx;
+			BOOLEAN		found = FALSE;
 			ADD_HTINFO *pAdd_HtInfo;
 			
 			for (index = 0; index < pAd->ChannelListNum; index++)
@@ -1389,6 +1368,8 @@ VOID APPeerBeaconAction(
 						pAd->ChannelList[index].bEffectedChannel |=  EFFECTED_CH_LEGACY; /* 4; 1 for legacy AP. */
 						pAd->CommonCfg.BssCoexApCnt++;
 					}
+
+					found = TRUE;
 				}
 			}
 		}
@@ -1633,6 +1614,7 @@ VOID APMlmeScanReqAction(RTMP_ADAPTER *pAd, MLME_QUEUE_ELEM *Elem)
  */
 VOID APPeerBeaconAtScanAction(RTMP_ADAPTER *pAd, MLME_QUEUE_ELEM *Elem)
 {
+	PFRAME_802_11 pFrame;
 	UCHAR *VarIE = NULL;
 	USHORT LenVIE;
 	NDIS_802_11_VARIABLE_IEs *pVIE = NULL;
@@ -1662,6 +1644,7 @@ VOID APPeerBeaconAtScanAction(RTMP_ADAPTER *pAd, MLME_QUEUE_ELEM *Elem)
 		goto LabelErr;
 	}
 
+	pFrame = (PFRAME_802_11) Elem->Msg;
 	/* Init Variable IE structure */
 	pVIE = (PNDIS_802_11_VARIABLE_IEs) VarIE;
 	pVIE->Length = 0;

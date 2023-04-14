@@ -2759,13 +2759,6 @@ _dprintf("nat_rule: stop_nat_rules 1.\n");
 	}
 #endif
 
-#if defined(RTCONFIG_SWRT_FASTPATH)
-	char fbuf[3];
-	if(f_read("/proc/lan_ip", fbuf, 2) > 0){
-		char *p = nvram_get("lan_ipaddr");
-		f_write_string("/proc/lan_ip", p, 0, 0);
-	}
-#endif
 	_dprintf("%s %d\n", __FUNCTION__, __LINE__);
 }
 
@@ -4216,10 +4209,6 @@ lan_up(char *lan_ifname)
 	stop_networkmap();
 	start_networkmap(0);
 	update_lan_state(LAN_STATE_CONNECTED, 0);
-
-#if defined(RTCONFIG_SWRT_KVR) && defined(RTCONFIG_RALINK)
-	system("/usr/bin/iappd.sh restart");
-#endif
 
 #ifdef RTCONFIG_WIRELESSREPEATER
 	// when wlc_mode = 0 & wlc_state = WLC_STATE_CONNECTED, don't notify wanduck yet.
@@ -5856,9 +5845,9 @@ void restart_wireless(void)
 	if(nvram_get_int("AllLED") == 0) setAllLedOff();
 #endif
 
-//#ifdef RTCONFIG_NEW_USER_LOW_RSSI
+#ifdef RTCONFIG_NEW_USER_LOW_RSSI
 	start_roamast();
-//#endif
+#endif
 
 #if defined(RTCONFIG_RALINK_MT7621)
 	setup_smp();	/* for adjust smp_affinity of cpu */
@@ -5937,9 +5926,6 @@ void restart_wireless(void)
 		chmod(RSTHYD_SCRIPT, 0777);
 		doSystem("%s &", RSTHYD_SCRIPT);
 	}
-#endif
-#if defined(RTCONFIG_SWRT_KVR) && defined(RTCONFIG_RALINK)
-	system("/usr/bin/iappd.sh restart");
 #endif
 }
 

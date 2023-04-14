@@ -457,16 +457,16 @@ skip_check:
 			break;
 #endif /* RTMP_RF_RW_SUPPORT */
 #endif /* DBG */
-		case RTPRIV_IOCTL_ASUSCMD:
-			Status = RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_ASUSCMD, wrqin->u.data.flags, NULL, 0);
-			break;
 
 #ifdef WIFI_DIAG
 		case RTPRIV_IOCTL_GET_PROCESS_INFO:
 			RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_GET_PROCESS_INFO, 0, NULL, 0);
 			break;
 #endif
-
+		case RTPRIV_IOCTL_ASUSCMD:
+			subcmd = wrqin->u.data.flags;
+			RTMP_AP_IoctlHandle(pAd, wrq, CMD_RTPRIV_IOCTL_ASUSCMD,subcmd, wrqin->u.data.pointer, 0);
+			break;
 		default:
 /*			DBGPRINT(RT_DEBUG_ERROR, ("IOCTL::unknown IOCTL's cmd = 0x%08x\n", cmd)); */
 			Status = RTMP_IO_EOPNOTSUPP;

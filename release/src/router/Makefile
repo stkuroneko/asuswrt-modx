@@ -90,8 +90,6 @@ MODEL = $(subst -,,$(subst +,P,$(BUILD_NAME)))
 endif
 export CFLAGS += -D$(MODEL)
 export $(MODEL)=y
-export CFLAGS += -DSWRT_VER_MAJOR_$(SWRT_VER_MAJOR)
-export SWRT_VER_MAJOR_$(SWRT_VER_MAJOR)=y
 
 export OLD_SRC=$(SRCBASE)/../src
 ifeq ($(RTCONFIG_REALTEK),y)
@@ -486,7 +484,7 @@ obj-y += $(if $(RTCONFIG_ATED122),ated_1.2.2,ated)
 endif
 obj-y += $(if $(RTCONFIG_MII_MGR),mii_mgr)
 
-ifeq ($(or $(RTAC85P),$(RTN800HP),$(RTACRH26),$(RTMIR3G),$(RTMIR3P),$(RTMIR4A),$(RTRM2100),$(RTR2100),$(RTNEWIFI2),$(RTRS1200P),$(RTXYC3),$(RTNEWIFI3),$(RTHIWIFI4),$(RTE8820S),$(RTA040WQ),$(RTMSG1500),$(RTJDC1),$(RTMT1300)),y)
+ifeq ($(or $(RTAC85P),$(RTN800HP),$(RTACRH26),$(RTMIR3G),$(RTMIR3P),$(RTMIR4A),$(RTRM2100),$(RTR2100),$(RTNEWIFI2),$(RTRS1200P),$(RTXYC3),$(RTNEWIFI3),$(RTHIWIFI4),$(RTE8820S),$(RTA040WQ),$(RTMSG1500),$(RTJDC1),$(RTMT1300),$(RTK2P)),y)
 obj-y += switch
 endif
 
@@ -1029,7 +1027,6 @@ obj-$(RTCONFIG_FTPCLIENT) += ftpclient
 obj-$(RTCONFIG_SAMBACLIENT) += sambaclient
 obj-$(RTCONFIG_USBCLIENT) += usbclient
 
-obj-$(RTCONFIG_ENTWARE) += libiconv-1.14
 #aaews,asusnatnl related
 obj-$(RTCONFIG_TUNNEL) += libxml2
 obj-$(RTCONFIG_TUNNEL) += curl
@@ -1221,8 +1218,6 @@ obj-$(RTCONFIG_TCPDUMP) += tcpdump-4.4.0
 obj-$(RTCONFIG_TRACEROUTE) += traceroute-2.1.0
 
 obj-$(RTCONFIG_BLINK_LED) += bled
-obj-$(RTCONFIG_SWRT_I2CLED) += i2cled i2c-tools-3.1.2
-obj-$(RTCONFIG_SWRT_KVR) += ralinkiappd
 obj-$(RTCONFIG_BONDING) += ifenslave
 
 obj-$(RTCONFIG_GEOIP) += GeoIP-1.6.2
@@ -2061,23 +2056,20 @@ ifeq ($(RTCONFIG_QTN),y)
 endif
 ifeq ($(RTCONFIG_BWDPI),y)
 	@install -d $(TARGETDIR)/usr/bwdpi/
-	@cp -f $(TOP)/bwdpi_source/RC_INDEP/*.so $(TARGETDIR)/usr/lib/
-	@cp -f $(TOP)/bwdpi_source/RC_INDEP/*.ko $(TARGETDIR)/usr/bwdpi/
-	@cp -f $(TOP)/bwdpi_source/RC_INDEP/*.trf $(TARGETDIR)/usr/bwdpi/
-	@cp -f $(TOP)/bwdpi_source/RC_INDEP/*.cert $(TARGETDIR)/usr/bwdpi/
+ifneq ($(or $(RTMIR3G),$(RTMIR3P),$(RTMIR4A),$(RTRM2100),$(RTR2100),$(RTNEWIFI2),$(RTRS1200P),$(RTXYC3),$(RTNEWIFI3),$(RTHIWIFI4),$(RTE8820S),$(RTA040WQ),$(RTMSG1500),$(RTJDC1),$(RTMT1300),$(RTK2P)),y)
 	@install -D $(TOP)/bwdpi_source/RC_INDEP/wred $(TARGETDIR)/usr/sbin/wred
 	@install -D $(TOP)/bwdpi_source/RC_INDEP/wred_set_conf $(TARGETDIR)/usr/sbin/wred_set_conf
-	-@install -D $(TOP)/bwdpi_source/RC_INDEP/wred_set_wbl $(TARGETDIR)/usr/sbin/wred_set_wbl
+	@install -D $(TOP)/bwdpi_source/RC_INDEP/wred_set_wbl $(TARGETDIR)/usr/sbin/wred_set_wbl
+	@cp -f $(TOP)/bwdpi_source/RC_INDEP/*.so $(TARGETDIR)/usr/lib/
+endif
+	@cp -f $(TOP)/bwdpi_source/RC_INDEP/*.ko $(TARGETDIR)/usr/bwdpi/
+	@cp -f $(TOP)/bwdpi_source/RC_INDEP/*.cert $(TARGETDIR)/usr/bwdpi/
+	@cp -f $(TOP)/bwdpi_source/RC_INDEP/*.trf $(TARGETDIR)/usr/bwdpi/
 	@install -D $(TOP)/bwdpi_source/RC_INDEP/dcd $(TARGETDIR)/usr/sbin/dcd
-	-@install -D $(TOP)/bwdpi_source/RC_INDEP/tcd $(TARGETDIR)/usr/sbin/tcd
+	@install -D $(TOP)/bwdpi_source/RC_INDEP/tcd $(TARGETDIR)/usr/sbin/tcd
 	@install -D $(TOP)/bwdpi_source/RC_INDEP/shn_ctrl $(TARGETDIR)/usr/sbin/shn_ctrl
 	@install -D $(TOP)/bwdpi_source/RC_INDEP/tdts_rule_agent $(TARGETDIR)/usr/sbin/tdts_rule_agent
 	@install -D $(shell dirname $(shell which $(CXX)))/../lib/librt.so.0 $(TARGETDIR)/lib/librt.so.0
-ifeq ($(RTCONFIG_RALINK),y)
-	# Due to some library strip will make wred crash, need to rollback library from toolchains
-	install $(LIBDIR)/libpthread.so.0 $(TARGETDIR)/lib/
-	install $(LIBDIR)/libc.so.0 $(TARGETDIR)/lib/
-endif
 endif
 
 ifeq ($(RTCONFIG_BCMARM),y)
@@ -2788,7 +2780,6 @@ ifeq ($(RTCONFIG_DHDAP),y)
 	+$(MAKE) -C dhd_monitor clean
 endif
 endif
-
 
 dnsmasq:
 	@$(SEP)

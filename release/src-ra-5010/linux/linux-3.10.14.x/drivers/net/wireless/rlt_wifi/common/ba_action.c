@@ -1153,7 +1153,7 @@ VOID PeerAddBAReqAction(RTMP_ADAPTER *pAd, MLME_QUEUE_ELEM *Elem)
 	PUCHAR pOutBuffer = NULL;
 	NDIS_STATUS NStatus;
 	PFRAME_ADDBA_REQ pAddreqFrame = NULL;
-	ULONG FrameLen;
+	ULONG FrameLen, *ptemp;
 	MAC_TABLE_ENTRY *pMacEntry;
 #ifdef CONFIG_AP_SUPPORT
 	INT apidx;
@@ -1168,6 +1168,7 @@ VOID PeerAddBAReqAction(RTMP_ADAPTER *pAd, MLME_QUEUE_ELEM *Elem)
 	
 	pMacEntry = &pAd->MacTab.Content[Elem->Wcid];
 	DBGPRINT(RT_DEBUG_TRACE,("BA - PeerAddBAReqAction----> \n"));
+	ptemp = (PULONG)Elem->Msg;
 
 	if (PeerAddBAReqActionSanity(pAd, Elem->Msg, Elem->MsgLen, pAddr))
 	{
@@ -1917,17 +1918,7 @@ VOID Indicate_AMPDU_Packet(RTMP_ADAPTER *pAd, RX_BLK *pRxBlk, UCHAR FromWhichBSS
 	{
 		
 		pBAEntry->nDropPacket++;
-		if (pRxBlk->Ping)
-		{
-				INDICATE_LEGACY_OR_AMSDU(pAd, pRxBlk, FromWhichBSSID);
-		} else if (pRxBlk->Arp)
-		{
-				INDICATE_LEGACY_OR_AMSDU(pAd, pRxBlk, FromWhichBSSID);
-		} else if (pRxBlk->Dhcp){
-				INDICATE_LEGACY_OR_AMSDU(pAd, pRxBlk, FromWhichBSSID);
-		} else
-				RELEASE_NDIS_PACKET(pAd, pRxBlk->pRxPacket, NDIS_STATUS_FAILURE);
-
+		RELEASE_NDIS_PACKET(pAd, pRxBlk->pRxPacket, NDIS_STATUS_FAILURE);
 	}
 	
 	/* III. Drop Old Received Packet*/
@@ -1935,17 +1926,7 @@ VOID Indicate_AMPDU_Packet(RTMP_ADAPTER *pAd, RX_BLK *pRxBlk, UCHAR FromWhichBSS
 	{
 		
 		pBAEntry->nDropPacket++;
-		if (pRxBlk->Ping)
-		{
-				INDICATE_LEGACY_OR_AMSDU(pAd, pRxBlk, FromWhichBSSID);
-		} else if (pRxBlk->Arp)
-		{
-				INDICATE_LEGACY_OR_AMSDU(pAd, pRxBlk, FromWhichBSSID);
-		} else if (pRxBlk->Dhcp){
-				INDICATE_LEGACY_OR_AMSDU(pAd, pRxBlk, FromWhichBSSID);
-		} else
-				RELEASE_NDIS_PACKET(pAd, pRxBlk->pRxPacket, NDIS_STATUS_FAILURE);
-
+		RELEASE_NDIS_PACKET(pAd, pRxBlk->pRxPacket, NDIS_STATUS_FAILURE);
 	}
 	
 	/* IV. Receive Sequence within Window Size*/

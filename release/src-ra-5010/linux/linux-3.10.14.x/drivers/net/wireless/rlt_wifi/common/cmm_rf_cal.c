@@ -281,8 +281,13 @@ INT Set_TestLoftTxIQCalibration_Proc(
 	IN RTMP_ADAPTER	*pAd,
 	IN PSTRING arg)
 {
+	UINT32 Value;
+
+	Value = simple_strtol(arg, 0, 10);
+
 	DBGPRINT(RT_DEBUG_OFF, ("TestLOFTTxIQCalibration !!!\n"));
 	pAd->bCalibrationDone = FALSE;
+	//LOFT_IQ_Calibration_v2(pAd, TRUE, Value);
 	LOFT_IQ_Calibration(pAd);
 	pAd->bCalibrationDone = TRUE;
 
@@ -882,9 +887,7 @@ UCHAR DPD_Calibration(
 	{
 		DPD_Cal_success = FALSE;
 
-		DBGPRINT(RT_DEBUG_TRACE, 
-				("Don't need do DPD Calibration  !!!, bInternalTxALC = %u\n",
-				bInternalTxALC));
+		DBGPRINT(RT_DEBUG_TRACE, ("Don't need do DPD Calibration  !!!\n"));
 
 		return 0;
 	}

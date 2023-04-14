@@ -233,7 +233,7 @@ struct nvram_tuple router_defaults[] = {
 #endif
 #endif
 	{ "wl_mrate_x", "0", CKN_STR4, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },	/* Mcast Auto rate */
-#if !defined(RTCONFIG_WIFILOGO) && !defined(RTCONFIG_QCA) && !defined(RTMIR3G) && !defined(RTMIR3P) && !defined(RTMIR4A) && !defined(RTRM2100) && !defined(RTR2100) && !defined(RTNEWIFI2) && !defined(RTXYC3) && !defined(RTNEWIFI3) && !defined(RTHIWIFI4) && !defined(RTE8820S) && !defined(RTA040WQ) && !defined(RTMSG1500) && !defined(RTJDC1) && !defined(RTMT1300)
+#if !defined(RTCONFIG_WIFILOGO) && !defined(RTCONFIG_QCA) && !defined(RTMIR3G) && !defined(RTMIR3P) && !defined(RTMIR4A) && !defined(RTRM2100) && !defined(RTR2100) && !defined(RTNEWIFI2) && !defined(RTXYC3) && !defined(RTNEWIFI3) && !defined(RTHIWIFI4) && !defined(RTE8820S) && !defined(RTA040WQ) && !defined(RTMSG1500) && !defined(RTJDC1) && !defined(RTMT1300) && !defined(RTK2P)
 	{ "wl_frameburst", "on", CKN_STR4, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },	/* BRCM Frambursting mode (off|on) */
 	{ "wl_frameburst_override", "on", CKN_STR_DEFAULT, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },  /* BRCM frameburst override to enable/disable
 						 * dynamic framebursting default on
@@ -289,7 +289,9 @@ struct nvram_tuple router_defaults[] = {
 #ifdef RTCONFIG_WL_AUTO_CHANNEL
 	{ "AUTO_CHANNEL", "1", CKN_STR1, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },	/* 0: real channel; 1: Auto; for RT-N12HP & RT-N14UHP */
 #endif
-	{ "location_code", "CN", CKN_STR8, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
+#ifdef RTCONFIG_TCODE
+	{ "location_code", "CN", CKN_STR8, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },	/* 0: real channel; 1: Auto; for RT-N12HP & RT-N14UHP */
+#endif
 #ifdef RTCONFIG_RALINK
 	{ "wl_nband", "2", CKN_STR1, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },	/* N-BAND */
 	{ "wl0_nband", "2", CKN_STR1, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },	/* 2.4 GHz */
@@ -395,7 +397,7 @@ struct nvram_tuple router_defaults[] = {
 #ifdef RTCONFIG_PSR_GUEST
 	{ "wl_psr_guest", "0", CKN_STR_DEFAULT, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },	/* Default to disable PSR guest support */
 #endif
-#elif defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTXYC3) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300)
+#elif defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTXYC3) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300) || defined(RTK2P)
 	{ "wl_mfp", "0", CKN_STR1, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },	/* Protected Management Frame */
 #endif
 #ifdef RTCONFIG_WPS
@@ -638,7 +640,7 @@ struct nvram_tuple router_defaults[] = {
 #ifdef RTCONFIG_RALINK
 	{ "wl_PktAggregate", "1", CKN_STR1, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },	/* UI configurable */
 	{ "wl_HT_OpMode", "0", CKN_STR_DEFAULT, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },	/* UI configurable */
-#if defined(RTAC85U) || defined(RTAC85P) || defined(RTAC65U) || defined(RTN800HP) || defined(RTACRH26) || defined(RMAC2100) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTXYC3) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300)
+#if defined(RTAC85U) || defined(RTAC85P) || defined(RTAC65U) || defined(RTN800HP) || defined(RTACRH26) || defined(RMAC2100) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTXYC3) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300) || defined(RTK2P)
 	{ "wl_DLSCapable", "1", CKN_STR1, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },	/* UI configurable */
 #else
 	{ "wl_DLSCapable", "0", CKN_STR1, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },	/* UI configurable */
@@ -649,7 +651,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "wl_HT_RDG", "1", CKN_STR_DEFAULT, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
 	{ "wl_HT_LinkAdapt", "0", CKN_STR_DEFAULT, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
 	{ "wl_HT_MpduDensity", "5", CKN_STR_DEFAULT, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-#if defined(RTAC85U) || defined(RTAC85P) || defined(RPAC87) || defined(RTN800HP) || defined(RTACRH26) || defined(RMAC2100) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTXYC3) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300)
+#if defined(RTAC85U) || defined(RTAC85P) || defined(RPAC87) || defined(RTN800HP) || defined(RTACRH26) || defined(RMAC2100) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTXYC3) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300) || defined(RTK2P)
 	{ "wl_HT_AMSDU", "1", CKN_STR_DEFAULT, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
 #else
 	{ "wl_HT_AMSDU", "0", CKN_STR_DEFAULT, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
@@ -687,7 +689,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "wl0.1_turbo_qam", "1", CKN_STR1, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
 #endif
 #endif
-#if defined(RTAC85U) || defined(RTAC85P) || defined(RTN800HP) || defined(RTACRH26) || defined(RMAC2100) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTXYC3) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300)
+#if defined(RTAC85U) || defined(RTAC85P) || defined(RTN800HP) || defined(RTACRH26) || defined(RMAC2100) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTXYC3) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300) || defined(RTK2P)
 	{ "wl_txbf_en", "1", CKN_STR_DEFAULT, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
 #else
 	{ "wl_txbf_en", "0", CKN_STR_DEFAULT, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
@@ -2223,8 +2225,9 @@ struct nvram_tuple router_defaults[] = {
 	{ "http_lanport", "80", CKN_STR5, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
 #ifdef RTCONFIG_HTTPS
 	{ "https_lanport", "8443", CKN_STR5, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-	{ "https_crt_save", "1", CKN_STR1, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-	{ "https_crt_gen", "1", CKN_STR1, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
+	{ "https_crt_file", "", CKN_STR_DEFAULT, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
+	{ "https_crt_save", "1", CKN_STR_DEFAULT, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
+	{ "https_crt_gen", "1", CKN_STR_DEFAULT, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
 	{ "https_crt_cn", "", CKN_STR_DEFAULT, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
 	{ "webs_last_info", "", CKN_STR_DEFAULT, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
 	{ "firmware_path", "", CKN_STR128, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
@@ -3091,39 +3094,6 @@ struct nvram_tuple router_defaults[] = {
 	{ "entware_wan_sig", "0", CKN_STR1, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
 	{ "entware_stop_sig", "0", CKN_STR1, CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
 	{ "entware_type", "" , CKN_STR16 , CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-#endif
-#if defined(RTCONFIG_SMARTDNS)
-	{ "smartdns_dis_ipv6", "0" , CKN_STR1 , CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-	{ "smartdns_prefetch", "1" , CKN_STR1 , CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-	{ "smartdns_dualstackip", "1" , CKN_STR1 , CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-	{ "smartdns_num", "0" , CKN_STR1 , CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-	{ "smartdns_server_1", "" , CKN_STR128 , CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-	{ "smartdns_port_1", "" , CKN_STR10 , CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-	{ "smartdns_type_1", "" , CKN_STR10 , CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-	{ "smartdns_server_2", "" , CKN_STR128 , CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-	{ "smartdns_port_2", "" , CKN_STR10 , CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-	{ "smartdns_type_2", "" , CKN_STR10 , CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-	{ "smartdns_server_3", "" , CKN_STR128 , CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-	{ "smartdns_port_3", "" , CKN_STR10 , CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-	{ "smartdns_type_3", "" , CKN_STR10 , CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-	{ "smartdns_server_4", "" , CKN_STR128 , CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-	{ "smartdns_port_4", "" , CKN_STR10 , CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-	{ "smartdns_type_4", "" , CKN_STR64 , CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-	{ "smartdns_server_5", "" , CKN_STR128 , CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-	{ "smartdns_port_5", "" , CKN_STR10 , CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-	{ "smartdns_type_5", "" , CKN_STR10 , CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-	{ "smartdns_server_6", "" , CKN_STR128 , CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-	{ "smartdns_port_6", "" , CKN_STR10 , CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-	{ "smartdns_type_6", "" , CKN_STR10 , CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-	{ "smartdns_server_7", "" , CKN_STR128 , CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-	{ "smartdns_port_7", "" , CKN_STR10 , CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-	{ "smartdns_type_7", "" , CKN_STR10 , CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-	{ "smartdns_server_8", "" , CKN_STR128 , CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-	{ "smartdns_port_8", "" , CKN_STR10 , CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-	{ "smartdns_type_8", "" , CKN_STR10 , CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-	{ "smartdns_server_9", "" , CKN_STR128 , CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-	{ "smartdns_port_9", "" , CKN_STR10 , CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
-	{ "smartdns_type_9", "" , CKN_STR10 , CKN_TYPE_DEFAULT, CKN_ACC_LEVEL_DEFAULT, CKN_ENC_DEFAULT, 0 },
 #endif
 	{ 0, 0, 0, 0, 0, 0, 0 }
 }; // router_defaults
@@ -4246,3 +4216,4 @@ nvram_restore_var(char *prefix, char *name)
 #endif
 }
 #endif	/* CONFIG_BCMWL5 */
+

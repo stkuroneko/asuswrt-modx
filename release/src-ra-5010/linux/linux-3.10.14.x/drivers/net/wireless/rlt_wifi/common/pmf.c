@@ -67,6 +67,8 @@ VOID PMF_MlmeSAQueryReq(
         HEADER_802_11 SAQReqHdr;
         UINT32 FrameLen = 0;
         UCHAR SACategoryType, SAActionType;
+        UINT ccmp_len = LEN_CCMP_HDR + LEN_CCMP_MIC;
+        UCHAR ccmp_buf[ccmp_len];
         PPMF_CFG pPmfCfg = NULL;
 
         if (!pEntry)
@@ -150,6 +152,8 @@ VOID PMF_PeerSAQueryReqAction(
                 HEADER_802_11 SAQRspHdr;
                 UINT32 FrameLen = 0;
                 UCHAR SACategoryType, SAActionType;
+                UINT ccmp_len = LEN_CCMP_HDR + LEN_CCMP_MIC;
+                UCHAR ccmp_buf[ccmp_len];
 
                 DBGPRINT(RT_DEBUG_ERROR, ("[PMF]%s : Receive SA Query Request\n", __FUNCTION__));
                 pHeader = (PFRAME_802_11) Elem->Msg;
@@ -259,10 +263,9 @@ VOID PMF_SAQueryTimeOut(
 
         if (pEntry)
         {
-		PRTMP_ADAPTER pAd = (PRTMP_ADAPTER)pEntry->pAd;
-
    		DBGPRINT(RT_DEBUG_ERROR, ("[PMF]%s - STA(%02x:%02x:%02x:%02x:%02x:%02x)\n",
    					__FUNCTION__, PRINT_MAC(pEntry->Addr)));
+			PRTMP_ADAPTER pAd = (PRTMP_ADAPTER)pEntry->pAd;
 #ifdef CONFIG_AP_SUPPORT
 		IF_DEV_CONFIG_OPMODE_ON_AP(pAd)
 		{		
@@ -283,12 +286,10 @@ VOID PMF_SAQueryConfirmTimeOut(
 
         if (pEntry)
         {
-			PRTMP_ADAPTER pAd = (PRTMP_ADAPTER)pEntry->pAd;
-
-			DBGPRINT(RT_DEBUG_ERROR, ("[PMF]%s - STA(%02x:%02x:%02x:%02x:%02x:%02x)\n",
-					__FUNCTION__, PRINT_MAC(pEntry->Addr)));
-			pEntry->SAQueryStatus = SAQ_RETRY;
-			PMF_MlmeSAQueryReq(pAd, pEntry);
+   		DBGPRINT(RT_DEBUG_ERROR, ("[PMF]%s - STA(%02x:%02x:%02x:%02x:%02x:%02x)\n", __FUNCTION__, PRINT_MAC(pEntry->Addr)));
+                PRTMP_ADAPTER pAd = (PRTMP_ADAPTER)pEntry->pAd;
+                pEntry->SAQueryStatus = SAQ_RETRY;
+                PMF_MlmeSAQueryReq(pAd, pEntry);
         }
 }
 
@@ -736,7 +737,7 @@ INT PMF_RobustFrameClassify(
 	IN PUCHAR pData,
 	IN BOOLEAN IsRx)
 {
-	PMAC_TABLE_ENTRY pEntry = (PMAC_TABLE_ENTRY) pData;
+	PMAC_TABLE_ENTRY pEntry = pData;
 
 	if ((pHdr->FC.Type != FC_TYPE_MGMT) || (frame_len <= 0))
 		return NORMAL_FRAME;
@@ -1130,7 +1131,7 @@ BOOLEAN	PMF_PerformTxFrameAction(
 	UINT SrcBufLen;
         UINT8 TXWISize = pAd->chipCap.TXWISize;
 	INT FrameType;
-        INT ret = 0;
+        INT ret;
 	PMAC_TABLE_ENTRY pEntry = NULL;
 
 	RTMP_QueryPacketInfo(pPacket, &PacketInfo, &pSrcBufVA, &SrcBufLen);
@@ -1180,14 +1181,14 @@ BOOLEAN	PMF_PerformTxFrameAction(
                 	pHeader_802_11 = (PHEADER_802_11) (pSrcBufVA + TXINFO_SIZE + TXWISize);
 
 			ret = PMF_EncryptUniRobustFrameAction(pAd, 
-			        			(PUCHAR) pHeader_802_11, 
+			        			pHeader_802_11, 
 				        		(SrcBufLen - TXINFO_SIZE - TXWISize));
 		        break;
 		}
 		case GROUP_ROBUST_FRAME:	
 		{
 			ret = PMF_EncapBIPAction(pAd, 
-						(PUCHAR) pHeader_802_11, 
+						pHeader_802_11, 
 						(SrcBufLen - TXINFO_SIZE - TXWISize));
 		        break;
 	        }
@@ -1219,6 +1220,7 @@ BOOLEAN	PMF_PerformRxFrameAction(
 	INT FrameType;
 	PUCHAR pMgmtFrame;
 	UINT mgmt_len;
+	RXWI_STRUC *pRxWI = pRxBlk->pRxWI;
 	PHEADER_802_11 pHeader = pRxBlk->pHeader;
 	PMAC_TABLE_ENTRY pEntry = NULL;
 
@@ -1370,7 +1372,7 @@ RSNA policy selection in an IBSS: IEEE P802.11w Table 8-1b
 /* chane the cmd depend on security mode first, and update to run time flag */
 INT Set_PMFMFPC_Proc (
 	IN PRTMP_ADAPTER pAd, 
-	IN PSTRING arg)
+	IN PCHAR arg)
 {
  	if(strlen(arg) == 0)
 		return FALSE;
@@ -1411,7 +1413,7 @@ RSNA policy selection in an IBSS: IEEE P802.11w Table 8-1b
 /* chane the cmd depend on security mode first, and update to run time flag*/
 INT Set_PMFMFPR_Proc (
 	IN PRTMP_ADAPTER pAd, 
-	IN PSTRING arg)
+	IN PCHAR arg)
 {
  	if(strlen(arg) == 0)
 		return FALSE;
@@ -1438,7 +1440,7 @@ INT Set_PMFMFPR_Proc (
 
 INT Set_PMFSHA256_Proc (
 	IN PRTMP_ADAPTER pAd, 
-	IN PSTRING arg)
+	IN PCHAR arg)
 {
  	if(strlen(arg) == 0)
 		return FALSE;

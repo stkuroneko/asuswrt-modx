@@ -317,9 +317,6 @@
 #include "mbo.h"
 #endif/* MBO_SUPPORT */
 
-#ifdef MAP_SUPPORT
-#include "map.h"
-#endif
 
 #ifdef WAPP_SUPPORT
 #include "wnm.h"

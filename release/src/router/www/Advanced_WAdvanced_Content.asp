@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <html xmlns:v>
 <head>
@@ -356,7 +356,7 @@ function initial(){
 			document.getElementById("wl_plcphdr_field").style.display = "none";
 		}
 
-		if(based_modelid == "RT-AC66U" || based_modelid == "RT-AC85U" || based_modelid == "RT-AC65U" || based_modelid == "RT-AC85P" || based_modelid == "RT-ACRH26" || based_modelid == "RT-MIR3G" || based_modelid == "RT-MIR4A" || based_modelid == "RT-MIR3P" || based_modelid == "RT-RM2100" || based_modelid == "RT-R2100" || based_modelid == "RT-NEWIFI2" || based_modelid == "RT-RS1200P" || based_modelid == "RT-NEWIFI3" || based_modelid == "RT-HIWIFI4" || based_modelid == "RT-E8820S" || based_modelid == "RT-A040WQ" || based_modelid == "RT-MSG1500" || based_modelid == "RT-JDC1" || based_modelid == "RT-MT1300"){
+		if(based_modelid == "RT-AC66U" || based_modelid == "RT-AC85U" || based_modelid == "RT-AC65U" || based_modelid == "RT-AC85P" || based_modelid == "RT-ACRH26" || based_modelid == "RT-MIR3G" || based_modelid == "RT-MIR4A" || based_modelid == "RT-MIR3P" || based_modelid == "RT-RM2100" || based_modelid == "RT-R2100" || based_modelid == "RT-NEWIFI2" || based_modelid == "RT-RS1200P" || based_modelid == "RT-NEWIFI3" || based_modelid == "RT-HIWIFI4" || based_modelid == "RT-E8820S" || based_modelid == "RT-A040WQ" || based_modelid == "RT-MSG1500" || based_modelid == "RT-JDC1" || based_modelid == "RT-MT1300" || based_modelid == "RT-K2P"){
 			document.getElementById('wl_txbf_desc').innerHTML = "<#WLANConfig11b_x_acBeam#>";
 			inputCtrl(document.form.wl_txbf, 1);
 		}
@@ -412,7 +412,7 @@ function initial(){
 				inputCtrl(document.form.wl_itxbf, 1);
 			}	
 		}	
-		if(based_modelid == "RT-AC88N" || based_modelid == "RT-AC88Q" || based_modelid == "BRT-AC828" || based_modelid == "RT-AD7200" || based_modelid == "RT-AC58U" || based_modelid == "RT-AC82U" || based_modelid == "MAP-AC1300" || based_modelid == "MAP-AC2200" || based_modelid == "VZW-AC1300" || based_modelid == "MAP-AC3000" || based_modelid == "RT-MIR3P" || based_modelid == "RT-A040WQ" || based_modelid == "RT-MSG1500" || based_modelid == "RT-MT1300")
+		if(based_modelid == "RT-AC88N" || based_modelid == "RT-AC88Q" || based_modelid == "BRT-AC828" || based_modelid == "RT-AD7200" || based_modelid == "RT-AC58U" || based_modelid == "RT-AC82U" || based_modelid == "MAP-AC1300" || based_modelid == "MAP-AC2200" || based_modelid == "VZW-AC1300" || based_modelid == "MAP-AC3000" || based_modelid == "RT-MIR3P" || based_modelid == "RT-A040WQ" || based_modelid == "RT-MSG1500" || based_modelid == "RT-MT1300" || based_modelid == "RT-K2P")
 		{
 			$('wl_txbf_desc').innerHTML = "<#WLANConfig11b_x_ExpBeam#>";
 			inputCtrl(document.form.wl_txbf, 1);
@@ -1883,3 +1883,4 @@ function checkWLReady(){
 <div id="footer"></div>
 </body>
 </html>
+

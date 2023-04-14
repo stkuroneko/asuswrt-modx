@@ -2181,9 +2181,7 @@ UCHAR APAutoSelectChannel(
 	IN BOOLEAN IsABand)
 {
 	UCHAR ch = 0;
-	//ch = SelectBestChannel(pAd, Alg, pwdev); //asuswrt need it.
-	if (pAd->phy_op && pAd->phy_op->AutoCh)
-		ch = pAd->phy_op->AutoCh(pAd, pwdev, Alg, IsABand);
+	ch = SelectBestChannel(pAd, Alg, pwdev); //asuswrt need it.
 
 	return ch;
 }
@@ -2604,7 +2602,7 @@ VOID AutoChSelBuildChannelListFor5G(
 
 			pACSChList[ChIdx].CentralChannel = vht_cent_ch_freq(pACSChList[ChIdx].Channel, VHT_BW_80);
 		} else if ((cfg_vht_bw == VHT_BW_160)
-				   && vht160_channel_group(pAd, pACSChList[ChIdx].Channel)) {
+				   && vht80_channel_group(pAd, pACSChList[ChIdx].Channel)) {
 			pACSChList[ChIdx].Bw = BW_160;
 			idx = 0;
 			count = 0;

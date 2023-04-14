@@ -109,7 +109,7 @@ unsigned int CFG_BLOCKSIZE;
 #ifdef CONFIG_RT2880_ROOTFS_IN_FLASH
 #define NAND_MTD_ROOTFS_PARTITION_NO            5
 #endif
-#define shift_on_bbt 0
+static int shift_on_bbt = 0;
 static int is_skip_bad_block(struct mtd_info *mtd, int page);
 extern void nand_bbt_set(struct mtd_info *mtd, int page, int flag);
 extern int nand_bbt_get(struct mtd_info *mtd, int page);
@@ -4997,7 +4997,7 @@ int mtk_nand_probe()
 
         offs = LARGE_MTD_BOOT_PART_SIZE + LARGE_MTD_CONFIG_PART_SIZE + (LARGE_MTD_FACTORY_PART_SIZE*2) + trx_firmware_size;
 // HIWIFI4
-#if defined(CONFIG_MODEL_RTHIWIFI4) || defined(CONFIG_MODEL_RTE8820S) || defined(CONFIG_MODEL_RTA040WQ) || defined(CONFIG_MODEL_RTMSG1500)
+#if defined(CONFIG_MODEL_RTHIWIFI4) || defined(CONFIG_MODEL_RTE8820S) || defined(CONFIG_MODEL_RTA040WQ) || defined(CONFIG_MODEL_RTMSG1500) || defined(CONFIG_MODEL_RTK2P)
         offs = 0x140000;
 #endif 
 // HIWIFI4
@@ -5034,7 +5034,7 @@ int mtk_nand_probe()
         if (rfs_offset != 0) {
             MSG(INIT, "[mtk_nand] Line = %d!\n", __LINE__);
 // HIWIFI4
-#if defined(CONFIG_MODEL_RTHIWIFI4) || defined(CONFIG_MODEL_RTE8820S) || defined(CONFIG_MODEL_RTA040WQ) || defined(CONFIG_MODEL_RTMSG1500) || defined(CONFIG_MODEL_RTMIR3P) || defined(CONFIG_MODEL_RTMIR3G) || defined(CONFIG_MODEL_RTRM2100) || defined(CONFIG_MODEL_RTR2100)
+#if defined(CONFIG_MODEL_RTHIWIFI4) || defined(CONFIG_MODEL_RTE8820S) || defined(CONFIG_MODEL_RTA040WQ) || defined(CONFIG_MODEL_RTMSG1500) || defined(CONFIG_MODEL_RTK2P) || defined(CONFIG_MODEL_RTMIR3P) || defined(CONFIG_MODEL_RTMIR3G) || defined(CONFIG_MODEL_RTRM2100) || defined(CONFIG_MODEL_RTR2100)
             g_pasStatic_Partition[4 + shift].offset = offs + trx_firmware_size;
             g_pasStatic_Partition[5 + shift].offset = offs + trx_firmware_size + rfs_offset;
             g_pasStatic_Partition[5 + shift].mask_flags |= MTD_WRITEABLE;
@@ -5061,7 +5061,7 @@ int mtk_nand_probe()
 //----- asus add
 
 // HIWIFI4
-#if defined(CONFIG_MODEL_RTHIWIFI4) || defined(CONFIG_MODEL_RTE8820S) || defined(CONFIG_MODEL_RTA040WQ) || defined(CONFIG_MODEL_RTMSG1500)
+#if defined(CONFIG_MODEL_RTHIWIFI4) || defined(CONFIG_MODEL_RTE8820S) || defined(CONFIG_MODEL_RTA040WQ) || defined(CONFIG_MODEL_RTMSG1500) || defined(CONFIG_MODEL_RTK2P)
 	g_pasStatic_Partition[1].offset = 0x80000;
 	g_pasStatic_Partition[2].offset = 0x100000;
 	g_pasStatic_Partition[3].offset = 0xc0000;
@@ -5105,7 +5105,7 @@ int mtk_nand_probe()
     {
         MSG(INIT, "[mtk_nand] probe successfully!\n");
         nand_disable_clock();
-#if 0
+#if defined(SKIP_BAD_BLOCK)
 	shift_on_bbt = 1;
 #if defined(CONFIG_SUPPORT_OPENWRT)
 	printk("rootfs = %x to %x\n", (int)rootfs_offset, (int)rootfs_data_offset);

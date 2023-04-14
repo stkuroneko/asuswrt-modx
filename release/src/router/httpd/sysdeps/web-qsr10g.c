@@ -150,7 +150,7 @@ wl_ether_etoa(const struct ether_addr *n)
 	for (i = 0; i < ETHER_ADDR_LEN; i++) {
 		if (i)
 			*c++ = ':';
-		c += snprintf(c, sizeof(etoa_buf), "%02X", n->ether_addr_octet[i] & 0xff);
+		c += sprintf(c, "%02X", n->ether_addr_octet[i] & 0xff);
 	}
 	return etoa_buf;
 }
@@ -676,7 +676,7 @@ char *wl_ifname_qtn_by_unit(int unit)
 	else
 		qtn_unit=0;	/* 5G */
 
-	snprintf(tmp, sizeof(tmp), "wifi%d_0", qtn_unit);
+	sprintf(tmp, "wifi%d_0", qtn_unit);
 	return strdup(tmp);
 }
 
@@ -805,7 +805,7 @@ int wl_wps_info(int eid, webs_t wp, int argc, char_t **argv, int unit)
 	//7. AP PIN Code
 	{
 		memset(tmpstr, 0, sizeof(tmpstr));
-		snprintf(tmpstr, sizeof(tmpstr), "%s", nvram_safe_get("wps_device_pin"));
+		sprintf(tmpstr, "%s", nvram_safe_get("wps_device_pin"));
 		retval += websWrite(wp, "<wps_info>%s</wps_info>\n", tmpstr);
 	}
 
@@ -882,7 +882,7 @@ int get_wl_channel_list_by_bw_core(int unit, string_1024 list_of_channels, int b
 {
 	int ret;
 	int retval = 0;
-	char tmp[256] = {0}, tmp_t[256] = {0};
+	char tmp[256];
 	char *p;
 	int i = 0;;
 	char cur_ccode[20] = {0};
@@ -890,7 +890,7 @@ int get_wl_channel_list_by_bw_core(int unit, string_1024 list_of_channels, int b
 
 	snprintf(ifname, sizeof(ifname), "%s", wl_vifname_qtn(unit, 0));
 
-	snprintf(tmp, sizeof(tmp), "[\"%d\"]", 0);
+	sprintf(tmp, "[\"%d\"]", 0);
 
 	if (!rpc_qtn_ready()){
 		snprintf(tmp, sizeof(tmp), "");
@@ -918,24 +918,20 @@ int get_wl_channel_list_by_bw_core(int unit, string_1024 list_of_channels, int b
 	while (p)
 	{
 		if (i == 0)
-			snprintf(tmp, sizeof(tmp), "[\"%s\"", (char *) p);
-		else{
-			snprintf(tmp_t, sizeof(tmp_t),  "%s, \"%s\"", tmp, (char *) p);
-			strlcpy(tmp, tmp_t, sizeof(tmp));
-		}
+			sprintf(tmp, "[\"%s\"", (char *) p);
+		else
+			sprintf(tmp,  "%s, \"%s\"", tmp, (char *) p);
 
 		p = strtok(NULL, ",");
 		i++;
 	}
 
-	if (i){
-		snprintf(tmp_t, sizeof(tmp_t),  "%s]", tmp);
-		strlcpy(tmp, tmp_t, sizeof(tmp));
-	}
+	if (i)
+		sprintf(tmp,  "%s]", tmp);
 
 ERROR:
 	/* list_of_channels = 1024, tmp = 256 */
-	snprintf(list_of_channels, 1024, "%s", tmp);
+	sprintf(list_of_channels, "%s", tmp);
 	return 0;
 }
 
@@ -1086,7 +1082,7 @@ ej_wl_scan_2g(int eid, webs_t wp, int argc, char_t **argv)
 		memset(ssid_str, 0, sizeof(ssid_str));
 		char_to_ascii(ssid_str, ap_current.ap_name_SSID);
 
-		snprintf(macstr, sizeof(macstr), "%02X:%02X:%02X:%02X:%02X:%02X",
+		sprintf(macstr, "%02X:%02X:%02X:%02X:%02X:%02X",
 			ap_current.ap_mac_addr[0],
 			ap_current.ap_mac_addr[1],
 			ap_current.ap_mac_addr[2],
@@ -1170,7 +1166,7 @@ ej_wl_scan_5g(int eid, webs_t wp, int argc, char_t **argv)
 		memset(ssid_str, 0, sizeof(ssid_str));
 		char_to_ascii(ssid_str, ap_current.ap_name_SSID);
 
-		snprintf(macstr, sizeof(macstr), "%02X:%02X:%02X:%02X:%02X:%02X",
+		sprintf(macstr, "%02X:%02X:%02X:%02X:%02X:%02X",
 			ap_current.ap_mac_addr[0],
 			ap_current.ap_mac_addr[1],
 			ap_current.ap_mac_addr[2],
@@ -1223,11 +1219,11 @@ ej_wl_sta_list_qtn_core(int eid, webs_t wp, int argc, char_t **argv, int unit)
 #if 0
 	if (index == -1) return retval;
 	else if (index == 0)
-		snprintf(prefix, sizeof(prefix), "wl%d_", unit);
+		sprintf(prefix, "wl%d_", unit);
 	else
-		snprintf(prefix, sizeof(prefix), "wl%d.%d_", unit, index);
+		sprintf(prefix, "wl%d.%d_", unit, index);
 #else
-		snprintf(prefix, sizeof(prefix), "wl%d_", unit);
+		sprintf(prefix, "wl%d_", unit);
 #endif
 
 	// ret = qcsapi_wifi_get_count_associations((const char *)ifname, &association_count);
@@ -1306,9 +1302,9 @@ ej_wl_stainfo_list_qtn(int eid, webs_t wp, int argc, char_t **argv, const char *
 	sscanf(ifname, "wifi%d", &index);
 	if (index == -1) return retval;
 	else if (index == 0)
-		snprintf(prefix, sizeof(prefix), "wl%d_", unit);
+		sprintf(prefix, "wl%d_", unit);
 	else
-		snprintf(prefix, sizeof(prefix), "wl%d.%d_", unit, index);
+		sprintf(prefix, "wl%d.%d_", unit, index);
 
 	ret = qcsapi_wifi_get_count_associations(ifname, &association_count);
 	if (ret < 0) {
@@ -1377,7 +1373,7 @@ ej_wl_sta_list_qtn(int eid, webs_t wp, int argc, char_t **argv, int unit)
 		return ret;
 
 	for (i = 1; i < 4; i++) {
-		snprintf(prefix, sizeof(prefix), "wl%d.%d_", unit, i);
+		sprintf(prefix, "wl%d.%d_", unit, i);
 		if (nvram_match(strcat_r(prefix, "bss_enabled", tmp), "1")){
 			if (ret_t != ret)
 				retval += websWrite(wp, ", ");
@@ -1406,7 +1402,7 @@ ej_wl_stainfo_list_2g(int eid, webs_t wp, int argc, char_t **argv)
                 return ret;
 
 	for (i = 1; i < 4; i++) {
-		snprintf(prefix, sizeof(prefix), "wl%d.%d_", unit, i);
+		sprintf(prefix, "wl%d.%d_", unit, i);
 		if (nvram_match(strcat_r(prefix, "bss_enabled", tmp), "1")){
 			if (ret_t != ret)
 				retval += websWrite(wp, ", ");
@@ -1434,7 +1430,7 @@ ej_wl_stainfo_list_5g(int eid, webs_t wp, int argc, char_t **argv)
                 return ret;
 
 	for (i = 1; i < 4; i++) {
-		snprintf(prefix, sizeof(prefix), "wl%d.%d_", unit, i);
+		sprintf(prefix, "wl%d.%d_", unit, i);
 		if (nvram_match(strcat_r(prefix, "bss_enabled", tmp), "1")){
 			if (ret_t != ret)
 				retval += websWrite(wp, ", ");
@@ -1490,14 +1486,14 @@ wl_status_2g(int eid, webs_t wp, int argc, char_t **argv)
 		dbG("rpc_qcsapi_get_bw error, return: %d\n", ret);
 
 	if (bw == 80)
-		snprintf(chspec_str, sizeof(chspec_str), "%d/%d", channel, bw);
+		sprintf(chspec_str, "%d/%d", channel, bw);
 	else if (bw == 40)
 	{
 		is_nctrlsb_lower = ((channel == 36) || (channel == 44) || (channel == 52) || (channel == 60) || (channel == 100) || (channel == 108) || (channel == 116) || (channel == 124) || (channel == 132) || (channel == 149) || (channel == 157));
-		snprintf(chspec_str, sizeof(chspec_str), "%d%c", channel, is_nctrlsb_lower ? 'l': 'u');
+		sprintf(chspec_str, "%d%c", channel, is_nctrlsb_lower ? 'l': 'u');
 	}
 	else
-		snprintf(chspec_str, sizeof(chspec_str), "%d", channel);
+		sprintf(chspec_str, "%d", channel);
 
 	retval += websWrite(wp, "Channel: %s\n", chspec_str);
 
@@ -1556,14 +1552,14 @@ wl_status_5g(int eid, webs_t wp, int argc, char_t **argv)
 		dbG("rpc_qcsapi_get_bw error, return: %d\n", ret);
 
 	if (bw == 80)
-		snprintf(chspec_str, sizeof(chspec_str), "%d/%d", channel, bw);
+		sprintf(chspec_str, "%d/%d", channel, bw);
 	else if (bw == 40)
 	{
 		is_nctrlsb_lower = ((channel == 36) || (channel == 44) || (channel == 52) || (channel == 60) || (channel == 100) || (channel == 108) || (channel == 116) || (channel == 124) || (channel == 132) || (channel == 149) || (channel == 157));
-		snprintf(chspec_str, sizeof(chspec_str), "%d%c", channel, is_nctrlsb_lower ? 'l': 'u');
+		sprintf(chspec_str, "%d%c", channel, is_nctrlsb_lower ? 'l': 'u');
 	}
 	else
-		snprintf(chspec_str, sizeof(chspec_str), "%d", channel);
+		sprintf(chspec_str, "%d", channel);
 
 	retval += websWrite(wp, "Channel: %s\n", chspec_str);
 
@@ -1667,7 +1663,7 @@ ej_wl_status_qtn(int eid, webs_t wp, int argc, char_t **argv, int unit)
                 return ret;
 
 	for (i = 1; i < 4; i++) {
-		snprintf(prefix, sizeof(prefix), "wl%d.%d_", unit, i);
+		sprintf(prefix, "wl%d.%d_", unit, i);
 		if (nvram_match(strcat_r(prefix, "bss_enabled", tmp), "1"))
 			ret += ej_wl_status_qtn_core(eid, wp, argc, argv, unit);
 	}
@@ -1761,7 +1757,7 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 #ifdef RTCONFIG_WIRELESSREPEATER
 		if ((nvram_get_int("sw_mode") == SW_MODE_REPEATER)
 			&& (nvram_get_int("wlc_band") == unit))
-			snprintf(prefix, sizeof(prefix), "wl%d.%d_", unit, 1);
+			sprintf(prefix, "wl%d.%d_", unit, 1);
 #endif
 		ret += websWrite(wp, "Mode	: Repeater [ SSID local: \"%s\" ]\n", nvram_safe_get(strcat_r(prefix, "ssid", tmp)));
 //		ret += ej_wl_sta_status(eid, wp, name);
@@ -1793,7 +1789,7 @@ ej_wl_status_2g(int eid, webs_t wp, int argc, char_t **argv)
 
 	_dprintf("Raymond: [%s][%d]\n", __func__, __LINE__);
 	for (ii = 0; ii < DEV_NUMIFS; ii++) {
-		snprintf(nv_param, sizeof(nv_param), "wl%d_unit", ii);
+		sprintf(nv_param, "wl%d_unit", ii);
 		_dprintf("Raymond: [%s][%d], nv_param=[%s]\n", __func__, __LINE__, nv_param);
 		temp = nvram_get(nv_param);
 
@@ -1961,7 +1957,7 @@ ej_wl_auth_psta_qtn(int eid, webs_t wp, int argc, char_t **argv, int unit)
 	char wlc_ssid[33];
 	char ifname[WIFINAME_MAX_LEN] = {0};
 
-	strlcpy(wlc_ssid, nvram_safe_get("wlc_ssid"), sizeof(wlc_ssid));
+	strcpy(wlc_ssid, nvram_safe_get("wlc_ssid"));
 	memset(ssid, 0, sizeof(ssid));
 	memset(auth, 0, sizeof(auth));
 
@@ -2074,7 +2070,7 @@ wl_autho(char *name, struct ether_addr *ea)
 {
 	char buf[sizeof(sta_info_t)];
 
-	strlcpy(buf, "sta_info", sizeof(buf));
+	strcpy(buf, "sta_info");
 	memcpy(buf + strlen(buf) + 1, (void *)ea, ETHER_ADDR_LEN);
 
 	if (!wl_ioctl(name, WLC_GET_VAR, buf, sizeof(buf))) {
@@ -2129,7 +2125,7 @@ static int ej_wl_rate(int eid, webs_t wp, int argc, char_t **argv, int unit)
 	else if(unit == 1)	snprintf(ifname, sizeof(ifname), "wifi0_0");
 	else snprintf(ifname, sizeof(ifname), "wifi0_0");
 
-	snprintf(rate_buf, sizeof(rate_buf), "0 Mbps");
+	sprintf(rate_buf, "0 Mbps");
 
 	if (!rpc_qtn_ready()) {
 		goto ERROR;
@@ -2140,9 +2136,9 @@ static int ej_wl_rate(int eid, webs_t wp, int argc, char_t **argv, int unit)
 	} else {
 		speed = speed ;  /* 4 antenna? */
 		if ((int)speed < 1) {
-			snprintf(rate_buf, sizeof(rate_buf), "auto");
+			sprintf(rate_buf, "auto");
 		} else {
-			snprintf(rate_buf, sizeof(rate_buf), "%d Mbps", (int)speed);
+			sprintf(rate_buf, "%d Mbps", (int)speed);
 		}
 	}
 

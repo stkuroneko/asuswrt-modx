@@ -195,6 +195,7 @@ define(function(){
 				tab: [
 					{url: "Advanced_Wireless_Content.asp", tabName: "<#menu5_1_1#>"},
 					{url: "Advanced_WWPS_Content.asp", tabName: "<#menu5_1_2#>"},
+					{url: "Advanced_WMode_Content.asp", tabName: "WDS"},
 					{url: "Advanced_ACL_Content.asp", tabName: "<#menu5_1_4#>"},
 					{url: "Advanced_WSecurity_Content.asp", tabName: "<#menu5_1_5#>"},
 					{url: "Advanced_WAdvanced_Content.asp", tabName: "<#menu5_1_6#>"},
@@ -212,7 +213,6 @@ define(function(){
 					{url: "Advanced_GWStaticRoute_Content.asp", tabName: "<#menu5_2_3#>"},
 					{url: "Advanced_IPTV_Content.asp", tabName: "IPTV"},
 					{url: "Advanced_SwitchCtrl_Content.asp", tabName: "<#Switch_itemname#>"},
-					{url: "Advanced_SmartDNS_Content.asp", tabName: "SmartDNS"},
 					{url: "NULL", tabName: "__INHERIT__"}
 				] 
 			},
@@ -319,23 +319,6 @@ define(function(){
 					{url: "Advanced_Smart_Connect.asp", tabName: "<#smart_connect_rule#>"},
 					{url: "NULL", tabName: "__INHERIT__"}
 				]
-			},
-			{
-				menuName: "Entware",
-				index: "menu_Split",
-				tab: [
-					{url: "NULL", tabName: "__HIDE__"}
-				]
-			},
-			{
-				menuName: "Entware",
-				index: "menu_Entware",
-				tab: [
-					{url: "Entware_start.asp", tabName: "<#Entware_home#>"},
-					{url: "Entware_installed.asp", tabName: "<#Entware_installed#>"},
-					{url: "Entware_list.asp", tabName: "<#Entware_list#>"},
-					{url: "NULL", tabName: "__INHERIT__"}
-				] 
 			},
 			{
 				menuName: "<#Softcenter#>",
@@ -484,13 +467,6 @@ define(function(){
 				}
 				if(lyra_hide_support){
 					retArray.push("menu_Wireless");
-				}
-				if (!entware_support){
-					retArray.push("menu_Entware");
-					for(i=0; i<menuTree.list.length; i++){
-						if(menuTree.list[i].menuName == 'Entware')
-							menuTree.list.splice(i,1);
-					}
 				}
 
 				return retArray;
@@ -703,7 +679,6 @@ define(function(){
 					retArray.push("Main_RouteStatus_Content.asp");
 					retArray.push("Main_IPTStatus_Content.asp");
 					retArray.push("Main_ConnStatus_Content.asp");
-					retArray.push("Advanced_Smart_Connect.asp");
 
 					if(userRSSI_support){
 						retArray.push("Advanced_ACL_Content.asp");
@@ -780,6 +755,13 @@ define(function(){
 				return retArray;
 			}
 		}
+	}
+
+	if(odmpid == "RT-N66U_C1"){
+		menuTree.list.splice(7,2);
+	}
+	else{
+		menuTree.list.splice(5,2);
 	}
 
 	return menuTree;
