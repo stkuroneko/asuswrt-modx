@@ -90,12 +90,12 @@ endif
 ifneq ($(SKU_5G_EAC),)
 	install DUMMY_SKU $(SKUDIR)/SingleSKU_5G_EAC.dat
 endif
-ifeq ($(or $(RTHIWIFI4),$(RTE8820S),$(RTMIR3G),$(RTNEWIFI2),$(RTNEWIFI3)),y)
+ifeq ($(or $(RTHIWIFI4),$(RTE8820S),$(RTMIR3G),$(RTNEWIFI2),$(RTRS1200P),$(RTNEWIFI3)),y)
 	@install $(BUILD_NAME)/l1profile.dat $(SKUDIR)/l1profile.dat
 	@install $(BUILD_NAME)/SingleSKU_2.4G.dat $(SKUDIR)/SingleSKU_2.4G.dat
 	@install $(BUILD_NAME)/SingleSKU_5.8G.dat $(SKUDIR)/SingleSKU_5.8G.dat
 endif
-ifeq ($(or $(RTA040WQ),$(RTMSG1500),$(RTK2P),$(RTMIR3P),$(RTRM2100),$(RTR2100)),y))
+ifeq ($(or $(RTA040WQ),$(RTMSG1500),$(RTMIR3P),$(RTRM2100),$(RTR2100),$(RTJDC1),$(RTMT1300),$(RTK2P)),y))
 	@install $(BUILD_NAME)/l1profile.dat $(SKUDIR)/l1profile.dat
 	@install $(BUILD_NAME)/SingleSKU_mt7615e-sku.dat $(SKUDIR)/SingleSKU_mt7615e-sku.dat
 	@install $(BUILD_NAME)/SingleSKU_mt7615e-sku-bf.dat $(SKUDIR)/SingleSKU_mt7615e-sku-bf.dat

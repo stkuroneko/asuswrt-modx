@@ -489,6 +489,7 @@ static struct chip_info chips_data [] = {
 	{ "W25Q64BV",           0xef, 0x40170000, 64 * 1024, 128, 0 }, //S25FL064K //W25Q64FV
 	{ "W25Q128BV",          0xef, 0x40180000, 64 * 1024, 256, 0 },//W25Q128FV
 	{ "W25Q256FV",          0xef, 0x40190000, 64 * 1024, 512, 1 },
+	{ "W25Q512JV",          0xef, 0x40200000, 64 * 1024, 1024, 1 },
 	{ "N25Q032A13ESE40F",   0x20, 0xba161000, 64 * 1024, 64,  0 },
 	{ "N25Q064A13ESE40F",   0x20, 0xba171000, 64 * 1024, 128, 0 },
 	{ "N25Q128A13ESE40F",   0x20, 0xba181000, 64 * 1024, 256, 0 },
@@ -1945,7 +1946,7 @@ static struct mtd_info *raspi_probe(struct map_info *map)
 			rt2880_partitions[4].size = flash->mtd.size - rt2880_partitions[4].offset - MTD_RADIO_PART_SIZE;
 			rt2880_partitions[5].offset = flash->mtd.size - MTD_RADIO_PART_SIZE;
 #else 
-#if defined(CONFIG_MODEL_RTNEWIFI2) || defined(CONFIG_MODEL_RTXYC3) || defined(CONFIG_MODEL_RTNEWIFI3)
+#if defined(CONFIG_MODEL_RTNEWIFI2) ||defined(CONFIG_MODEL_RTRS1200P) || defined(CONFIG_MODEL_RTXYC3) || defined(CONFIG_MODEL_RTNEWIFI3) || defined(CONFIG_MODEL_RTJDC1) || defined(CONFIG_MODEL_RTMT1300)
                         loff_t j = MTD_JFFS2_PART_SIZE;
                         j =  flash->mtd.size - 0x1f00000;
 			rt2880_partitions[3].size = flash->mtd.size - (MTD_BOOT_PART_SIZE + MTD_CONFIG_PART_SIZE + MTD_FACTORY_PART_SIZE) - j;
