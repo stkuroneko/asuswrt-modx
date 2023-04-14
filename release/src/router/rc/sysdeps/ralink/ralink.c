@@ -53,15 +53,7 @@
 char *wlc_nvname(char *keyword);
 //#endif
 
-<<<<<<< HEAD
 #if defined(RTAC52U) || defined(RTAC51U) || defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTAC54U) || defined(RTN56UB2) || defined(RTAC1200GA1)  || defined(RTAC1200GU) || defined(RTAC1200) || defined(RTCONFIG_MTK_REP) || defined(RTAC51UP) || defined(RTAC53) || defined(RTAC85P) || defined(RTACRH26) || defined(RMAC2100) || defined(R6800) || defined(RTMIR3G) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTRM2100) || defined(RTR2100) || defined(RTMIR3P) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300) || defined(RTK2P)
-=======
-<<<<<<< HEAD
-#if defined(RTAC52U) || defined(RTAC51U) || defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTAC54U) || defined(RTN56UB2) || defined(RTAC1200GA1)  || defined(RTAC1200GU) || defined(RTAC1200) || defined(RTCONFIG_MTK_REP) || defined(RTAC51UP) || defined(RTAC53) || defined(RTAC85P) || defined(RTACRH26) || defined(RMAC2100) || defined(R6800) || defined(RTMIR3G) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTRM2100) || defined(RTR2100) || defined(RTMIR3P) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300)
-=======
-#if defined(RTAC52U) || defined(RTAC51U) || defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTAC54U) || defined(RTN56UB2) || defined(RTAC1200GA1)  || defined(RTAC1200GU) || defined(RTAC1200) || defined(RTCONFIG_MTK_REP) || defined(RTAC51UP) || defined(RTAC53) || defined(RTAC85P) || defined(RTACRH26) || defined(RMAC2100) || defined(R6800) || defined(RTMIR3G) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTRM2100) || defined(RTR2100) || defined(RTMIR3P) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300) || defined(RTK2P)
->>>>>>> back211003
->>>>>>> main
 #define VHT_SUPPORT /* 11AC */
 #endif
 
@@ -1315,15 +1307,7 @@ int gen_ralink_config(int band, int is_iNIC)
 		}
 		fprintf(fp, "NoForwarding=%s\n", tmpstr);
 
-<<<<<<< HEAD
 		#if defined(RTA040WQ) || defined(RTMSG1500) || defined(RTMT1300) || defined(RTK2P)
-=======
-<<<<<<< HEAD
-		#if defined(RTA040WQ) || defined(RTMSG1500) || defined(RTMT1300)
-=======
-		#if defined(RTA040WQ) || defined(RTMSG1500) || defined(RTMT1300) || defined(RTK2P)
->>>>>>> back211003
->>>>>>> main
 		fprintf(fp, "NoForwardingBTNBSSID=%d\n", 0);
 		#else
 		fprintf(fp, "NoForwardingBTNBSSID=%d\n", atoi(str));
@@ -1684,15 +1668,7 @@ int gen_ralink_config(int band, int is_iNIC)
 	{
 		fprintf(fp, "GreenAP=%d\n", 1);
 	}
-<<<<<<< HEAD
 #elif defined(RTN14U) || defined(RTAC52U) || defined(RTAC51U) || defined(RTAC51UP) || defined(RTAC53) || defined(RTN11P) || defined(RTN300) || defined(RTN54U) || defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTAC54U) || defined(RTN56UB2) || defined(RTAC1200GA1)  || defined(RTAC1200GU) || defined(RTCONFIG_MTK_REP) || defined(RTMIR3G) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTRM2100) || defined(RTR2100) || defined(RTMIR3P) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300) || defined(RTK2P)
-=======
-<<<<<<< HEAD
-#elif defined(RTN14U) || defined(RTAC52U) || defined(RTAC51U) || defined(RTAC51UP) || defined(RTAC53) || defined(RTN11P) || defined(RTN300) || defined(RTN54U) || defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTAC54U) || defined(RTN56UB2) || defined(RTAC1200GA1)  || defined(RTAC1200GU) || defined(RTCONFIG_MTK_REP) || defined(RTMIR3G) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTRM2100) || defined(RTR2100) || defined(RTMIR3P) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300)
-=======
-#elif defined(RTN14U) || defined(RTAC52U) || defined(RTAC51U) || defined(RTAC51UP) || defined(RTAC53) || defined(RTN11P) || defined(RTN300) || defined(RTN54U) || defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTAC54U) || defined(RTN56UB2) || defined(RTAC1200GA1)  || defined(RTAC1200GU) || defined(RTCONFIG_MTK_REP) || defined(RTMIR3G) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTRM2100) || defined(RTR2100) || defined(RTMIR3P) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300) || defined(RTK2P)
->>>>>>> back211003
->>>>>>> main
 	/// MT7620 GreenAP will impact TSSI, force to disable GreenAP here..
 	//  MT7620 GreenAP cause bad site survey result on RTAC52 2G.
 	{
@@ -1711,15 +1687,7 @@ int gen_ralink_config(int band, int is_iNIC)
 		fprintf(fp, "GreenAP=%d\n", 0);
 	}
 #endif
-<<<<<<< HEAD
 #if defined(RTA040WQ) || defined(RTMSG1500) || defined(RTMT1300) || defined(RTK2P)
-=======
-<<<<<<< HEAD
-#if defined(RTA040WQ) || defined(RTMSG1500) || defined(RTMT1300)
-=======
-#if defined(RTA040WQ) || defined(RTMSG1500) || defined(RTMT1300) || defined(RTK2P)
->>>>>>> back211003
->>>>>>> main
 	fprintf(fp, "DBDC_MODE=%d\n", 1);
 #endif
 
@@ -2446,23 +2414,9 @@ int gen_ralink_config(int band, int is_iNIC)
 		}
 		
 
-<<<<<<< HEAD
 		//HT_BSSCoexistence
 #if defined(RMAC2100) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTMIR3G) || defined(RTE8820S) || defined(RTHIWIFI4) || defined(RTNEWIFI3) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTRM2100) || defined(RTR2100) || defined(RTMIR3P)
 	fprintf(fp, "HT_BSSCoexistence=%d\n", 0);
-=======
-<<<<<<< HEAD
-	//HT_BSSCoexistence
-	if ((wl_bw > 1) && (HTBW_MAX == 1) &&
-		!((sw_mode == SW_MODE_REPEATER) 
-#if defined(RTCONFIG_WIRELESSREPEATER) && defined(RTCONFIG_CONCURRENTREPEATER)
-		&& (wlc_express == 0 || (wlc_express - 1) != band))
-=======
-		//HT_BSSCoexistence
-#if defined(RMAC2100) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTMIR3G) || defined(RTE8820S) || defined(RTHIWIFI4) || defined(RTNEWIFI3) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTRM2100) || defined(RTR2100) || defined(RTMIR3P)
-	fprintf(fp, "HT_BSSCoexistence=%d\n", 0);
->>>>>>> back211003
->>>>>>> main
 #else
 		if ((wl_bw > 1) && (HTBW_MAX == 1) 
 	#if defined(RTCONFIG_WIRELESSREPEATER) && defined(RTCONFIG_CONCURRENTREPEATER)
@@ -2621,16 +2575,6 @@ int gen_ralink_config(int band, int is_iNIC)
 	else
 		fprintf(fp, "VHT_BW=%d\n", 0);
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-	str = nvram_get(strcat_r(prefix, "VHT_DisallowNonVHT", tmp));
-	if (str && strlen(str))
-		fprintf(fp, "VHT_DisallowNonVHT=%d\n", atoi(str));
-	else
-		fprintf(fp, "VHT_DisallowNonVHT=%d\n", 0);
-=======
->>>>>>> main
 
 #endif
 
@@ -2690,10 +2634,6 @@ int gen_ralink_config(int band, int is_iNIC)
 		}
 		
 
-<<<<<<< HEAD
-=======
->>>>>>> back211003
->>>>>>> main
 #endif
 
 #if !defined (RTCONFIG_WLMODULE_MT7615E_AP)

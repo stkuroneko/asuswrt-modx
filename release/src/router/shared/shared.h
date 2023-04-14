@@ -738,14 +738,7 @@ enum {
 #define MODEL_RTMSG1500 MODEL_RTAC85U
 #define MODEL_RTJDC1 MODEL_RTAC85U
 #define MODEL_RTMT1300 MODEL_RTAC85U
-<<<<<<< HEAD
 #define MODEL_RTK2P MODEL_RTAC85U
-=======
-<<<<<<< HEAD
-=======
-#define MODEL_RTK2P MODEL_RTAC85U
->>>>>>> back211003
->>>>>>> main
 
 enum {
 	MODEL_SWRTMIN = 0,

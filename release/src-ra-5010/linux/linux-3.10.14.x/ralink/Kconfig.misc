@@ -91,17 +91,8 @@ config  MODEL_RTMT1300
 	bool "RT-MT1300"
 	default n
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
->>>>>>> main
 config  MODEL_RTK2P
 	bool "RT-K2P"
 	default n
 
-<<<<<<< HEAD
-=======
->>>>>>> back211003
->>>>>>> main
 endmenu
