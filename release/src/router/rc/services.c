@@ -13830,7 +13830,15 @@ void start_roamast(void){
 		}
 	}
 }
+<<<<<<< HEAD
 #elif defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300) || defined(RTK2P)
+=======
+<<<<<<< HEAD
+#elif defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300)
+=======
+#elif defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300) || defined(RTK2P)
+>>>>>>> back211003
+>>>>>>> main
 void start_roamast(void){
 	int rssi, i;
 	char prefix[] = "wl_XXXXX";

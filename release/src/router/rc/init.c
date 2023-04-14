@@ -4025,7 +4025,15 @@ int init_nvram(void)
 		nvram_set("wl1_HT_RxStream", "4");
 
 		break;
+<<<<<<< HEAD
 #endif /* RTJDC1*/
+=======
+<<<<<<< HEAD
+#endif /* Newifi*/
+=======
+#endif /* RTJDC1*/
+>>>>>>> back211003
+>>>>>>> main
 
 #if defined(RTNEWIFI2) 
 	case MODEL_RTNEWIFI2:
@@ -4074,7 +4082,15 @@ int init_nvram(void)
 		nvram_set("wl1_HT_RxStream", "2");
 
 		break;
+<<<<<<< HEAD
 #endif /* NEWIFI2*/
+=======
+<<<<<<< HEAD
+#endif /* Newifi*/
+=======
+#endif /* NEWIFI2*/
+>>>>>>> back211003
+>>>>>>> main
 
 
 #if defined(RTRS1200P) 
@@ -9608,7 +9624,15 @@ int init_nvram(void)
 	}
 
 	// wrs - white and black list
+<<<<<<< HEAD
 #if !defined(RTMIR3G) && !defined(RTMIR3P) && !defined(RTMIR4A) && !defined(RTRM2100) && !defined(RTR2100) && !defined(RTNEWIFI2) && !defined(RTRS1200P) && !defined(RTXYC3) && !defined(RTNEWIFI3) && !defined(RTHIWIFI4) && !defined(RTE8820S) && !defined(RTA040WQ) && !defined(RTMSG1500) && !defined(RTJDC1) && !defined(RTMT1300) && !defined(RTK2P)
+=======
+<<<<<<< HEAD
+#if !defined(RTMIR3G) && !defined(RTMIR3P) && !defined(RTMIR4A) && !defined(RTRM2100) && !defined(RTR2100) && !defined(RTNEWIFI2) && !defined(RTXYC3) && !defined(RTNEWIFI3) && !defined(RTHIWIFI4) && !defined(RTE8820S) && !defined(RTA040WQ) && !defined(RTMSG1500) && !defined(RTJDC1) && !defined(RTMT1300)
+=======
+#if !defined(RTMIR3G) && !defined(RTMIR3P) && !defined(RTMIR4A) && !defined(RTRM2100) && !defined(RTR2100) && !defined(RTNEWIFI2) && !defined(RTRS1200P) && !defined(RTXYC3) && !defined(RTNEWIFI3) && !defined(RTHIWIFI4) && !defined(RTE8820S) && !defined(RTA040WQ) && !defined(RTMSG1500) && !defined(RTJDC1) && !defined(RTMT1300) && !defined(RTK2P)
+>>>>>>> back211003
+>>>>>>> main
 	add_rc_support("wrs_wbl");
 #endif
 #endif
@@ -11235,7 +11259,15 @@ int init_main(int argc, char *argv[])
 		mount("/dev/mtdblock5", "/jffs", "jffs2", MS_NOATIME, "");
 #endif
 
+<<<<<<< HEAD
 #if defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTJDC1) || defined(RTMT1300)
+=======
+<<<<<<< HEAD
+#if defined(RTNEWIFI2) || defined(RTJDC1) || defined(RTMT1300)
+=======
+#if defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTJDC1) || defined(RTMT1300)
+>>>>>>> back211003
+>>>>>>> main
 		mount("/dev/mtdblock5", "/jffs", "jffs2", MS_NOATIME, "");	
 #endif
 
@@ -11279,7 +11311,15 @@ int init_main(int argc, char *argv[])
 #endif
 	}
 
+<<<<<<< HEAD
 #if defined(RTA040WQ) || defined(RTMSG1500) || defined(RTMT1300) || defined(RTK2P)
+=======
+<<<<<<< HEAD
+#if defined(RTA040WQ) || defined(RTMSG1500) || defined(RTMT1300)
+=======
+#if defined(RTA040WQ) || defined(RTMSG1500) || defined(RTMT1300) || defined(RTK2P)
+>>>>>>> back211003
+>>>>>>> main
                 restart_wireless();
 #endif
 	for (;;) {
@@ -11903,7 +11943,15 @@ int reboothalt_main(int argc, char *argv[])
 	_dprintf(reboot ? "Rebooting..." : "Shutting down...");
 	kill(1, reboot ? SIGTERM : SIGQUIT);
 
+<<<<<<< HEAD
 #if defined(RTN14U) || defined(RTN65U) || defined(RTAC52U) || defined(RTAC51U) || defined(RTN11P) || defined(RTN300) || defined(RTN54U) || defined(RTCONFIG_QCA) || defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTAC54U) || defined(RTN56UB2) || defined(RTAC85U) || defined(RTAC85P) || defined(RTN800HP) || defined(RTACRH26) || defined(RMAC2100) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTXYC3) || defined(RTNEWIFI3)  || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300) || defined(RTK2P)
+=======
+<<<<<<< HEAD
+#if defined(RTN14U) || defined(RTN65U) || defined(RTAC52U) || defined(RTAC51U) || defined(RTN11P) || defined(RTN300) || defined(RTN54U) || defined(RTCONFIG_QCA) || defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTAC54U) || defined(RTN56UB2) || defined(RTAC85U) || defined(RTAC85P) || defined(RTN800HP) || defined(RTACRH26) || defined(RMAC2100) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTXYC3) || defined(RTNEWIFI3)  || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300)
+=======
+#if defined(RTN14U) || defined(RTN65U) || defined(RTAC52U) || defined(RTAC51U) || defined(RTN11P) || defined(RTN300) || defined(RTN54U) || defined(RTCONFIG_QCA) || defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTAC54U) || defined(RTN56UB2) || defined(RTAC85U) || defined(RTAC85P) || defined(RTN800HP) || defined(RTACRH26) || defined(RMAC2100) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTXYC3) || defined(RTNEWIFI3)  || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300) || defined(RTK2P)
+>>>>>>> back211003
+>>>>>>> main
 	def_reset_wait = 50;
 #endif
 

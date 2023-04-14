@@ -286,7 +286,15 @@ char* GetBW(int BW)
 		case BW_40:
 			return "40M";
 
+<<<<<<< HEAD
 #if defined(RTAC52U) || defined(RTAC51U) || defined(RTN54U) || defined(RTAC1200HP) || defined(RTAC54U) || defined(RTAC1200) || defined(RTAC1200GA1) || defined(RTAC1200GU) || defined(RTAC85P) || defined(RMAC2100) || defined(R6800) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300) || defined(RTK2P)
+=======
+<<<<<<< HEAD
+#if defined(RTAC52U) || defined(RTAC51U) || defined(RTN54U) || defined(RTAC1200HP) || defined(RTAC54U) || defined(RTAC1200) || defined(RTAC1200GA1) || defined(RTAC1200GU) || defined(RTAC85P) || defined(RMAC2100) || defined(R6800) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300)
+=======
+#if defined(RTAC52U) || defined(RTAC51U) || defined(RTN54U) || defined(RTAC1200HP) || defined(RTAC54U) || defined(RTAC1200) || defined(RTAC1200GA1) || defined(RTAC1200GU) || defined(RTAC85P) || defined(RMAC2100) || defined(R6800) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300) || defined(RTK2P)
+>>>>>>> back211003
+>>>>>>> main
 		case BW_80:
 			return "80M";
 #endif
@@ -325,6 +333,13 @@ char* GetPhyMode(int Mode)
 	}
 }
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+int MCSMappingRateTable[] =
+	{2,  4,   11,  22, // CCK
+=======
+>>>>>>> main
 int MCSMappingRateTable[] ={
 #if defined(RTAC85P) || defined(RMAC2100) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTK2P)
 	2,  4, 11, 22, 12,  18,  24,  36, 48,  72,  96, 108, 109, 110, 111, 112,/* CCK and OFDM */
@@ -386,6 +401,10 @@ int MCSMappingRateTable[] ={
 	260, 520, 780, 1040, 1560, 2080,	2340, 2600, 3120, 3466, /*4ss mcs 0~9*/
 #else
 	2,  4,   11,  22, // CCK
+<<<<<<< HEAD
+=======
+>>>>>>> back211003
+>>>>>>> main
 	12, 18,   24,  36, 48, 72, 96, 108, // OFDM
 	13, 26,   39,  52,  78, 104, 117, 130, 26,  52,  78, 104, 156, 208, 234, 260, // 20MHz, 800ns GI, MCS: 0 ~ 15
 	39, 78,  117, 156, 234, 312, 351, 390,										  // 20MHz, 800ns GI, MCS: 16 ~ 23
@@ -404,6 +423,12 @@ int MCSMappingRateTable[] ={
 #endif
 	};
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+
+=======
+>>>>>>> main
 #if defined(RTAC85P) || defined(RMAC2100) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTK2P)
 #define FN_GETRATE(_fn_, _st_)						\
 _fn_(_st_ HTSetting)							\
@@ -460,6 +485,10 @@ _fn_(_st_ HTSetting)							\
 		return MCSMappingRateTable[rate_index];		\
 }
 #else
+<<<<<<< HEAD
+=======
+>>>>>>> back211003
+>>>>>>> main
 #define FN_GETRATE(_fn_, _st_)						\
 _fn_(_st_ HTSetting)							\
 {									\
@@ -667,8 +696,19 @@ wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 	else
 		ret+=websWrite(wp, "OP Mode		: AP\n");
 
+<<<<<<< HEAD
 #if defined(RTAC52U) || defined(RTAC51U) || defined(RTN54U)  || defined(RTAC1200HP) || defined(RTAC54U) || defined(RTAC1200) || defined(RTAC1200GA1) || defined(RTAC1200GU) || defined(RTAC85U) || defined(RTAC85P) || defined(MTK_REP) || defined(RTACRH26) || defined(RMAC2100) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTK2P)
 	if (unit == 1)
+=======
+<<<<<<< HEAD
+/*
+#if defined(RTAC52U) || defined(RTAC51U) || defined(RTN54U)  || defined(RTAC1200HP) || defined(RTAC54U) || defined(RTAC1200) || defined(RTAC1200GA1) || defined(RTAC1200GU) || defined(RTAC85U) || defined(RTAC85P) || defined(MTK_REP) || defined(RTACRH26)
+	if (unit == 1)*/
+=======
+#if defined(RTAC52U) || defined(RTAC51U) || defined(RTN54U)  || defined(RTAC1200HP) || defined(RTAC54U) || defined(RTAC1200) || defined(RTAC1200GA1) || defined(RTAC1200GU) || defined(RTAC85U) || defined(RTAC85P) || defined(MTK_REP) || defined(RTACRH26) || defined(RMAC2100) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTK2P)
+	if (unit == 1)
+>>>>>>> back211003
+>>>>>>> main
 	{
 		char *p = tmp;
 		size_t len = sizeof(tmp);
@@ -1161,7 +1201,15 @@ int ej_wl_sta_list_2g(int eid, webs_t wp, int argc, char_t **argv)
 
 	memset(mac, 0, sizeof(mac));
 
+<<<<<<< HEAD
 #if defined(RTAC85U) || defined(RTAC85P) || defined(RTACRH26) || defined(RMAC2100) || defined(R6800) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300) || defined(RTK2P)
+=======
+<<<<<<< HEAD
+#if defined(RTAC85U) || defined(RTAC85P) || defined(RTACRH26) || defined(RMAC2100) || defined(R6800) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300)
+=======
+#if defined(RTAC85U) || defined(RTAC85P) || defined(RTACRH26) || defined(RMAC2100) || defined(R6800) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300) || defined(RTK2P)
+>>>>>>> back211003
+>>>>>>> main
 	if (!nvram_get_int("wlready"))
 		goto exit;
 #endif
@@ -1261,7 +1309,15 @@ int ej_wl_sta_list_5g(int eid, webs_t wp, int argc, char_t **argv)
 
 	memset(mac, 0, sizeof(mac));
 
+<<<<<<< HEAD
 #if defined(RTAC85U) || defined(RTAC85P) || defined(RTACRH26) || defined(RMAC2100) || defined(R6800) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300) || defined(RTK2P)
+=======
+<<<<<<< HEAD
+#if defined(RTAC85U) || defined(RTAC85P) || defined(RTACRH26) || defined(RMAC2100) || defined(R6800) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300)
+=======
+#if defined(RTAC85U) || defined(RTAC85P) || defined(RTACRH26) || defined(RMAC2100) || defined(R6800) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300) || defined(RTK2P)
+>>>>>>> back211003
+>>>>>>> main
 	if (!nvram_get_int("wlready"))
 		goto exit;
 #endif
@@ -1876,7 +1932,15 @@ static int ej_wl_channel_list(int eid, webs_t wp, int argc, char_t **argv, int u
 
 	if (band != 0 && band != 1) return retval;
 
+<<<<<<< HEAD
 #if defined(RTAC85U) || defined(RTAC85P) || defined(RTACRH26) || defined(RMAC2100) || defined(R6800) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300) || defined(RTK2P)
+=======
+<<<<<<< HEAD
+#if defined(RTAC85U) || defined(RTAC85P) || defined(RTACRH26) || defined(RMAC2100) || defined(R6800) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300)
+=======
+#if defined(RTAC85U) || defined(RTAC85P) || defined(RTACRH26) || defined(RMAC2100) || defined(R6800) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTNEWIFI3) || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300) || defined(RTK2P)
+>>>>>>> back211003
+>>>>>>> main
 	if (!nvram_get_int("wlready")) return retval;
 #endif
 

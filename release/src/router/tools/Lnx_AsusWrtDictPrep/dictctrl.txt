@@ -439,8 +439,17 @@ EN,BR,CN,CZ,DA,DE,ES,FI,FR,HU,IT,JP,KR,MS,NL,NO,PL,RO,RU,SL,SV,TH,TR,TW,UK
 RT-MT1300
 EN,BR,CN,CZ,DA,DE,ES,FI,FR,HU,IT,JP,KR,MS,NL,NO,PL,RO,RU,SL,SV,TH,TR,TW,UK
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+>>>>>>> main
 [MODEL]
 RT-K2P
 EN,BR,CN,CZ,DA,DE,ES,FI,FR,HU,IT,JP,KR,MS,NL,NO,PL,RO,RU,SL,SV,TH,TR,TW,UK
 
+<<<<<<< HEAD
+=======
+>>>>>>> back211003
+>>>>>>> main
 [END]

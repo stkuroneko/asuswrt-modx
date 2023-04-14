@@ -186,7 +186,15 @@ ifeq ($(AC2900),y)
 endif
 
 ifeq ($(or $(RTCONFIG_BWDPI),$(RTCONFIG_BWDPI_DEP)),y)
+<<<<<<< HEAD
 ifneq ($(or $(RTMIR3G),$(RTMIR3P),$(RTMIR4A),$(RTRM2100),$(RTR2100),$(RTNEWIFI2),$(RTRS1200P),$(RTXYC3),$(RTNEWIFI3),$(RTHIWIFI4),$(RTE8820S),$(RTA040WQ),$(RTMSG1500),$(RTJDC1),$(RTMT1300),$(RTK2P)),y)
+=======
+<<<<<<< HEAD
+ifneq ($(or $(RTMIR3G),$(RTMIR3P),$(RTMIR4A),$(RTRM2100),$(RTR2100),$(RTNEWIFI2),$(RTRS1200P),$(RTXYC3),$(RTNEWIFI3),$(RTHIWIFI4),$(RTE8820S),$(RTA040WQ),$(RTMSG1500),$(RTJDC1),$(RTMT1300)),y)
+=======
+ifneq ($(or $(RTMIR3G),$(RTMIR3P),$(RTMIR4A),$(RTRM2100),$(RTR2100),$(RTNEWIFI2),$(RTRS1200P),$(RTXYC3),$(RTNEWIFI3),$(RTHIWIFI4),$(RTE8820S),$(RTA040WQ),$(RTMSG1500),$(RTJDC1),$(RTMT1300),$(RTK2P)),y)
+>>>>>>> back211003
+>>>>>>> main
 	cp -f webs_scripts/sig2nd_upgrade.sh $(INSTALLDIR)/usr/sbin/sig_upgrade.sh
 	cp -f webs_scripts/sig2nd_update.sh $(INSTALLDIR)/usr/sbin/sig_update.sh
 else

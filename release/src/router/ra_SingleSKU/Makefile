@@ -95,7 +95,15 @@ ifeq ($(or $(RTHIWIFI4),$(RTE8820S),$(RTMIR3G),$(RTNEWIFI2),$(RTRS1200P),$(RTNEW
 	@install $(BUILD_NAME)/SingleSKU_2.4G.dat $(SKUDIR)/SingleSKU_2.4G.dat
 	@install $(BUILD_NAME)/SingleSKU_5.8G.dat $(SKUDIR)/SingleSKU_5.8G.dat
 endif
+<<<<<<< HEAD
 ifeq ($(or $(RTA040WQ),$(RTMSG1500),$(RTMIR3P),$(RTRM2100),$(RTR2100),$(RTJDC1),$(RTMT1300),$(RTK2P)),y))
+=======
+<<<<<<< HEAD
+ifeq ($(or $(RTA040WQ),$(RTMSG1500),$(RTMIR3P),$(RTRM2100),$(RTR2100),$(RTJDC1),$(RTMT1300)),y))
+=======
+ifeq ($(or $(RTA040WQ),$(RTMSG1500),$(RTMIR3P),$(RTRM2100),$(RTR2100),$(RTJDC1),$(RTMT1300),$(RTK2P)),y))
+>>>>>>> back211003
+>>>>>>> main
 	@install $(BUILD_NAME)/l1profile.dat $(SKUDIR)/l1profile.dat
 	@install $(BUILD_NAME)/SingleSKU_mt7615e-sku.dat $(SKUDIR)/SingleSKU_mt7615e-sku.dat
 	@install $(BUILD_NAME)/SingleSKU_mt7615e-sku-bf.dat $(SKUDIR)/SingleSKU_mt7615e-sku-bf.dat
