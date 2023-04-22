@@ -22,7 +22,7 @@ static void handle_tftp(time_t now, struct tftp_transfer *transfer, ssize_t len)
 static struct tftp_file *check_tftp_fileperm(ssize_t *len, char *prefix);
 static void free_transfer(struct tftp_transfer *transfer);
 static ssize_t tftp_err(int err, char *packet, char *message, char *file);
-static ssize_t tftp_err_oops(char *packet, const char *file);
+static ssize_t tftp_err_oops(char *packet, char *file);
 static ssize_t get_block(char *packet, struct tftp_transfer *transfer);
 static char *next(char **p, char *end);
 static void sanitise(char *buf);
@@ -39,7 +39,6 @@ static void sanitise(char *buf);
 #define ERR_PERM   2
 #define ERR_FULL   3
 #define ERR_ILL    4
-#define ERR_TID    5
 
 void tftp_request(struct listener *listen, time_t now)
 {
@@ -95,7 +94,7 @@ void tftp_request(struct listener *listen, time_t now)
 
   if ((len = recvmsg(listen->tftpfd, &msg, 0)) < 2)
     return;
-  
+
   /* Can always get recvd interface for IPv6 */
   if (!check_dest)
     {
@@ -584,27 +583,11 @@ void check_tftp_listeners(time_t now)
     for (transfer = daemon->tftp_trans; transfer; transfer = transfer->next)
       if (poll_check(transfer->sockfd, POLLIN))
 	{
-	  union mysockaddr peer;
-	  socklen_t addr_len = sizeof(union mysockaddr);
-	  ssize_t len;
-	  
 	  /* we overwrote the buffer... */
 	  daemon->srv_save = NULL;
-
-	  if ((len = recvfrom(transfer->sockfd, daemon->packet, daemon->packet_buff_sz, 0, &peer.sa, &addr_len)) > 0)
-	    {
-	      if (sockaddr_isequal(&peer, &transfer->peer)) 
-		handle_tftp(now, transfer, len);
-	      else
-		{
-		  /* Wrong source address. See rfc1350 para 4. */
-		  prettyprint_addr(&peer, daemon->addrbuff);
-		  len = tftp_err(ERR_TID, daemon->packet, _("ignoring packet from %s (TID mismatch)"), daemon->addrbuff);
-		  sendto(transfer->sockfd, daemon->packet, len, 0, &peer.sa, sa_len(&peer));
-		}
-	    }
+	  handle_tftp(now, transfer, recv(transfer->sockfd, daemon->packet, daemon->packet_buff_sz, 0));
 	}
-	  
+
   for (transfer = daemon->tftp_trans, up = &daemon->tftp_trans; transfer; transfer = tmp)
     {
       tmp = transfer->next;
@@ -619,7 +602,7 @@ void check_tftp_listeners(time_t now)
 	  	  
 	  /* we overwrote the buffer... */
 	  daemon->srv_save = NULL;
-
+	 
 	  if ((len = get_block(daemon->packet, transfer)) == -1)
 	    {
 	      len = tftp_err_oops(daemon->packet, transfer->file->filename);
@@ -753,8 +736,7 @@ static ssize_t tftp_err(int err, char *packet, char *message, char *file)
   char *errstr = strerror(errno);
   
   memset(packet, 0, daemon->packet_buff_sz);
-  if (file)
-    sanitise(file);
+  sanitise(file);
   
   mess->op = htons(OP_ERR);
   mess->err = htons(err);
@@ -766,11 +748,10 @@ static ssize_t tftp_err(int err, char *packet, char *message, char *file)
   return  ret;
 }
 
-static ssize_t tftp_err_oops(char *packet, const char *file)
+static ssize_t tftp_err_oops(char *packet, char *file)
 {
   /* May have >1 refs to file, so potentially mangle a copy of the name */
-  if (file != daemon->namebuff)
-    strcpy(daemon->namebuff, file);
+  strcpy(daemon->namebuff, file);
   return tftp_err(ERR_NOTDEF, packet, _("cannot read %s: %s"), daemon->namebuff);
 }
 

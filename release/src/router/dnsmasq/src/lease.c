@@ -412,7 +412,7 @@ void lease_update_file(time_t now)
       if (next_event == 0 || difftime(next_event, LEASE_RETRY + now) > 0.0)
 	next_event = LEASE_RETRY + now;
       
-      my_syslog(MS_DHCP | LOG_ERR, _("failed to write %s: %s (retry in %u s)"), 
+      my_syslog(MS_DHCP | LOG_ERR, _("failed to write %s: %s (retry in %us)"), 
 		daemon->lease_file, strerror(err),
 		(unsigned int)difftime(next_event, now));
     }
@@ -640,6 +640,26 @@ struct dhcp_lease *lease_find_by_client(unsigned char *hwaddr, int hw_len, int h
 #endif   
       if ((!lease->clid || !clid) && 
 	  hw_len != 0 && 
+	  lease->hwaddr_len == hw_len &&
+	  lease->hwaddr_type == hw_type &&
+	  memcmp(hwaddr, lease->hwaddr, hw_len) == 0)
+	return lease;
+    }
+
+  return NULL;
+}
+
+struct dhcp_lease *lease_find_by_hwaddr(unsigned char *hwaddr, int hw_len, int hw_type)
+{
+  struct dhcp_lease *lease;
+
+  for (lease = leases; lease; lease = lease->next)
+    {
+#ifdef HAVE_DHCP6
+      if (lease->flags & (LEASE_TA | LEASE_NA))
+	continue;
+#endif
+      if (hw_len != 0 &&
 	  lease->hwaddr_len == hw_len &&
 	  lease->hwaddr_type == hw_type &&
 	  memcmp(hwaddr, lease->hwaddr, hw_len) == 0)
