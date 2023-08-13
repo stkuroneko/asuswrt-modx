@@ -70,6 +70,8 @@ static const struct model_s model_list[] = {
 	{ "RT-HIWIFI4", MODEL_RTHIWIFI4},
 #elif defined(RTE8820S)
 	{ "RT-E8820S", MODEL_RTE8820S},
+#elif defined(RTE8820V2)
+	{ "RT-E8820V2", MODEL_RTE8820V2},
 #elif defined(RTA040WQ)
 	{ "RT-A040WQ", MODEL_RTA040WQ},
 #elif defined(RTMSG1500)
@@ -302,6 +304,8 @@ int get_model(void)
 	return MODEL_RTHIWIFI4;
 #elif defined(RTE8820S)
 	return MODEL_RTE8820S;
+#elif defined(RTE8820V2)
+	return MODEL_RTE8820V2;
 #elif defined(RTA040WQ)
 	return MODEL_RTA040WQ;
 #elif defined(RTMSG1500)

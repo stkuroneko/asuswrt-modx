@@ -140,7 +140,7 @@ typedef struct usb_ctrlrequest devctrlrequest;
  *	Profile related sections
  ***********************************************************************************/
 
-#define L1_PROFILE_PATH	"/etc/wireless/l1profile.dat"
+#define L1_PROFILE_PATH	"/ra_SKU/l1profile.dat"
 
 #define L1PROFILE_INDEX_LEN		10
 #define	L1PROFILE_ATTRNAME_LEN	30

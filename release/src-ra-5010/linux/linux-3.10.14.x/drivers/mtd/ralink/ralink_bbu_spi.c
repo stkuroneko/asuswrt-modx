@@ -1946,7 +1946,7 @@ static struct mtd_info *raspi_probe(struct map_info *map)
 			rt2880_partitions[4].size = flash->mtd.size - rt2880_partitions[4].offset - MTD_RADIO_PART_SIZE;
 			rt2880_partitions[5].offset = flash->mtd.size - MTD_RADIO_PART_SIZE;
 #else 
-#if defined(CONFIG_MODEL_RTNEWIFI2) ||defined(CONFIG_MODEL_RTRS1200P) || defined(CONFIG_MODEL_RTXYC3) || defined(CONFIG_MODEL_RTNEWIFI3) || defined(CONFIG_MODEL_RTJDC1) || defined(CONFIG_MODEL_RTMT1300)
+#if defined(CONFIG_MODEL_RTNEWIFI2) ||defined(CONFIG_MODEL_RTE8820V2) ||defined(CONFIG_MODEL_RTRS1200P) || defined(CONFIG_MODEL_RTXYC3) || defined(CONFIG_MODEL_RTNEWIFI3) || defined(CONFIG_MODEL_RTJDC1) || defined(CONFIG_MODEL_RTMT1300)
                         loff_t j = MTD_JFFS2_PART_SIZE;
                         j =  flash->mtd.size - 0x1f00000;
 			rt2880_partitions[3].size = flash->mtd.size - (MTD_BOOT_PART_SIZE + MTD_CONFIG_PART_SIZE + MTD_FACTORY_PART_SIZE) - j;

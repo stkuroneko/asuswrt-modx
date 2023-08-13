@@ -19,6 +19,7 @@ config  MODEL_RPAC87
 config  MODEL_RTAC65U
 	bool "RT-AC65U"
 	default n
+	
 config  MODEL_RTN800HP
     bool "RT-N800HP"
     default n
@@ -73,6 +74,10 @@ config  MODEL_RTHIWIFI4
 
 config  MODEL_RTE8820S
 	bool "RT-E8820S"
+	default n
+
+config  MODEL_RTE8820V2
+	bool "RT-E8820V2"
 	default n
 
 config  MODEL_RTA040WQ
