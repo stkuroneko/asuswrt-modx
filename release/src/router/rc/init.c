@@ -3979,6 +3979,53 @@ int init_nvram(void)
 		break;
 #endif /* Newifi*/
 
+#if defined(RTOPENFI5) 
+	case MODEL_RTOPENFI5:
+		swrt_init();
+		nvram_set("boardflags", "0x100"); // although it is not used in ralink driver, set for vlan
+		nvram_set("vlan1hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
+		nvram_set("vlan2hwname", "et0");  // vlan. used to get "%smacaddr" for compare and find parent interface.
+		nvram_set("lan_ifname", "br0");
+
+		wl_ifaces[WL_2G_BAND] = "ra0";
+		wl_ifaces[WL_5G_BAND] = "rai0";
+
+		set_basic_ifname_vars("eth3", "vlan1", wl_ifaces, "usb", "vlan1", NULL, "vlan3", NULL, 0);
+		nvram_set("ehci_ports", "1-2");
+		nvram_set("ohci_ports", "2-2");
+		add_rc_support("2.4G 5G noupdate usbX1");
+
+		nvram_set_int("led_wan_gpio", 17|GPIO_ACTIVE_LOW);
+        nvram_set_int("led_pwr_gpio", 14|GPIO_ACTIVE_LOW);
+        nvram_set_int("btn_rst_gpio",  18|GPIO_ACTIVE_LOW);
+		nvram_set_int("btn_wps_gpio",  13|GPIO_ACTIVE_LOW);
+		nvram_set_int("led_lan_gpio", 16|GPIO_ACTIVE_LOW);
+
+		eval("rtkswitch", "11");
+		nvram_set("ct_max", "300000"); // force
+
+		add_rc_support("mssid");
+		add_rc_support("rawifi");
+		add_rc_support("11AC");
+		add_rc_support("manual_stb");
+		add_rc_support("user_low_rssi");
+		add_rc_support("loclist");
+		add_rc_support("mfp");
+		add_rc_support("pwrctrl");
+		add_rc_support("app");
+		add_rc_support("gameMode");
+		add_rc_support("switchctrl");
+		add_rc_support("uu_accel");
+
+		nvram_set("wl0_HT_TxStream", "2");
+		nvram_set("wl0_HT_RxStream", "2");
+
+		nvram_set("wl1_HT_TxStream", "2");
+		nvram_set("wl1_HT_RxStream", "2");
+
+		break;
+#endif /* OpenFi*/
+
 #if defined(RTJDC1) 
 	case MODEL_RTJDC1:
 		swrt_init();
@@ -9659,7 +9706,7 @@ int init_nvram(void)
 	}
 
 	// wrs - white and black list
-#if !defined(RTMIR3G) && !defined(RTMIR3P) && !defined(RTMIR4A) && !defined(RTRM2100) && !defined(RTR2100) && !defined(RTNEWIFI2) && !defined(RTRS1200P) && !defined(RTXYC3) && !defined(RTNEWIFI3) && !defined(RTHIWIFI4) && !defined(RTE8820S) && !defined(RTE8820V2) && !defined(RTA040WQ) && !defined(RTMSG1500) && !defined(RTJDC1) && !defined(RTMT1300) && !defined(RTK2P)
+#if !defined(RTMIR3G) && !defined(RTMIR3P) && !defined(RTMIR4A) && !defined(RTRM2100) && !defined(RTR2100) && !defined(RTNEWIFI2) && !defined(RTRS1200P) && !defined(RTXYC3) && !defined(RTNEWIFI3) && !defined(RTOPENFI5) && !defined(RTHIWIFI4) && !defined(RTE8820S) && !defined(RTE8820V2) && !defined(RTA040WQ) && !defined(RTMSG1500) && !defined(RTJDC1) && !defined(RTMT1300) && !defined(RTK2P)
 	add_rc_support("wrs_wbl");
 #endif
 #endif
@@ -11282,7 +11329,7 @@ int init_main(int argc, char *argv[])
 #if !defined(RTCONFIG_TEST_BOARDDATA_FILE)
 		start_jffs2();
 		
-#if defined(RTXYC3) || defined(RTNEWIFI3)
+#if defined(RTXYC3) || defined(RTNEWIFI3) || defined(RTOPENFI5)
 		mount("/dev/mtdblock5", "/jffs", "jffs2", MS_NOATIME, "");
 #endif
 
@@ -11954,7 +12001,7 @@ int reboothalt_main(int argc, char *argv[])
 	_dprintf(reboot ? "Rebooting..." : "Shutting down...");
 	kill(1, reboot ? SIGTERM : SIGQUIT);
 
-#if defined(RTN14U) || defined(RTN65U) || defined(RTAC52U) || defined(RTAC51U) || defined(RTN11P) || defined(RTN300) || defined(RTN54U) || defined(RTCONFIG_QCA) || defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTAC54U) || defined(RTN56UB2) || defined(RTAC85U) || defined(RTAC85P) || defined(RTN800HP) || defined(RTACRH26) || defined(RMAC2100) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTXYC3) || defined(RTNEWIFI3)  || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTE8820V2) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300) || defined(RTK2P)
+#if defined(RTN14U) || defined(RTN65U) || defined(RTAC52U) || defined(RTAC51U) || defined(RTN11P) || defined(RTN300) || defined(RTN54U) || defined(RTCONFIG_QCA) || defined(RTAC1200HP) || defined(RTN56UB1) || defined(RTAC54U) || defined(RTN56UB2) || defined(RTAC85U) || defined(RTAC85P) || defined(RTN800HP) || defined(RTACRH26) || defined(RMAC2100) || defined(RTMIR3G) || defined(RTMIR3P) || defined(RTMIR4A) || defined(RTRM2100) || defined(RTR2100) || defined(RTNEWIFI2) || defined(RTRS1200P) || defined(RTXYC3) || defined(RTNEWIFI3) || defined(RTOPENFI5)  || defined(RTHIWIFI4) || defined(RTE8820S) || defined(RTE8820V2) || defined(RTA040WQ) || defined(RTMSG1500) || defined(RTJDC1) || defined(RTMT1300) || defined(RTK2P)
 	def_reset_wait = 50;
 #endif
 

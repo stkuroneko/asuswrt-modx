@@ -68,6 +68,10 @@ config  MODEL_RTNEWIFI3
 	bool "RT-NEWIFI3"
 	default n
 
+config  MODEL_RTOPENFI5
+	bool "RT-OPENFI5"
+	default n
+
 config  MODEL_RTHIWIFI4
 	bool "RT-HIWIFI4"
 	default n
